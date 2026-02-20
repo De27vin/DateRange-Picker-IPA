@@ -1,0 +1,16 @@
+/*
+
+* Override default styles with customer related attribute values
+
+*/
+
+
+:root {
+	--theme-background-color: #f3f6f9;
+	--theme-primary-color: #00a0f5;
+	--theme-secondary-color: #0e6ba2;
+	--ui-dark-background-color: #939393;
+	--ui-light-color: #d9dee7;
+	--ui-dark-color: #556778;
+}
+/*--ui-dark-color: #556778;*/

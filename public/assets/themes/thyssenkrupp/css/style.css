@@ -1,0 +1,9 @@
+:root {
+    --tw-bg-opacity: 1;
+    --color-primary-200: rgb(84,193,245);
+    --color-primary-400: rgb(0,160,240);
+    --color-primary-600: rgb(0,87,160);
+    --color-secondary-200: rgb(217,222,232);
+    --color-secondary-400: rgb(156,163,175); /* rgb(120,135,155); */
+    --color-secondary-600: rgb(75,85,100);
+}

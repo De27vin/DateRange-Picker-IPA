@@ -1,0 +1,30 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import 'components/buttons.scss';
+@import 'components/icons.scss';
+@import 'components/forms.scss';
+@import 'components/tables.scss';
+@import 'components/lists.scss';
+@import 'components/switch.scss';
+@import 'components/navigation.scss';
+@import 'components/layout.scss';
+@import 'components/pikaday.scss';
+@import 'components/node.scss';
+@import 'components/help.scss';
+@import 'components/tiles.scss';
+
+
+/**
+ * workaround:
+ * for >npm run prod 
+ * background colors didn't work correctly
+ * 
+ * */
+:root {
+	--tw-bg-opacity: 1;
+}
+[x-cloak] { display: none !important; }
+
+@tailwind utilities;
+@import 'components/fonts.scss';
+@import 'components/typography.scss';

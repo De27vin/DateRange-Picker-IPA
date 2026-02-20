@@ -1,0 +1,1368 @@
+{
+  "versions": {
+    "0-0-0": ""
+  },
+  "theme": {
+    "backgroundcolor": "#ffffff",
+    "logo": ""
+  },
+  "translations": {
+    "de": {
+      "alert": {
+        "type": {
+          "ALARM": "Aktiver Alarm",
+          "BATDEF": "Fehlfunktion Batterie",
+          "BATLOW": "Batterie niedrig",
+          "BUTTON": "Fehlfunktion Taster",
+          "CHARGE": "Fehlfunktion Ladung",
+          "DB": "Fehlfunktion Datenbank",
+          "DISK": "Festplatte niedrig",
+          "DOOR": "Object door failure",
+          "ELEVATOR": "Elevator failure",
+          "GATEWAY": "Gateway Fehlfunktion",
+          "IDENTITY": "Nicht\u00fcbereinstimmung Identit\u00e4t",
+          "LEVEL": "Object is not level",
+          "LIGHT": "Light malfunction",
+          "LINE": "Linienalarm",
+          "LOCATION": "Standortalarm",
+          "MAINTENANCE": "Object is under maintenance",
+          "MIC": "Fehlfunktion Mikrofon",
+          "NETWORK": "Fehlfunktion Netzwerk",
+          "PERIODICAL": "Routineruf \u00fcberf\u00e4llig",
+          "PIN": "Nicht\u00fcbereinstimmung PIN",
+          "POWER": "Fehlfunktion Stromversorgung",
+          "RAM": "RAM niedrig",
+          "RESERVE": "Reserviertes Ger\u00e4t",
+          "SERIAL": "Fehlfunktion serielle Schnittstelle",
+          "SHAFT": "Shaft failure",
+          "SIGNAL": "Signal schwach",
+          "SIP": "SIP Registrierung fehlgeschlagen",
+          "SPEAKER": "Fehlfunktion Lautsprecher",
+          "TECH": "Lokale Kontrolle \u00fcberf\u00e4llig",
+          "VOICE": "Sprachalarm"
+        }
+      },
+      "call": {
+        "dtmf": {
+          "tx": {
+            "gain": "Call DTMF TX Gain",
+            "mark": "Call DTMF TX Mark",
+            "space": "Call DTMF TX Space"
+          }
+        },
+        "recording": "Call Recording"
+      },
+      "device": {
+        "field": {
+          "address": "Addresse",
+          "comments": "Kommentare",
+          "equipment": "Anlagen ID",
+          "identity": "Identit\u00e4t",
+          "link": "Externer LInk",
+          "module": "Modul",
+          "numbers": "Telefonnummern",
+          "pbx": "PBX",
+          "pin": "PIN",
+          "pstn": "PSTN",
+          "sim": "SIM",
+          "sip": "SIP"
+        },
+        "initial": {
+          "rx": {
+            "ignore": "Initial RX DTMF Ignore"
+          }
+        },
+        "setting": {
+          "alarm": {
+            "button": {
+              "delay": "Verz\u00f6gerung Alarmtaste",
+              "misuse": "Missbrauchunterdr\u00fcckung"
+            },
+            "cycles": "Alarmwiederholungen",
+            "reset": "Alarm zur\u00fccksetzen"
+          },
+          "alarm1": {
+            "mode": "Alarm 1 Art",
+            "number": "Alarm 1 Nummer"
+          },
+          "alarm2": {
+            "mode": "Alarm 2 Art",
+            "number": "Alarm 2 Nummer"
+          },
+          "alarm3": {
+            "mode": "Alarm 3 Art",
+            "number": "Alarm 3 Nummer"
+          },
+          "alarm4": {
+            "mode": "Alarm 4 Art",
+            "number": "Alarm 4 Nummer"
+          },
+          "alarm5": {
+            "mode": "Alarm 5 Art",
+            "number": "Alarm 5 Nummer"
+          },
+          "alarm6": {
+            "mode": "Alarm 6 Art",
+            "number": "Alarm 6 Nummer"
+          },
+          "alarm7": {
+            "mode": "Alarm 7 Art",
+            "number": "Alarm 7 Nummer"
+          },
+          "alarm8": {
+            "mode": "Alarm 8 Art",
+            "number": "Alarm 8 Nummer"
+          },
+          "monitor1": {
+            "mode": "Monitoring 1 Art",
+            "number": "Monitoring 1 Nummer"
+          },
+          "monitor2": {
+            "mode": "Monitoring 2 Art",
+            "number": "Monitoring 2 Nummer"
+          },
+          "monitor3": {
+            "mode": "Monitoring 3 Art",
+            "number": "Monitoring 3 Nummer"
+          },
+          "monitor4": {
+            "mode": "Monitoring 4 Art",
+            "number": "Monitoring 4 Nummer"
+          },
+          "monitor5": {
+            "mode": "Monitoring 5 Art",
+            "number": "Monitoring 5 Nummer"
+          },
+          "monitor6": {
+            "mode": "Monitoring 6 Art",
+            "number": "Monitoring 6 Nummer"
+          },
+          "monitor7": {
+            "mode": "Monitoring 7 Art",
+            "number": "Monitoring 7 Nummer"
+          },
+          "monitor8": {
+            "mode": "Monitoring 7 Art",
+            "number": "Monitoring 8 Nummer"
+          },
+          "noise": {
+            "canceler": "Hintergrundger\u00e4uschfilter"
+          },
+          "operator": {
+            "mode": "Operatormodus"
+          },
+          "periodical": {
+            "cycles": "Routinerufzyklen",
+            "interval": "Routinerufintervall"
+          },
+          "periodical1": {
+            "number": "Routinerufnummer 1"
+          },
+          "periodical2": {
+            "number": "Routinerufnummer 2"
+          },
+          "periodical3": {
+            "number": "Routinerufnummer 3"
+          },
+          "periodical4": {
+            "number": "Routinerufnummer 4"
+          },
+          "periodical5": {
+            "number": "Routinerufnummer 5"
+          },
+          "periodical6": {
+            "number": "Routinerufnummer 6"
+          },
+          "periodical7": {
+            "number": "Routinerufnummer 7"
+          },
+          "periodical8": {
+            "number": "Routinerufnummer 8"
+          },
+          "ring": {
+            "duration": "Rufdauer"
+          },
+          "speaker": {
+            "volume": "Lautsprecherlautst\u00e4rke"
+          }
+        }
+      }
+    },
+    "default": {
+      "alert": {
+        "type": {
+          "ALARM": "Active alarm",
+          "BATDEF": "Battery malfunction",
+          "BATLOW": "Battery low",
+          "BUTTON": "Button malfunction",
+          "CHARGE": "Charge malfunction",
+          "DB": "Database malfunction",
+          "DISK": "Disk low",
+          "DOOR": "Object door failure",
+          "ELEVATOR": "Elevator failure",
+          "GATEWAY": "Gateway malfunction",
+          "IDENTITY": "Identity mismatch",
+          "LEVEL": "Object is not level",
+          "LIGHT": "Light malfunction",
+          "LINE": "Line alarm",
+          "LOCATION": "Location alarm",
+          "MAINTENANCE": "Object is under maintenance",
+          "MIC": "Microphone malfunction",
+          "NETWORK": "Network malfunction",
+          "PERIODICAL": "Periodical call overdue",
+          "PIN": "PIN mismatch",
+          "POWER": "Power malfunction",
+          "RAM": "RAM low",
+          "RESERVE": "Reserved device",
+          "SERIAL": "Serial port malfunction",
+          "SHAFT": "Shaft failure",
+          "SIGNAL": "Low signal",
+          "SIP": "SIP registration failure",
+          "SPEAKER": "Speaker malfunction",
+          "TECH": "Technician check overdue",
+          "VOICE": "Voice alarm"
+        }
+      },
+      "call": {
+        "dtmf": {
+          "tx": {
+            "gain": "Call DTMF TX Gain",
+            "mark": "Call DTMF TX Mark",
+            "space": "Call DTMF TX Space"
+          }
+        },
+        "recording": "Call Recording"
+      },
+      "device": {
+        "field": {
+          "address": "Address",
+          "comments": "Comments",
+          "equipment": "Equipment ID",
+          "identity": "Identity",
+          "link": "External Link",
+          "module": "Module",
+          "numbers": "Phone Numbers",
+          "pbx": "PBX",
+          "pin": "PIN",
+          "pstn": "PSTN",
+          "sim": "SIM",
+          "sip": "SIP"
+        },
+        "initial": {
+          "rx": {
+            "ignore": "Initial RX DTMF Ignore"
+          }
+        },
+        "setting": {
+          "alarm": {
+            "button": {
+              "delay": "Alarm button delay",
+              "misuse": "Misuse Suppression"
+            },
+            "cycles": "Alarm cycles",
+            "reset": "Alarm reset"
+          },
+          "alarm1": {
+            "mode": "Alarm 1 mode",
+            "number": "Alarm 1 number"
+          },
+          "alarm2": {
+            "mode": "Alarm 2 mode",
+            "number": "Alarm 2 number"
+          },
+          "alarm3": {
+            "mode": "Alarm 3 mode",
+            "number": "Alarm 3 number"
+          },
+          "alarm4": {
+            "mode": "Alarm 4 mode",
+            "number": "Alarm 4 number"
+          },
+          "alarm5": {
+            "mode": "Alarm 5 mode",
+            "number": "Alarm 5 number"
+          },
+          "alarm6": {
+            "mode": "Alarm 6 mode",
+            "number": "Alarm 6 number"
+          },
+          "alarm7": {
+            "mode": "Alarm 7 mode",
+            "number": "Alarm 7 number"
+          },
+          "alarm8": {
+            "mode": "Alarm 8 mode",
+            "number": "Alarm 8 number"
+          },
+          "monitor1": {
+            "mode": "Monitoring 1 mode",
+            "number": "Monitoring 1 number"
+          },
+          "monitor2": {
+            "mode": "Monitoring 2 mode",
+            "number": "Monitoring 2 number"
+          },
+          "monitor3": {
+            "mode": "Monitoring 3 mode",
+            "number": "Monitoring 3 number"
+          },
+          "monitor4": {
+            "mode": "Monitoring 4 mode",
+            "number": "Monitoring 4 number"
+          },
+          "monitor5": {
+            "mode": "Monitoring 5 mode",
+            "number": "Monitoring 5 number"
+          },
+          "monitor6": {
+            "mode": "Monitoring 6 mode",
+            "number": "Monitoring 6 number"
+          },
+          "monitor7": {
+            "mode": "Monitoring 7 mode",
+            "number": "Monitoring 7 number"
+          },
+          "monitor8": {
+            "mode": "Monitoring 8 mode",
+            "number": "Monitoring 8 number"
+          },
+          "noise": {
+            "canceler": "Background noise filter"
+          },
+          "operator": {
+            "mode": "Operator mode"
+          },
+          "periodical": {
+            "cycles": "Periodic call cycles",
+            "interval": "Periodic call interval"
+          },
+          "periodical1": {
+            "number": "Periodic call 1 number"
+          },
+          "periodical2": {
+            "number": "Periodic call 2 number"
+          },
+          "periodical3": {
+            "number": "Periodic call 3 number"
+          },
+          "periodical4": {
+            "number": "Periodic call 4 number"
+          },
+          "periodical5": {
+            "number": "Periodic call 5 number"
+          },
+          "periodical6": {
+            "number": "Periodic call 6 number"
+          },
+          "periodical7": {
+            "number": "Periodic call 7 number"
+          },
+          "periodical8": {
+            "number": "Periodic call 8 number"
+          },
+          "ring": {
+            "duration": "Ring duration"
+          },
+          "speaker": {
+            "volume": "Speaker volume"
+          }
+        }
+      }
+    },
+    "en": {
+      "alert": {
+        "type": {
+          "ALARM": "Active alarm",
+          "BATDEF": "Battery malfunction",
+          "BATLOW": "Battery low",
+          "BUTTON": "Button malfunction",
+          "CHARGE": "Charge malfunction",
+          "DB": "Database malfunction",
+          "DISK": "Disk low",
+          "DOOR": "Object door failure",
+          "ELEVATOR": "Elevator failure",
+          "GATEWAY": "Gateway malfunction",
+          "IDENTITY": "Identity mismatch",
+          "LEVEL": "Object is not level",
+          "LIGHT": "Light malfunction",
+          "LINE": "Line alarm",
+          "LOCATION": "Location alarm",
+          "MAINTENANCE": "Object is under maintenance",
+          "MIC": "Microphone malfunction",
+          "NETWORK": "Network malfunction",
+          "PERIODICAL": "Periodical call overdue",
+          "PIN": "PIN mismatch",
+          "POWER": "Power malfunction",
+          "RAM": "RAM low",
+          "RESERVE": "Reserved device",
+          "SERIAL": "Serial port malfunction",
+          "SHAFT": "Shaft failure",
+          "SIGNAL": "Low signal",
+          "SIP": "SIP registration failure",
+          "SPEAKER": "Speaker malfunction",
+          "TECH": "Technician check overdue",
+          "VOICE": "Voice alarm"
+        }
+      },
+      "call": {
+        "dtmf": {
+          "tx": {
+            "gain": "Call DTMF TX Gain",
+            "mark": "Call DTMF TX Mark",
+            "space": "Call DTMF TX Space"
+          }
+        },
+        "recording": "Call Recording"
+      },
+      "device": {
+        "field": {
+          "address": "Address",
+          "comments": "Comments",
+          "equipment": "Equipment ID ",
+          "identity": "Identity",
+          "link": "External Link",
+          "module": "Module",
+          "numbers": "Phone Numbers",
+          "pbx": "PBX Number",
+          "pin": "Pin",
+          "pstn": "PSTN Number",
+          "sim": "SIM Number",
+          "sip": "SIP Number"
+        },
+        "initial": {
+          "rx": {
+            "ignore": "Initial RX DTMF Ignore"
+          }
+        },
+        "setting": {
+          "alarm": {
+            "button": {
+              "delay": "Alarm button delay",
+              "misuse": "Misuse Suppression"
+            },
+            "cycles": "Alarm cycles",
+            "reset": "Alarm reset"
+          },
+          "alarm1": {
+            "mode": "Alarm 1 mode",
+            "number": "Alarm 1 number"
+          },
+          "alarm2": {
+            "mode": "Alarm 2 mode",
+            "number": "Alarm 2 number"
+          },
+          "alarm3": {
+            "mode": "Alarm 3 mode",
+            "number": "Alarm 3 number"
+          },
+          "alarm4": {
+            "mode": "Alarm 4 mode",
+            "number": "Alarm 4 number"
+          },
+          "alarm5": {
+            "mode": "Alarm 5 mode",
+            "number": "Alarm 5 number"
+          },
+          "alarm6": {
+            "mode": "Alarm 6 mode",
+            "number": "Alarm 6 number"
+          },
+          "alarm7": {
+            "mode": "Alarm 7 mode",
+            "number": "Alarm 7 number"
+          },
+          "alarm8": {
+            "mode": "Alarm 8 mode",
+            "number": "Alarm 8 number"
+          },
+          "monitor1": {
+            "mode": "Monitoring 1 mode",
+            "number": "Monitoring 1 number"
+          },
+          "monitor2": {
+            "mode": "Monitoring 2 mode",
+            "number": "Monitoring 2 number"
+          },
+          "monitor3": {
+            "mode": "Monitoring 3 mode",
+            "number": "Monitoring 3 number"
+          },
+          "monitor4": {
+            "mode": "Monitoring 4 mode",
+            "number": "Monitoring 4 number"
+          },
+          "monitor5": {
+            "mode": "Monitoring 5 mode",
+            "number": "Monitoring 5 number"
+          },
+          "monitor6": {
+            "mode": "Monitoring 6 mode",
+            "number": "Monitoring 6 number"
+          },
+          "monitor7": {
+            "mode": "Monitoring 7 mode",
+            "number": "Monitoring 7 number"
+          },
+          "monitor8": {
+            "mode": "Monitoring 8 mode",
+            "number": "Monitoring 8 number"
+          },
+          "noise": {
+            "canceler": "Background noise filter"
+          },
+          "operator": {
+            "mode": "Operator mode"
+          },
+          "periodical": {
+            "cycles": "Periodic call cycles",
+            "interval": "Periodic call interval"
+          },
+          "periodical1": {
+            "number": "Periodic call 1 number"
+          },
+          "periodical2": {
+            "number": "Periodic call 2 number"
+          },
+          "periodical3": {
+            "number": "Periodic call 3 number"
+          },
+          "periodical4": {
+            "number": "Periodic call 4 number"
+          },
+          "periodical5": {
+            "number": "Periodic call 5 number"
+          },
+          "periodical6": {
+            "number": "Periodic call 6 number"
+          },
+          "periodical7": {
+            "number": "Periodic call 7 number"
+          },
+          "periodical8": {
+            "number": "Periodic call 8 number"
+          },
+          "ring": {
+            "duration": "Ring duration"
+          },
+          "speaker": {
+            "volume": "Speaker volume"
+          }
+        }
+      }
+    },
+    "es": {
+      "alert": {
+        "type": {
+          "ALARM": "Alarma activa",
+          "BATDEF": "Disfunci\u00f3n bateria",
+          "BATLOW": "Bater\u00eda baja",
+          "BUTTON": "Disfunci\u00f3n bot\u00f3n",
+          "CHARGE": "Disfunci\u00f3n carga",
+          "DB": "Disfunci\u00f3n base de datos",
+          "DISK": "Disco duro bajo",
+          "DOOR": "Object door failure",
+          "ELEVATOR": "Elevator failure",
+          "GATEWAY": "Disfunci\u00f3n gateway",
+          "IDENTITY": "Discordancia identidad",
+          "LEVEL": "Object is not level",
+          "LIGHT": "Light malfunction",
+          "LINE": "Alarma linea",
+          "LOCATION": "Alarma ubicaci\u00f3n",
+          "MAINTENANCE": "Object is under maintenance",
+          "MIC": "Disfunci\u00f3n micr\u00f3fono",
+          "NETWORK": "Disfunci\u00f3n red",
+          "PERIODICAL": "Llamada peri\u00f3dica atrasada",
+          "PIN": "Discordancia PIN",
+          "POWER": "Disfunci\u00f3n alimentac\u00edon",
+          "RAM": "RAM bajo",
+          "RESERVE": "Dispositivo reservado",
+          "SERIAL": "Disfunci\u00f3n puerto serie",
+          "SHAFT": "Shaft failure",
+          "SIGNAL": "Se\u00f1al baja",
+          "SIP": "Fallo registraci\u00f3n SIP",
+          "SPEAKER": "Disfunci\u00f3n altavoz",
+          "TECH": "Control local atrasado",
+          "VOICE": "Alarma voz"
+        }
+      },
+      "call": {
+        "dtmf": {
+          "tx": {
+            "gain": "Call DTMF TX Gain",
+            "mark": "Call DTMF TX Mark",
+            "space": "Call DTMF TX Space"
+          }
+        },
+        "recording": "Call Recording"
+      },
+      "device": {
+        "field": {
+          "address": "Direcci\u00f3n",
+          "comments": "Comentarios",
+          "equipment": "ID del equipo",
+          "identity": "Identidad",
+          "link": "Enlace externo",
+          "module": "M\u00f3dulo",
+          "numbers": "Numeros de telefono",
+          "pbx": "PBX",
+          "pin": "PIN",
+          "pstn": "PSTN",
+          "sim": "SIM",
+          "sip": "SIP"
+        },
+        "initial": {
+          "rx": {
+            "ignore": "Initial RX DTMF Ignore"
+          }
+        },
+        "setting": {
+          "alarm": {
+            "button": {
+              "delay": "Retraso bot\u00f3n de alarma",
+              "misuse": "Supressi\u00f3n de abuso"
+            },
+            "cycles": "Repeticiones de alarma",
+            "reset": "Cancelar alarma"
+          },
+          "alarm1": {
+            "mode": "Alarma 1 modo",
+            "number": "Alarma 1 numero"
+          },
+          "alarm2": {
+            "mode": "Alarma 2 modo",
+            "number": "Alarma 2 numero"
+          },
+          "alarm3": {
+            "mode": "Alarma 3 modo",
+            "number": "Alarma 3 numero"
+          },
+          "alarm4": {
+            "mode": "Alarma 4 modo",
+            "number": "Alarma 4 numero"
+          },
+          "alarm5": {
+            "mode": "Alarma 5 modo",
+            "number": "Alarma 5 numero"
+          },
+          "alarm6": {
+            "mode": "Alarma 6 modo",
+            "number": "Alarma 6 numero"
+          },
+          "alarm7": {
+            "mode": "Alarma 7 modo",
+            "number": "Alarma 7 numero"
+          },
+          "alarm8": {
+            "mode": "Alarma 8 modo",
+            "number": "Alarm 8 numero"
+          },
+          "monitor1": {
+            "mode": "Monitoring 1 modo",
+            "number": "Monitoring 1 numero"
+          },
+          "monitor2": {
+            "mode": "Monitoring 2 modo",
+            "number": "Monitoring 2 numero"
+          },
+          "monitor3": {
+            "mode": "Monitoring 3 modo",
+            "number": "Monitoring 3 numero"
+          },
+          "monitor4": {
+            "mode": "Monitoring 4 modo",
+            "number": "Monitoring 4 numero"
+          },
+          "monitor5": {
+            "mode": "Monitoring 5 modo",
+            "number": "Monitoring 5 numero"
+          },
+          "monitor6": {
+            "mode": "Monitoring 6 modo",
+            "number": "Monitoring 6 numero"
+          },
+          "monitor7": {
+            "mode": "Monitoring 7 modo",
+            "number": "Monitoring 7 numero"
+          },
+          "monitor8": {
+            "mode": "Monitoring 8 modo",
+            "number": "Monitoring 8 numero"
+          },
+          "noise": {
+            "canceler": "Filtro de ruido de fondo"
+          },
+          "operator": {
+            "mode": "Modo operadora"
+          },
+          "periodical": {
+            "cycles": "Ciclos de llamadas rutinarias",
+            "interval": "Intervalo de llamadas rutinarias"
+          },
+          "periodical1": {
+            "number": "Llamada rutinaria 1 numero"
+          },
+          "periodical2": {
+            "number": "Llamada rutinaria 2 numero"
+          },
+          "periodical3": {
+            "number": "Llamada rutinaria 3 numero"
+          },
+          "periodical4": {
+            "number": "Llamada rutinaria 4 numero"
+          },
+          "periodical5": {
+            "number": "Llamada rutinaria 5 numero"
+          },
+          "periodical6": {
+            "number": "Llamada rutinaria 6 numero"
+          },
+          "periodical7": {
+            "number": "Llamada rutinaria 7 numero"
+          },
+          "periodical8": {
+            "number": "Llamada rutinaria 8 numero"
+          },
+          "ring": {
+            "duration": "Duraci\u00f3n de llamada"
+          },
+          "speaker": {
+            "volume": "Volumen del altavoz"
+          }
+        }
+      }
+    },
+    "fr": {
+      "alert": {
+        "type": {
+          "ALARM": "Alarm active",
+          "BATDEF": "Dysfonctionnement batterie",
+          "BATLOW": "Batterie faible",
+          "BUTTON": "Dysfonctionnement bouton",
+          "CHARGE": "Dysfonctionnement charge",
+          "DB": "Dysfonctionnement base de donn\u00e9es",
+          "DISK": "Disque dur faible",
+          "DOOR": "Object door failure",
+          "ELEVATOR": "Elevator failure",
+          "GATEWAY": "Dysfonctionnement gateway",
+          "IDENTITY": "Incongruit\u00e9 identit\u00e9",
+          "LEVEL": "Object is not level",
+          "LIGHT": "Light malfunction",
+          "LINE": "Alarme ligne",
+          "LOCATION": "Alarm localisation",
+          "MAINTENANCE": "Object is under maintenance",
+          "MIC": "Dysfonctionnement microphone",
+          "NETWORK": "Dysfonctionnement r\u00e9seau",
+          "PERIODICAL": "Appel p\u00e9riodique en retard",
+          "PIN": "Incongruit\u00e9 PIN",
+          "POWER": "Dysfonctionnement alimentation",
+          "RAM": "RAM failbe",
+          "RESERVE": "Appareil r\u00e9serv\u00e9",
+          "SERIAL": "Dysfonctionnement port s\u00e9rie",
+          "SHAFT": "Shaft failure",
+          "SIGNAL": "Signal faible",
+          "SIP": "\u00c9chec de inscription SIP",
+          "SPEAKER": "Dysfonctionnement haute-parleur",
+          "TECH": "Contr\u00f4le local en retard",
+          "VOICE": "Alarm vocale"
+        }
+      },
+      "call": {
+        "dtmf": {
+          "tx": {
+            "gain": "Call DTMF TX Gain",
+            "mark": "Call DTMF TX Mark",
+            "space": "Call DTMF TX Space"
+          }
+        },
+        "recording": "Call Recording"
+      },
+      "device": {
+        "field": {
+          "address": "Address",
+          "comments": "Commentaires",
+          "equipment": "ID de l\u2019\u00e9quipement",
+          "identity": "Identit\u00e9",
+          "link": "Lien exgterne",
+          "module": "Module",
+          "numbers": "Num\u00e9ros de t\u00e9l\u00e9phone",
+          "pbx": "PBX",
+          "pin": "PIN",
+          "pstn": "PSTN",
+          "sim": "SIM",
+          "sip": "SIP"
+        },
+        "initial": {
+          "rx": {
+            "ignore": "Initial RX DTMF Ignore"
+          }
+        },
+        "setting": {
+          "alarm": {
+            "button": {
+              "delay": "Temporisation bouton d\u2019alarme",
+              "misuse": "R\u00e9pression d'abus"
+            },
+            "cycles": "R\u00e9p\u00e9titions d\u2019alarmes",
+            "reset": "Supppimer l\u2019alarme"
+          },
+          "alarm1": {
+            "mode": "Alarme 1 mode",
+            "number": "Alarme 1 num\u00e9ro"
+          },
+          "alarm2": {
+            "mode": "Alarme 2 mode",
+            "number": "Alarme 2 num\u00e9ro"
+          },
+          "alarm3": {
+            "mode": "Alarme 3 mode",
+            "number": "Alarme 3 num\u00e9ro"
+          },
+          "alarm4": {
+            "mode": "Alarme 4 mode",
+            "number": "Alarme 4 num\u00e9ro"
+          },
+          "alarm5": {
+            "mode": "Alarme 5 mode",
+            "number": "Alarme 5 num\u00e9ro"
+          },
+          "alarm6": {
+            "mode": "Alarme 6 mode",
+            "number": "Alarme 6 num\u00e9ro"
+          },
+          "alarm7": {
+            "mode": "Alarme 7 mode",
+            "number": "Alarme 7 num\u00e9ro"
+          },
+          "alarm8": {
+            "mode": "Alarme 8 mode",
+            "number": "Alarme 8 num\u00e9ro"
+          },
+          "monitor1": {
+            "mode": "Monitoring 1 mode",
+            "number": "Monitoring 1 num\u00e9ro"
+          },
+          "monitor2": {
+            "mode": "Monitoring 2 mode",
+            "number": "Monitoring 2 num\u00e9ro"
+          },
+          "monitor3": {
+            "mode": "Monitoring 3 mode",
+            "number": "Monitoring 3 num\u00e9ro"
+          },
+          "monitor4": {
+            "mode": "Monitoring 4 mode",
+            "number": "Monitoring 4 num\u00e9ro"
+          },
+          "monitor5": {
+            "mode": "Monitoring 5 mode",
+            "number": "Monitoring 5 num\u00e9ro"
+          },
+          "monitor6": {
+            "mode": "Monitoring 6 mode",
+            "number": "Monitoring 6 num\u00e9ro"
+          },
+          "monitor7": {
+            "mode": "Monitoring 7 mode",
+            "number": "Monitoring 7 num\u00e9ro"
+          },
+          "monitor8": {
+            "mode": "Monitoring 8 mode",
+            "number": "Monitoring 8 num\u00e9ro"
+          },
+          "noise": {
+            "canceler": "Filtre de bruit de fond"
+          },
+          "operator": {
+            "mode": "Mode op\u00e9rateur"
+          },
+          "periodical": {
+            "cycles": "Cycles d\u2019appels de routine",
+            "interval": "Intervalle d\u2019appels de routine"
+          },
+          "periodical1": {
+            "number": "Appel de routine 1 num\u00e9ro"
+          },
+          "periodical2": {
+            "number": "Appel de routine 2 num\u00e9ro"
+          },
+          "periodical3": {
+            "number": "Appel de routine 3 num\u00e9ro"
+          },
+          "periodical4": {
+            "number": "Appel de routine 4 num\u00e9ro"
+          },
+          "periodical5": {
+            "number": "Appel de routine 5 num\u00e9ro"
+          },
+          "periodical6": {
+            "number": "Appel de routine 6 num\u00e9ro"
+          },
+          "periodical7": {
+            "number": "Appel de routine 7 num\u00e9ro"
+          },
+          "periodical8": {
+            "number": "Appel de routine 8 num\u00e9ro"
+          },
+          "ring": {
+            "duration": "Dur\u00e9e de l\u2019appel"
+          },
+          "speaker": {
+            "volume": "Volume du haut-parleur"
+          }
+        }
+      }
+    },
+    "it": {
+      "alert": {
+        "type": {
+          "ALARM": "Allarme attivo",
+          "BATDEF": "Malfunzionamento batteria",
+          "BATLOW": "Batteria bassa",
+          "BUTTON": "Malfunzionamento pulsante",
+          "CHARGE": "Malfunzionamento carica",
+          "DB": "Malfunzionamento rete",
+          "DISK": "Disco rigido basso",
+          "DOOR": "Object door failure",
+          "ELEVATOR": "Elevator failure",
+          "GATEWAY": "Malfunzionamento del gateway",
+          "IDENTITY": "Incongruenza identit\u00e0",
+          "LEVEL": "Object is not level",
+          "LIGHT": "Light malfunction",
+          "LINE": "Allarme linea",
+          "LOCATION": "Allarme ubicazione",
+          "MAINTENANCE": "Object is under maintenance",
+          "MIC": "Malfunzionamento microfono",
+          "NETWORK": "Malfunzionamento rete",
+          "PERIODICAL": "Chiamata periodica scaduta",
+          "PIN": "Incongruenza PIN",
+          "POWER": "Malfunzionamento alimentazione",
+          "RAM": "RAM basso",
+          "RESERVE": "Dispositivo riservato",
+          "SERIAL": "Malfunzionamento porta seriale",
+          "SHAFT": "Shaft failure",
+          "SIGNAL": "Segnale debole",
+          "SIP": "Errore di registrazione SIP",
+          "SPEAKER": "Malfunzionamento altoparlante",
+          "TECH": "Controlo locale scaduto",
+          "VOICE": "Allarme vocale"
+        }
+      },
+      "call": {
+        "dtmf": {
+          "tx": {
+            "gain": "Call DTMF TX Gain",
+            "mark": "Call DTMF TX Mark",
+            "space": "Call DTMF TX Space"
+          }
+        },
+        "recording": "Call Recording"
+      },
+      "device": {
+        "field": {
+          "address": "Indirizzio",
+          "comments": "Commenti",
+          "equipment": "ID dell' apparecchiatura",
+          "identity": "Identit\u00e0",
+          "link": "Collegamento esterno",
+          "module": "Modulo",
+          "numbers": "Numeri di telefono",
+          "pbx": "PBX",
+          "pin": "PIN",
+          "pstn": "PSTN",
+          "sim": "SIM",
+          "sip": "SIP"
+        },
+        "initial": {
+          "rx": {
+            "ignore": "Initial RX DTMF Ignore"
+          }
+        },
+        "setting": {
+          "alarm": {
+            "button": {
+              "delay": "Ritardo pulsante di allarme",
+              "misuse": "Repressione di abuso"
+            },
+            "cycles": "Ripetizione di allarme",
+            "reset": "Cancellare l'allarme"
+          },
+          "alarm1": {
+            "mode": "Allarme 1 modo",
+            "number": "Allarme 1 numero"
+          },
+          "alarm2": {
+            "mode": "Allarme 2 modo",
+            "number": "Alarm 2 numero"
+          },
+          "alarm3": {
+            "mode": "Allarme 3 modo",
+            "number": "Alarm 3 numero"
+          },
+          "alarm4": {
+            "mode": "Allarme 4 modo",
+            "number": "Alarm 4 numero"
+          },
+          "alarm5": {
+            "mode": "Allarme 5 modo",
+            "number": "Alarm 5 numero"
+          },
+          "alarm6": {
+            "mode": "Allarme 6 modo",
+            "number": "Alarm 6 numero"
+          },
+          "alarm7": {
+            "mode": "Allarme 7 modo",
+            "number": "Alarm 7 numero"
+          },
+          "alarm8": {
+            "mode": "Allarme 8 modo",
+            "number": "Alarm 8 numero"
+          },
+          "monitor1": {
+            "mode": "Monitoring 1 modo",
+            "number": "Monitoring 1 numero"
+          },
+          "monitor2": {
+            "mode": "Monitoring 2 modo",
+            "number": "Monitoring 2 numero"
+          },
+          "monitor3": {
+            "mode": "Monitoring 3 modo",
+            "number": "Monitoring 3 numero"
+          },
+          "monitor4": {
+            "mode": "Monitoring 4 modo",
+            "number": "Monitoring 4 numero"
+          },
+          "monitor5": {
+            "mode": "Monitoring 5 modo",
+            "number": "Monitoring 5 numero"
+          },
+          "monitor6": {
+            "mode": "Monitoring 6 modo",
+            "number": "Monitoring 6 numero"
+          },
+          "monitor7": {
+            "mode": "Monitoring 7 modo",
+            "number": "Monitoring 7 numero"
+          },
+          "monitor8": {
+            "mode": "Monitoring 8 modo",
+            "number": "Monitoring 8 numero"
+          },
+          "noise": {
+            "canceler": "Filtro di rumore di fondo"
+          },
+          "operator": {
+            "mode": "Modo operatore"
+          },
+          "periodical": {
+            "cycles": "Cicli di chiamate di routina",
+            "interval": "Intervallo di chiamate di routina"
+          },
+          "periodical1": {
+            "number": "Chiamate di routina 1 numero"
+          },
+          "periodical2": {
+            "number": "Chiamate di routina 2 numero"
+          },
+          "periodical3": {
+            "number": "Chiamate di routina 3 numero"
+          },
+          "periodical4": {
+            "number": "Chiamate di routina 4 numero"
+          },
+          "periodical5": {
+            "number": "Chiamate di routina 5 numero"
+          },
+          "periodical6": {
+            "number": "Chiamate di routina 6 numero"
+          },
+          "periodical7": {
+            "number": "Chiamate di routina 7 numero"
+          },
+          "periodical8": {
+            "number": "Chiamate di routina 8 numero"
+          },
+          "ring": {
+            "duration": "Durata della chiamata"
+          },
+          "speaker": {
+            "volume": "Volume dell'altoparlante"
+          }
+        }
+      }
+    },
+    "pt": {
+      "alert": {
+        "type": {
+          "ALARM": "Alarme ativo",
+          "BATDEF": "Mau funcionamento bateria",
+          "BATLOW": "Bateria baixa",
+          "BUTTON": "Mau funcionamento bot\u00e3o",
+          "CHARGE": "Mau funcionamento carga",
+          "DB": "Mau funcionamento base de dados",
+          "DISK": "Disco r\u00edgido baixo",
+          "DOOR": "Object door failure",
+          "ELEVATOR": "Elevator failure",
+          "GATEWAY": "Mau funcionamento gateway",
+          "IDENTITY": "Incongru\u00eancia identidade",
+          "LEVEL": "Object is not level",
+          "LIGHT": "Light malfunction",
+          "LINE": "Alarme linha",
+          "LOCATION": "Alarme localiza\u00e7\u00e3o",
+          "MAINTENANCE": "Object is under maintenance",
+          "MIC": "Mau funcionamento microfone",
+          "NETWORK": "Mau funcionamento rede",
+          "PERIODICAL": "Chamada peri\u00f3dica atrasada",
+          "PIN": "Incongru\u00eancia PIN",
+          "POWER": "Mau funcionamento alimenta\u00e7\u00e3o",
+          "RAM": "RAM baixo",
+          "RESERVE": "Dispositivo reservado",
+          "SERIAL": "Mau funcionamento porta serial",
+          "SHAFT": "Shaft failure",
+          "SIGNAL": "Sinal fraco",
+          "SIP": "Falha no registro SIP",
+          "SPEAKER": "Mau funcionamento alto-falante",
+          "TECH": "Controlo local atrasado",
+          "VOICE": "Alarma de voz"
+        }
+      },
+      "call": {
+        "dtmf": {
+          "tx": {
+            "gain": "Call DTMF TX Gain",
+            "mark": "Call DTMF TX Mark",
+            "space": "Call DTMF TX Space"
+          }
+        },
+        "recording": "Call Recording"
+      },
+      "device": {
+        "field": {
+          "address": "Endere\u00e7o",
+          "comments": "Coment\u00e1rios",
+          "equipment": "ID do equipamento",
+          "identity": "Identidade",
+          "link": "Link externo",
+          "module": "M\u00f3dulo",
+          "numbers": "N\u00fameros de telefone",
+          "pbx": "PBX",
+          "pin": "PIN",
+          "pstn": "PSTN",
+          "sim": "SIM",
+          "sip": "SIP"
+        },
+        "initial": {
+          "rx": {
+            "ignore": "Initial RX DTMF Ignore"
+          }
+        },
+        "setting": {
+          "alarm": {
+            "button": {
+              "delay": "Atraso bot\u00e3o de alarme",
+              "misuse": "Supress\u00e3o de abuso"
+            },
+            "cycles": "Repeti\u00e7\u00f5es de alarme",
+            "reset": "Repor do alarme"
+          },
+          "alarm1": {
+            "mode": "Alarme 1 modo",
+            "number": "Alarme 1 n\u00famero"
+          },
+          "alarm2": {
+            "mode": "Alarme 2 modo",
+            "number": "Alarm 2 n\u00famero"
+          },
+          "alarm3": {
+            "mode": "Alarme 3 modo",
+            "number": "Alarm 3 n\u00famero"
+          },
+          "alarm4": {
+            "mode": "Alarme 4 modo",
+            "number": "Alarm 4 n\u00famero"
+          },
+          "alarm5": {
+            "mode": "Alarme 5 modo",
+            "number": "Alarm 5 n\u00famero"
+          },
+          "alarm6": {
+            "mode": "Alarme 6 modo",
+            "number": "Alarm 6 n\u00famero"
+          },
+          "alarm7": {
+            "mode": "Alarme 7 modo",
+            "number": "Alarm 7 n\u00famero"
+          },
+          "alarm8": {
+            "mode": "Alarme 8 modo",
+            "number": "Alarm 8 n\u00famero"
+          },
+          "monitor1": {
+            "mode": "Monitoring 1 modo",
+            "number": "Monitoring 1 n\u00famero"
+          },
+          "monitor2": {
+            "mode": "Monitoring 2 modo",
+            "number": "Monitoring 2 n\u00famero"
+          },
+          "monitor3": {
+            "mode": "Monitoring 3 modo",
+            "number": "Monitoring 3 n\u00famero"
+          },
+          "monitor4": {
+            "mode": "Monitoring 4 modo",
+            "number": "Monitoring 4 n\u00famero"
+          },
+          "monitor5": {
+            "mode": "Monitoring 5 modo",
+            "number": "Monitoring 5 n\u00famero"
+          },
+          "monitor6": {
+            "mode": "Monitoring 6 modo",
+            "number": "Monitoring 6 n\u00famero"
+          },
+          "monitor7": {
+            "mode": "Monitoring 7 modo",
+            "number": "Monitoring 7 n\u00famero"
+          },
+          "monitor8": {
+            "mode": "Monitoring 8 modo",
+            "number": "Monitoring 8 n\u00famero"
+          },
+          "noise": {
+            "canceler": "Filtro de ru\u00eddo de fundo"
+          },
+          "operator": {
+            "mode": "Modo operadora"
+          },
+          "periodical": {
+            "cycles": "Ciclos de chamadas de rotina",
+            "interval": "Intervalo de chamadas de rotina"
+          },
+          "periodical1": {
+            "number": "Chamadas de rotina 1 n\u00famero"
+          },
+          "periodical2": {
+            "number": "Chamadas de rotina 2 n\u00famero"
+          },
+          "periodical3": {
+            "number": "Chamadas de rotina 3 n\u00famero"
+          },
+          "periodical4": {
+            "number": "Chamadas de rotina 4 n\u00famero"
+          },
+          "periodical5": {
+            "number": "Chamadas de rotina 5 n\u00famero"
+          },
+          "periodical6": {
+            "number": "Chamadas de rotina 6 n\u00famero"
+          },
+          "periodical7": {
+            "number": "Chamadas de rotina 7 n\u00famero"
+          },
+          "periodical8": {
+            "number": "Chamadas de rotina 8 n\u00famero"
+          },
+          "ring": {
+            "duration": "Dura\u00e7\u00e3o da chamada"
+          },
+          "speaker": {
+            "volume": "Volume do alto-falante"
+          }
+        }
+      }
+    }
+  },
+  "languages": {
+    "de": true,
+    "en": true,
+    "es": true,
+    "fr": true,
+    "it": true,
+    "pt": true
+  },
+  "config": {
+    "alert": {
+      "display": {
+        "ALARM": true
+      },
+      "critical": {
+        "ALARM": false
+      },
+      "alarm": {
+        "ALARM": true
+      }
+    },
+    "modules": {
+      "SYSTEM": {
+        "device": {
+          "field": {
+            "equipment": {
+              "required": true,
+              "display": true,
+              "locked": true
+            },
+            "identity": {
+              "required": false,
+              "display": false,
+              "locked": true
+            },
+            "module": {
+              "required": false,
+              "display": false,
+              "locked": true
+            },
+            "pin": {
+              "required": false,
+              "display": false,
+              "locked": true
+            },
+            "address": {
+              "required": false,
+              "display": true,
+              "locked": false
+            },
+            "numbers": {
+              "required": false,
+              "display": false,
+              "locked": true
+            },
+            "comments": {
+              "required": false,
+              "display": true,
+              "locked": false
+            },
+            "link": {
+              "required": false,
+              "display": true,
+              "locked": false
+            }
+          }
+        }
+      }
+    }
+  },
+  "custom_fields": {
+    "1000": {
+      "icon": "info",
+      "required": false,
+      "dashboard": false,
+      "translations": {
+        "en": "custom 1"
+      }
+    }
+  },
+  "default_tabs": {
+    "1": {
+      "dashboard": "alerts",
+      "equipment": "enabled"
+    }
+  },
+  "export": {
+    "devices": {
+      "presets": {}
+    }
+  }
+}

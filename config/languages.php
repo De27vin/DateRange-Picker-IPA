@@ -1,0 +1,8 @@
+<?php
+return [
+    'en' => 'English',
+    'de' => 'German',
+    'fr' => 'French',
+    'it' => 'Italian',
+    'es' => 'Spanish'
+];

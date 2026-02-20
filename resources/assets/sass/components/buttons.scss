@@ -1,0 +1,358 @@
+
+.button-group {
+    &.badged {
+        @apply text-xm;
+        & button {
+            @apply flex text-xm font-medium bg-gray-600 text-gray-200 bg-opacity-60;
+            & .badge {
+                @apply text-xm py-1;
+            }
+        }
+    }
+}
+.actionBtn.gray {
+    @apply relative z-0 inline-flex;
+    & button {
+        @apply ml-px border-r border-solid border-gray-200;
+        &:hover {
+            @apply text-white font-medium bg-gray-800;
+        }
+        &.active {
+            @apply text-white font-medium bg-gray-800;
+        }
+        &.disabled {
+            @apply cursor-not-allowed bg-color-new bg-opacity-50 text-opacity-50;
+            &:hover {
+                @apply cursor-not-allowed bg-color-new bg-opacity-50 text-opacity-50;
+            }
+        }
+    }
+}
+.boxitemDropdown {
+    @apply relative z-0 block;
+    & button {
+        @apply relative mx-0 ml-px text-sm border-none rounded-none inline-flex items-center px-4 py-2 text-gray-600;
+        &:hover {
+            @apply text-blue-600 font-medium;
+        }
+    }
+}
+.topActionBtn {
+    @apply block h-full z-0 inline-flex;
+    & button {
+        @apply relative mx-0 ml-px text-sm border-none rounded-none inline-flex items-center px-4 py-2 bg-color-new text-blue-100;
+        &:hover {
+            @apply text-white font-medium bg-blue-800;
+        }
+        &.active {
+            @apply text-white font-medium bg-blue-800;
+        }
+        &.disabled {
+            @apply cursor-not-allowed bg-blue-300 bg-opacity-80 text-blue-100 text-opacity-50;
+            &:hover {
+                @apply cursor-not-allowed bg-blue-300 bg-opacity-80 text-blue-100 text-opacity-50;
+            }
+        }
+    }
+}
+
+
+button, a[type="button"] {
+    @apply relative font-medium ml-2 my-2 mr-0 px-8 py-2 rounded-full tracking-normal uppercase whitespace-nowrap overflow-visible bg-opacity-70;
+    &.dropdown {
+      @apply bg-gray-100 relative w-full rounded-none border border-gray-300 pl-3 pr-10 pb-3 pt-8 mt-0 text-left cursor-default focus:outline-none sm:text-sm;
+    }
+    &.disabled {
+        @apply cursor-not-allowed bg-opacity-50 text-opacity-50;
+        &:hover {
+            @apply cursor-not-allowed bg-opacity-50 text-opacity-50;
+        }
+    }
+    &.default {
+        @apply text-base;
+    }
+    &.small {
+        @apply text-sm;
+    }
+    &.info {
+        @apply bg-blue-600 text-blue-100;
+        &:hover {
+            @apply text-white bg-blue-800;
+        }
+    }
+    &.primary {
+        @apply bg-color-new text-white;
+        &:hover {
+            @apply bg-blue-700;
+        }
+        &.disabled {
+            @apply cursor-not-allowed bg-color-new bg-opacity-50 text-opacity-50;
+            &:hover {
+                @apply cursor-not-allowed bg-color-new bg-opacity-50 text-opacity-50;
+            }
+        }
+    }
+    &.secondary {
+        @apply bg-gray-500 text-white bg-opacity-70;
+        &:hover {
+            @apply bg-gray-800 text-white;
+        }
+        &.disabled {
+            @apply cursor-not-allowed bg-gray-500 bg-opacity-50 text-opacity-50;
+            &:hover {
+                @apply cursor-not-allowed bg-gray-500 bg-opacity-50 text-opacity-50;
+            }
+        }
+    }
+    &.badged {
+        @apply relative bg-opacity-70 text-sm ml-0 my-2 mr-16 pl-4 pr-4 py-1 rounded-l-full rounded-r-none uppercase whitespace-nowrap overflow-visible transition ease-in duration-200;
+        & .badge {
+            @apply absolute text-sm right-0 w-16 px-2 -mr-16 py-1 top-0 items-center rounded-r-full;
+            &:focus {
+                @apply outline-none;
+            }
+        }
+        &.warning {
+            @apply text-gray-700;
+            &:hover {
+                @apply bg-orange-400 text-orange-800;
+            }
+            & .badge {
+                @apply bg-orange-400 text-orange-800;
+            }
+        }
+        &.error {
+            @apply text-gray-700;
+            &:hover {
+                @apply bg-red-400 text-red-800;
+            }
+            & .badge {
+                @apply bg-red-400 text-red-800;
+            }
+        }
+        &.missing {
+            @apply text-gray-700;
+            &:hover {
+                @apply bg-blue-400 text-blue-800;
+            }
+            & .badge {
+                @apply bg-blue-400 text-blue-800;
+            }
+        }
+        &.dropdown {
+            @apply bg-gray-100 relative w-full rounded-none border border-gray-300 pl-3 pr-10 pb-3 pt-8 mt-0 text-left cursor-default;
+            &:focus {
+                @apply outline-none;
+            }
+
+        }
+
+    }
+}
+nav {
+    & button {
+        @apply px-4 py-1;
+    }
+}
+
+.list-item {
+    & button {
+        @apply px-1;
+    }
+}
+.btn {
+    &.switch {
+        @apply relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200;
+        &:focus {
+            @apply outline-none ring-2 ring-offset-2 ring-blue-300;
+        }
+        &.small {
+            @apply h-5 w-9;
+        }
+    }
+}
+.badge {
+    @apply ml-4 inline-flex leading-5 uppercase rounded-none tracking-normal;
+    &.fill {
+        @apply  px-4 py-1 bg-opacity-100 whitespace-nowrap text-xs justify-between;
+        &.info {
+            @apply bg-color-new text-white;
+        }
+        &.fields {
+            @apply absolute right-0 bg-gray-300 mr-2 mt-1 text-gray-600;
+        }
+    }
+    &.default {
+        @apply text-base px-4 py-2;
+    }
+    &.small {
+        @apply text-xs px-2 py-1;
+    }
+    &.warning {
+        @apply bg-orange-400 bg-opacity-70 text-orange-800;
+    }
+    &.error {
+        @apply bg-red-600 bg-opacity-70 text-white;
+    }
+    &.successful {
+        @apply bg-green-800 bg-opacity-70 text-white;
+    }
+    &.pending {
+        @apply bg-color-new text-white;
+    }
+    &.canceled {
+        @apply bg-gray-800 bg-opacity-70 text-white;
+    }
+    &.expired {
+        @apply bg-red-800 bg-opacity-70 text-white;
+    }
+    &.missing {
+        @apply bg-blue-400 bg-opacity-70 text-blue-800;
+    }
+}
+
+.tabs {
+    @apply  space-x-0 lg:space-x-4 space-y-4 lg:space-y-0 flex flex-col justify-start lg:flex-row pb-4;
+    & .tab {
+        & button {
+            @apply rounded-none text-sm font-medium py-1 relative inline-flex items-center px-4 border border-white rounded-full  bg-white text-gray-600;
+            &:hover {
+                @apply bg-color-new text-white border border-blue-500;
+            }
+        }
+        &.active {
+            & button {
+                @apply bg-color-new text-white border border-blue-500;
+            }
+        }
+    }
+}
+
+.list-filter {
+    & .tab {
+        & button {
+            @apply rounded-none text-sm font-medium py-1;
+            &:first-child {
+                @apply relative inline-flex items-center px-4 border border-white rounded-l-full rounded-r-none mr-0 bg-white text-gray-600;
+            }
+            &:last-child {
+                @apply -ml-px relative inline-flex items-center px-3 border border-blue-500 rounded-r-full rounded-l-none ml-0 bg-color-new text-white;
+            }
+            &:hover {
+                @apply bg-color-new text-white border border-blue-500;
+                & span {
+                    @apply text-white;
+                }
+            }
+            &.button-indicator {
+                @apply bg-white border text-gray-800 border-white rounded-r-full rounded-l-none;
+                &:hover {
+                    @apply bg-white border-white ;
+                    & span {
+                        @apply text-gray-800;
+                    }
+                }
+            }
+        }
+        &.active {
+            & button {
+                @apply bg-color-new text-white border border-blue-500;
+                &.button-indicator {
+                        @apply bg-white border border-white rounded-r-full rounded-l-none;
+                        &:hover {
+                            @apply bg-white border-white;
+                        }
+                    }
+                }
+        }
+    }
+    & button {
+        &.dropdown {
+            @apply rounded-none;
+            &:first-child {
+                @apply rounded-none;
+            }
+            &:last-child {
+                @apply rounded-none;
+            }
+            &:hover {
+                @apply bg-blue-600 text-white border border-blue-600;
+            }
+        }
+    }
+}
+
+.topActionBtn .dropdown .dropdown-item {
+    @apply block w-full bg-transparent text-secondary-200 px-4 py-2 text-sm my-0 text-left normal-case;
+    &:hover {
+        @apply  bg-blue-600 text-white block;
+    }
+}
+
+.sort-panel .sort-group {
+    @apply flex items-center;
+    & .label {
+        @apply text-gray-500 mr-4;
+    }
+    & .button-group {
+        @apply relative inline-flex ml-px;
+        & span {
+            @apply px-2 py-1 bg-blue-400 text-blue-100 ml-px;
+            &:hover {
+                @apply bg-blue-800 text-white cursor-pointer;
+            }
+            &.active {
+                @apply  bg-blue-800 text-white;
+            }
+        }
+    }
+}
+
+/* ucp 211 */
+
+.btnWithCount {
+    @apply relative ml-0 my-2 mr-12 pl-4 pr-4 py-2 text-bold tracking-normal text-xs whitespace-nowrap rounded-r-none rounded-l-full bg-slate-100 text-slate-600 overflow-visible transition ease-in duration-200 focus:outline-none;
+    &:hover {
+        @apply text-white bg-slate-500 ;
+    }
+    &.error {
+        &.active {
+            @apply bg-red-600 text-white;
+        }
+    }
+    & .counter {
+        @apply absolute right-0 w-12 -mr-11 py-2 top-0 items-center text-xs text-white rounded-l-none rounded-r-full focus:outline-none;
+    }
+    &.error {
+        & .counter {
+            @apply bg-red-600;
+        }
+    }
+    &.warning {
+        &.active {
+            @apply bg-orange-600 text-white;
+        }
+    }
+    &.warning {
+        & .counter {
+            @apply bg-orange-600;
+        }
+    }
+}
+.spotlight {
+    & button {
+        @apply normal-case;
+    }
+}
+
+.actionButtonGroup {
+    & button {
+        @apply my-2 ml-px mr-0 rounded-none relative inline-flex items-center bg-gray-400 text-gray-200 hover:text-white text-sm hover:bg-gray-600 focus:z-10;
+    }
+    & button:first-child {
+        @apply rounded-l-full;
+    }
+    & button:last-child {
+        @apply rounded-r-full;
+    }
+}

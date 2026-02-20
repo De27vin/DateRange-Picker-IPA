@@ -1,0 +1,53 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use App\Providers\RouteServiceProvider;
+use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class RedirectIfAuthenticated
+{
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
+     * @param  string|null  ...$guards
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     */
+    public function handle(Request $request, Closure $next, ...$guards)
+    {
+
+        // \Log::info('in Authenticate Middleware');
+        // if($guard == 'eurofunk') {
+        //     \Log::info('im richtigen guard');
+        //     if(request()->token == 'Bm0uD0r1U1qmN3csPJod8qCYwjxoAj8kNMwLouOgpKLp23x6MOs5ksQEzmsl0vxp'){
+        //         return $next($request);
+        //     } else {
+        //         return response('Unauthorized.', 401);
+        //     }
+            
+        // }
+        // if (Auth::guard($guard)->guest()) {
+
+        //     if ($request->ajax() || $request->wantsJson()) {
+        //         return response('Unauthorized.', 401);
+        //     } else {
+        //         return redirect()->guest('login');
+        //     }
+
+        // }
+
+        $guards = empty($guards) ? [null] : $guards;
+
+        foreach ($guards as $guard) {
+            if (Auth::guard($guard)->check()) {
+                return redirect(RouteServiceProvider::HOME);
+            }
+        }
+
+        return $next($request);
+    }
+}

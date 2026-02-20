@@ -1,0 +1,35 @@
+.help {
+    @apply text-sm text-normal text-gray-600 leading-relaxed;
+    & h1 {
+        @apply text-lg text-bold text-blue-600 mb-2 mt-4;
+        &:first-child {
+            @apply mt-0;
+        }
+    }
+    & h2 {
+        @apply text-base text-bold uppercase text-gray-600 mb-0 mt-8;
+        &:first-child {
+            @apply mt-0;
+        }
+    }
+    & h3 {
+        @apply text-sm text-medium uppercase text-gray-600 mb-0 mt-2;
+        &:first-child {
+            @apply mt-0;
+        }
+    }
+    & ul {
+        padding-inline-start: 1rem;
+        @apply list-disc;
+        & li {
+            @apply list-disc;
+            & li {
+                @apply ml-2 list-disc;
+            }
+        }
+    }
+    & p {
+        @apply mb-2;
+    }
+}
+

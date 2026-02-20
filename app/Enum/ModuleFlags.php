@@ -1,0 +1,14 @@
+<?php
+
+namespace App\Enum;
+
+enum ModuleFlags: int
+{
+    case MODULE_FLAG_IDENTITY_REQUIRED  = 0x0001; // 1
+    case MODULE_FLAG_MODULE_REQUIRED = 0x0002; // 2
+    case MODULE_FLAG_PIN_REQUIRED = 0x0004; // 4
+    case MODULE_FLAG_NUMBER_REQUIRED = 0x0008; // 8
+    case MODULE_FLAG_MULTI_SUPPORT = 0x0010; // 16
+    case MODULE_FLAG_HALF_DUPLEX = 0x0020; // 32
+    case MODULE_FLAG_SIP_SUPPORT = 0x0040; // 64
+}

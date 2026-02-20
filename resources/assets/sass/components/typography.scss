@@ -1,0 +1,111 @@
+body {
+  font-family: "UCP Medium", sans-serif;
+  font-size: 16px;
+  line-height: 1.5rem;
+  font-weight: normal;
+  -webkit-font-smoothing: subpixel-antialiased;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  font-variant-ligatures: none;
+  -webkit-font-variant-ligatures: none;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  font-smoothing: subpixel-antialiased;
+  -moz-font-feature-settings: "kern" 1;
+}
+
+/*
+.font-heavy, .text-heavy {font-family: "UCP Font", sans-serif; font-weight: bold;}
+.font-light, .text-light {font-family: "UCP Font", sans-serif; font-weight: 300;}
+.font-medium, .text-medium {font-family: "UCP Font", sans-serif; font-weight: 600;}
+.font-bold, .text-bold, b, strong {font-family: "UCP Font", sans-serif; font-weight: bold;}
+.text-light {font-family: "UCP Font"; font-weight: 300;}
+.text-normal {font-family: "UCP Font"; font-weight: normal;}
+.text-medium {font-family: "UCP Font"; font-weight: 600;}
+.text-bold {font-family: "UCP Font"; font-weight: bold;}
+.text-extrabold {font-family: "UCP Font"; font-weight: bold;}
+h2, h3, h4, h5, h6 {font-family: "UCP Font", sans-serif; font-weight: 600;}
+h1 {font-family: "UCP Font", sans-serif; font-weight: bold;}
+*/
+
+.text-lead {
+    @apply text-lg;
+}
+
+body {
+  @apply text-gray-700 antialiased;
+}
+
+h1,h2,h3,h4,h5,h6 {
+    @apply text-gray-900;
+}
+
+h1 {
+    @apply mb-6;
+}
+h2 {
+    @apply mb-4;
+}
+h3 {
+    @apply mb-2;
+}
+p {
+    @apply leading-normal;
+}
+a {
+    // @apply text-primary-400;
+}
+a:hover {
+    // @apply text-primary-400;
+}
+.text-muted {
+    @apply text-gray-400;
+}
+
+h1 {
+    @apply text-3xl;
+}
+h2 {
+    @apply text-2xl;
+}
+h3 {
+    @apply text-xl;
+}
+h4 {
+    @apply text-lg;
+}
+h5 {
+    @apply text-base;
+}
+.text-warning-400,
+.text-warnings-400 {
+    @apply text-orange-400;
+}
+.text-missing-400,
+.text-missings-400 {
+    @apply text-blue-400;
+}
+.text-error-400,
+.text-errors-400 {
+    @apply text-red-400;
+}
+.bg-warning-600,
+.bg-warnings-600 {
+    @apply bg-orange-600;
+}
+.bg-missing-600,
+.bg-missings-600 {
+    @apply bg-blue-600;
+}
+.bg-error-600,
+.bg-errors-600 {
+    @apply bg-red-600;
+}
+.text-success-400,
+.text-success-400 {
+    @apply text-green-400;
+}
+.text-fail-400,
+.text-fail-400 {
+    @apply text-red-400;
+}

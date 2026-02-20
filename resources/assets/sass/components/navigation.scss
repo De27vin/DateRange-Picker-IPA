@@ -1,0 +1,61 @@
+nav {
+	@apply text-base text-medium tracking-normal normal-case;
+	& button {
+		& a {
+			@apply  text-secondary-600 normal-case tracking-normal whitespace-nowrap;
+			&:hover {
+				@apply text-secondary-200;
+			}
+			&:focus {
+				 @apply outline-none text-secondary-200;
+			}
+		}
+		&.active {
+			& a {
+				@apply bg-color-new text-secondary-200 whitespace-nowrap;
+			}
+		}
+		&:hover {
+			@apply bg-color-new;
+			& a {
+				@apply bg-color-new text-secondary-200;
+			}
+		}
+	}
+	& .dropdown {
+		@apply relative inline-block text-left z-10;
+		& a {
+			@apply block px-4 py-3 leading-5 text-secondary-200 transition duration-150 ease-in-out whitespace-nowrap;
+			&:hover {
+				@apply bg-color-new text-white;
+			}
+			&.active {
+				@apply bg-color-new text-white;
+			}
+			&:focus {
+				 @apply outline-none bg-color-new text-white;
+			}
+		}
+		& button {
+			&.with_text {
+				@apply inline-flex justify-center w-full py-2 leading-5 text-secondary-600 tracking-normal normal-case;
+				&:hover {
+					@apply text-secondary-200;
+				}
+				&.active {
+					@apply text-secondary-200;
+				}
+				&:focus {
+					 @apply outline-none text-secondary-200;
+				}
+			}
+			&.with_icon_only {
+				@apply inline-flex justify-center w-full;
+			}
+		}
+	}
+}
+
+#mobile-menu .dropdown a {
+	@apply text-base text-secondary-200 pl-8 pr-16 whitespace-nowrap;
+}

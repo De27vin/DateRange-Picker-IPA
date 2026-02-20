@@ -1,0 +1,171 @@
+.node-1 {
+    border-right: 1px solid #94a3b8;
+    border-bottom: 1px solid #94a3b8;
+    @apply shadow-lg;
+}
+
+.node-content:hover,
+.node-content:hover + .node,
+.node-content:hover + .node .hover_fix,
+.node-content:hover + .node .node .hover_fix.p2,
+.node-content:hover + .node .node .node .hover_fix.p3 {
+    @apply bg-blue-400 text-white;
+    border-left: 1px solid #94a3b8;
+}
+.node-content:hover + .node .hover_fix,
+.node-content:hover + .node .node .hover_fix.p2,
+.node-content:hover + .node .node .node .hover_fix.p3 {
+    border-top: 1px solid #60A5FA;
+    border-left: 1px solid #94a3b8;
+}
+.node-content:hover + .node .hover_fix.p2,
+.node-content:hover + .node .hover_fix.p3,
+.node-content:hover + .node .node .hover_fix.p3 {
+    @apply bg-transparent;
+    border-top: 1px solid transparent;
+    border-left: 1px solid #94a3b8;
+    border-right: 1px solid #94a3b8;
+}
+
+/* highlight subtree */
+.node-content:hover + .node .node-content,
+.node-content:hover + .node .node .hover_fix,
+.node-content:hover + .node .node .node-content,
+.node-content:hover + .node .node .node .hover_fix,
+.node-content:hover + .node .node .node .node-content,
+.node-content:hover + .node .node .node .node .hover_fix {
+    @apply bg-blue-200 text-gray-700;
+}
+.node-content:hover + .node .node .hover_fix,
+.node-content:hover + .node .node .node .hover_fix,
+.node-content:hover + .node .node .node .node .hover_fix {
+    border-top: 1px solid #BFDBFE;
+}
+.node-content.active,
+.node-content.active + .node,
+.node-content.active + .node .hover_fix,
+.node-content.active + .node .node .hover_fix.p2,
+.node-content.active + .node .node .node .hover_fix.p3 {
+    @apply bg-blue-400 text-white;
+    border-left: 1px solid #94a3b8;
+}
+.node-content.active + .node .hover_fix,
+.node-content.active + .node .node .hover_fix.p2,
+.node-content.active + .node .node .node .hover_fix.p3 {
+    border-top: 1px solid #60A5FA;
+    border-left: 1px solid #94a3b8;
+}
+.node-content.active + .node .hover_fix.p2,
+.node-content.active + .node .hover_fix.p3,
+.node-content.active + .node .node .hover_fix.p3 {
+    @apply bg-transparent;
+    border-top: 1px solid transparent;
+    border-left: 1px solid #94a3b8;
+    border-right: 1px solid #94a3b8;
+}
+
+/* highlight subtree */
+.node-content.active + .node .node-content,
+.node-content.active + .node .node .hover_fix,
+.node-content.active + .node .node .node-content,
+.node-content.active + .node .node .node .hover_fix,
+.node-content.active + .node .node .node .node-content,
+.node-content.active + .node .node .node .node .hover_fix {
+    @apply bg-blue-200 text-gray-700;
+}
+
+.node-content.active + .node .node .hover_fix,
+.node-content.active + .node .node .node .hover_fix,
+.node-content.active + .node .node .node .node .hover_fix {
+    border-top: 1px solid #BFDBFE;
+}
+.node-content {
+    border-top: 1px solid #94a3b8;
+    border-left: 1px solid #94a3b8;
+}
+.node {
+    @apply bg-transparent;
+}
+.node,
+.node-content {
+    @apply relative border-opacity-60;
+}
+.node .node {
+    @apply relative pl-10;
+    border-left: 1px solid #94a3b8;
+}
+.node-content {
+    @apply text-gray-700;
+    padding: 0.5rem 2rem 0.5rem 2.5rem;
+    line-height: 1rem;
+    display: flex;
+}
+.hover_fix {
+    @apply absolute top-0 bg-transparent;
+    border-left: 1px solid #94a3b8;
+    border-right: 1px solid #94a3b8;
+    width: calc(2.5rem + 2px);
+    height: calc(2.5rem + 1px);
+    margin-top: -1px;
+    border-top: none;
+}
+.hover_fix.p1 {
+    left: -2.5rem;
+    margin-left: -2px;
+}
+.hover_fix.p2 {
+    left: -5rem;
+    margin-left: -3px;
+}
+.hover_fix.p3 {
+    left: -7.5rem;
+    margin-left: -4px;
+}
+.drag-handle {
+    @apply bg-transparent justify-center items-center;
+    width: 1rem;
+    height: 1rem;
+    margin-left: -1.5rem;
+    margin-right: 0.5rem;
+}
+
+.dropdown-node button.action {
+    @apply relative bg-white text-gray-600 text-sm normal-case rounded-none outline-none focus:outline-none border-none m-0 px-3 py-2 flex items-center tracking-normal whitespace-nowrap overflow-visible;
+}
+.dropdown-node button.action:hover {
+    @apply bg-color-new text-white;;
+}
+.dropdown-node li button {
+    @apply relative rounded-none font-medium outline-none focus:outline-none border-none m-0 px-3 py-2 flex items-center tracking-normal normal-case whitespace-nowrap overflow-visible;
+}
+.dropdown-node li,
+.dropdown-node li button {
+    @apply text-gray-600 bg-white;
+}
+.dropdown-node li:hover,
+.dropdown-node button:hover {
+    @apply bg-color-new text-white;
+}
+.dropdown-node li>ul {
+    @apply border-none absolute top-0 right-0 transition duration-150 ease-in-out origin-top-left min-w-32;
+}
+
+.dropdown-node li>ul                 { transform: translatex(100%) scale(0) }
+.dropdown-node li:hover>ul           { transform: translatex(101%) scale(1) }
+.dropdown-node li > button svg       { transform: rotate(-90deg) }
+.dropdown-node li:hover > button svg { transform: rotate(-270deg) }
+
+/* Below styles fake what can be achieved with the tailwind config
+ you need to add the group-hover variant to scale and define your custom
+ min width style.
+ See https://codesandbox.io/s/tailwindcss-multilevel-dropdown-y91j7?file=/index.html
+ for implementation with config file
+*/
+.dropdown-node:hover .group-hover\:scale-100 { transform: scale(1) }
+.dropdown-node:hover .group-hover\:-rotate-180 { transform: rotate(180deg) }
+.scale-0 { transform: scale(0) }
+.min-w-32 { min-width: 8rem }
+
+.groups-container {
+    @apply bg-gray-100 outline-none border border-gray-300 shadow-md h-16 w-full ml-6 py-4 px-4 flex flex-wrap space-x-2;
+}

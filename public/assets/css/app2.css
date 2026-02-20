@@ -1,0 +1,575 @@
+/***************************** START COLORS *****************************/
+.bg-color-new {
+  background-color: #8fabdd;
+}
+.hover\:bg-color-new:hover {
+background-color: #8fabdd;
+}
+.color-new {
+  background-color: #8fabdd;
+}
+.hover\:color-new:hover {
+  background-color: #8fabdd;
+}
+.text-color-new {
+  color: #8fabdd;
+}
+.hover\:text-color-new:hover {
+  color: #8fabdd;
+}
+.border-color-new {
+  border-color: #8fabdd;
+}
+.hover\:border-color-new:hover {
+  border-color: #8fabdd;
+}
+
+/****** 800 ******/
+.bg-color-new-800 {
+  background-color: #638bcf;
+}
+.hover\:bg-color-new-800:hover {
+background-color: #638bcf;
+}
+.color-new-800 {
+  background-color: #638bcf;
+}
+.hover\:color-new-800:hover {
+  background-color: #638bcf;
+}
+.text-color-new-800 {
+  color: #638bcf;
+}
+.hover\:text-color-new-800:hover {
+  color: #638bcf;
+}
+.border-color-new-800 {
+  border-color: #638bcf;
+}
+.hover\:border-color-new-800:hover {
+  border-color: #638bcf;
+}
+
+/****** 700 ******/
+.bg-color-new-700 {
+  background-color: #7396d4;
+}
+.hover\:bg-color-new-700:hover {
+background-color: #7396d4;
+}
+.color-new-700 {
+  background-color: #7396d4;
+}
+.hover\:color-new-700:hover {
+  background-color: #7396d4;
+}
+.text-color-new-700 {
+  color: #7396d4;
+}
+.hover\:text-color-new-700:hover {
+  color: #7396d4;
+}
+.border-color-new-700 {
+  border-color: #7396d4;
+}
+.hover\:border-color-new-700:hover {
+  border-color: #7396d4;
+}
+
+/****** 600 ******/
+.bg-color-new-600 {
+  background-color: #82a2d9;
+}
+.hover\:bg-color-new-600:hover {
+background-color: #82a2d9;
+}
+.color-new-600 {
+  background-color: #82a2d9;
+}
+.hover\:color-new-600:hover {
+  background-color: #82a2d9;
+}
+.text-color-new-600 {
+  color: #82a2d9;
+}
+.hover\:text-color-new-600:hover {
+  color: #82a2d9;
+}
+.border-color-new-600 {
+  border-color: #82a2d9;
+}
+.hover\:border-color-new-600:hover {
+  border-color: #82a2d9;
+}
+
+/****** 400 ******/
+.bg-color-new-400 {
+  background-color: #a1b9e2;
+}
+.hover\:bg-color-new-400:hover {
+background-color: #a1b9e2;
+}
+.color-new-400 {
+  background-color: #a1b9e2;
+}
+.hover\:color-new-400:hover {
+  background-color: #a1b9e2;
+}
+.text-color-new-400 {
+  color: #a1b9e2;
+}
+.hover\:text-color-new-400:hover {
+  color: #a1b9e2;
+}
+.border-color-new-400 {
+  border-color: #a1b9e2;
+}
+.hover\:border-color-new-400:hover {
+  border-color: #a1b9e2;
+}
+
+/****** 300 ******/
+.bg-color-new-300 {
+  background-color: #b1c5e7;
+}
+.hover\:bg-color-new-300:hover {
+background-color: #b1c5e7;
+}
+.color-new-300 {
+  background-color: #b1c5e7;
+}
+.hover\:color-new-300:hover {
+  background-color: #b1c5e7;
+}
+.text-color-new-300 {
+  color: #b1c5e7;
+}
+.hover\:text-color-new-300:hover {
+  color: #b1c5e7;
+}
+.border-color-new-300 {
+  border-color: #b1c5e7;
+}
+.hover\:border-color-new-300:hover {
+  border-color: #b1c5e7;
+}
+
+/****** 200 ******/
+.bg-color-new-200 {
+  background-color: #c1d0ec;
+}
+.hover\:bg-color-new-200:hover {
+background-color: #c1d0ec;
+}
+.color-new-200 {
+  background-color: #c1d0ec;
+}
+.hover\:color-new-200:hover {
+  background-color: #c1d0ec;
+}
+.text-color-new-200 {
+  color: #c1d0ec;
+}
+.hover\:text-color-new-200:hover {
+  color: #c1d0ec;
+}
+.border-color-new-200 {
+  border-color: #c1d0ec;
+}
+.hover\:border-color-new-200:hover {
+  border-color: #c1d0ec;
+}
+
+/****** 100 ******/
+.bg-color-new-100 {
+  background-color: #d0dcf1;
+}
+.hover\:bg-color-new-100:hover {
+background-color: #d0dcf1;
+}
+.color-new-100 {
+  background-color: #d0dcf1;
+}
+.hover\:color-new-100:hover {
+  background-color: #d0dcf1;
+}
+.text-color-new-100 {
+  color: #d0dcf1;
+}
+.hover\:text-color-new-100:hover {
+  color: #d0dcf1;
+}
+.border-color-new-100 {
+  border-color: #d0dcf1;
+}
+.hover\:border-color-new-100:hover {
+  border-color: #d0dcf1;
+}
+/***************************** END COLORS *****************************/
+
+/***************************** START FLEX *****************************/
+.f {
+    display: flex;
+}
+.fs {
+    display: flex;
+    align-items: stretch;
+}
+.fsr {
+    flex-shrink: 1;
+}
+.fw {
+    flex-wrap: wrap;
+}
+.fi {
+    flex: 1;
+}
+.fg {
+    flex-grow: 1;
+}
+/***************************** END FLEX *****************************/
+
+
+/***************************** START GRID *****************************/
+.ga {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+}
+
+.gd {
+    grid-auto-flow: dense;
+}
+
+.grtl {
+    direction: rtl;
+}
+
+.gr-1 {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+.gr-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.gr-3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.gr-4 {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.gr-5 {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.gr-6 {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+.gr-7 {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+.gr-8 {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+}
+.gr-9 {
+    display: grid;
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+}
+.gr-10 {
+    display: grid;
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+}
+.gr-11 {
+    display: grid;
+    grid-template-columns: repeat(11, minmax(0, 1fr));
+}
+.gr-12 {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+.gs-1 {
+    grid-column: span 1 / span 1;
+}
+.gs-2 {
+    grid-column: span 2 / span 2;
+}
+.gs-3 {
+    grid-column: span 3 / span 3;
+}
+.gs-4 {
+    grid-column: span 4 / span 4;
+}
+.gs-5 {
+    grid-column: span 5 / span 5;
+}
+.gs-6 {
+    grid-column: span 6 / span 6;
+}
+.gs-7 {
+    grid-column: span 7 / span 7;
+}
+.gs-8 {
+    grid-column: span 8 / span 8;
+}
+.gs-9 {
+    grid-column: span 9 / span 9;
+}
+.gs-10 {
+    grid-column: span 10 / span 10;
+}
+.gs-11 {
+    grid-column: span 11 / span 11;
+}
+.gs-12 {
+    grid-column: span 12 / span 12;
+}
+/***************************** END GRID *****************************/
+
+
+/***************************** START VUE TOOLTIP *****************************/
+.tt-vue {
+    position: relative;
+    display: inline-block;
+}
+ /*tooltip text */
+.ttt-vue {
+    opacity: 0;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    padding-inline: 1rem;
+    /*pointer-events: none;*/
+    position: absolute;
+    z-index: 100;
+}
+
+.ttt-vue.ttt-vue-on {
+    opacity: 1;
+    transition: opacity 0.1s ease-in-out;
+}
+
+.ttt-vue-t {
+    bottom: 1rem;
+    left: 8rem;
+}
+
+.ttt-vue-tr {
+    bottom: 1rem;
+    left: 5rem;
+}
+
+.ttt-vue-trr {
+    bottom: 1rem;
+    left: 2rem;
+}
+
+.ttt-vue-tl {
+    bottom: 1rem;
+    right: -1rem;
+}
+
+.ttt-vue-top {
+    bottom: 1rem;
+    left: -2rem;
+}
+
+/***************************** END VUE TOOLTIP *****************************/
+
+/***************************** START TOOLTIP *****************************/
+/* tooltipped element */
+.tt {
+    position: relative;
+    display: inline-block;
+}
+ /*tooltip text */
+.ttt {
+    opacity: 0;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    padding-inline: 1rem;
+    pointer-events: none;
+
+    position: absolute;
+    z-index: 100;
+}
+.elip {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+/* Icon hover to show tooltip */
+.tt .tts:hover + .ttt {
+    opacity: 1;
+    transition: opacity 0.1s ease-in-out;
+}
+
+/*!* Hide tooltip when hovering over tooltip text *!*/
+.tt .ttt:hover {
+    opacity: 0;
+}
+/* tooltip top */
+.ttt-t {
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+/* tooltip top-top */
+.ttt-tt {
+    bottom: 165%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+/* tooltip right */
+.ttt-r {
+    top: -5px;
+    left: 105%;
+}
+/* tooltip left */
+.ttt-l {
+    top: -5px;
+    right: 105%;
+}
+/* tooltip bottom */
+.ttt-b {
+    top: 100%;
+    left: 50%;
+    margin-left: -60px;
+}
+
+.ttt-br {
+    top: 100%;
+    left: 50%;
+    margin-left: -45px;
+}
+/* tooltip top-right */
+.ttt-tr {
+    bottom: 125%;
+    left: 50%;
+}
+/* tooltip top-left */
+.ttt-tl {
+    bottom: 125%;
+    right: 50%;
+}
+
+/****************************** ANOTHER TT ****************************/
+
+.ttip-container {
+    position: relative;
+}
+
+.ttip {
+    opacity: 0;
+    position: absolute;
+    pointer-events: none;
+
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    padding-inline: 1rem;
+    z-index: 100;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    /*bottom : 110%;*/
+    /*right: 50%;*/
+}
+.ttip-container:hover > .ttip {
+    opacity: 1;
+    transition: opacity 0.1s ease-in-out;
+    transition-delay: 0.5s;
+    pointer-events: auto;
+}
+
+/*************************** END ANOTHER TT ****************************/
+
+/*********************** START ADVANCED TOOLTIP ************************/
+.tt-adv {
+  position: relative;
+  display: inline-block;
+}
+
+.tt-adv .tts {
+  cursor: pointer;
+}
+
+.tt-adv .ttt-adv {
+  opacity: 0;
+  visibility: hidden;
+  position: fixed;
+  z-index: 9999;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  max-width: 300px;
+  width: max-content;
+  text-align: left;
+  pointer-events: none;
+  word-wrap: break-word;
+  white-space: normal;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  transform-origin: top center;
+  transform: translateY(5px);
+  transition:
+    opacity 0.2s ease-in-out,
+    transform 0.2s ease-in-out,
+    visibility 0.2s ease-in-out;
+}
+
+.tt-adv .tts:hover + .ttt-adv {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+/************************** END ADVANCED TOOLTIP ************************/
+
+
+/***************************** START SEARCH *****************************/
+.searchfield:focus {
+    border-color: #cbd5e1 !important;
+}
+/***************************** END SEARCH *****************************/
+
+
+/****** ------------------------variables----------------------- ******/
+:root {
+  /* colors */
+
+  /* shades */
+  --darken05: rgba(0,0,0,0.05);
+  --darken1: rgba(0,0,0,0.1);
+  --darken2: rgba(0,0,0,0.2);
+  --darken3: rgba(0,0,0,0.3);
+  --darken4: rgba(0,0,0,0.4);
+  --darken5: rgba(0,0,0,0.5);
+  --darken6: rgba(0,0,0,0.6);
+  --darken7: rgba(0,0,0,0.7);
+  --darken8: rgba(0,0,0,0.8);
+  --darken9: rgba(0,0,0,0.9);
+  --darken10: rgba(0,0,0,1);
+
+  /* tints */
+  --lighter3: rgba(255,255,255,0.3);
+  --lighter4: rgba(255,255,255,0.4);
+  --lighter7: rgba(255,255,255,0.7);
+  --lighter8: rgba(255,255,255,0.8);
+
+  --transparent: rgba(0,0,0,0);
+
+  /* new colors */
+    --color-new: #8fabdd;;
+    --color-new-light-bg: #fafafc;
+}

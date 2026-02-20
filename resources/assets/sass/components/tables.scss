@@ -1,0 +1,25 @@
+table {
+	& th {
+		& button {
+			@apply flex items-center space-x-1 text-left text-sm leading-4 font-medium text-white uppercase tracking-normal focus:outline-none focus:underline;
+			&:focus {
+				@apply outline-none underline;
+			}
+		}
+		& .dropdown {
+			@apply relative inline-block text-left z-10;
+			& .dropdown-item {
+				@apply block px-4 py-2 text-sm leading-5 text-secondary-200  inline-flex justify-between w-full py-2 leading-5 tracking-normal normal-case;
+				&:hover {
+					@apply text-white bg-primary-600;
+				}
+				&:focus {
+					 @apply outline-none text-white bg-primary-600;
+				}
+			}
+		}
+	}
+	& td {
+		@apply px-6 py-4 whitespace-nowrap text-sm leading-5 text-gray-900;
+	}
+}

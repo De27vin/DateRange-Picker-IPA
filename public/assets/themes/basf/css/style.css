@@ -1,0 +1,10 @@
+:root {
+  --tw-bg-opacity: 1;
+  --color-primary-200: #67b0d2;
+  --color-primary-400: #21a0d2;
+  --color-primary-600: #004a96;
+  --color-secondary-200: #e5e7eb;
+  --color-secondary-400: rgb(156,163,175); /* rgb(120,135,155); */
+  --color-secondary-600: #4b5563;
+  --color-header-bg: #21a0d2;
+}

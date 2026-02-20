@@ -1,0 +1,174 @@
+//@import 'components-new/variables.scss';
+@import 'components-new/node.scss';
+@import 'components-new/text.scss';
+
+.bg-color-new {
+  background-color: #8fabdd;
+}
+
+.color-new {
+  background-color: #8fabdd;
+}
+
+// ----------------------------------- START WORKAROUNDS
+.uiswitch-new:checked {
+  background-color: #8fabdd;
+  background-image: -webkit-linear-gradient(-90deg, #8fabdd 0%, #a1b9e2 100%);
+  background-image: linear-gradient(-180deg,#8fabdd 0%, #a1b9e2 100%);
+}
+
+[type=checkbox], [type=radio] {
+  color: #c1d0ec;
+}
+
+[type="checkbox"]:focus, [type="radio"]:focus {
+  --tw-ring-color: unset;
+}
+
+.list-filter .tab.active button {
+  background-color: #8fabdd;
+  border-color: #8fabdd;
+}
+
+.list-filter .tab button:hover, .list-filter .tab button:last-child{
+  background-color: #8fabdd;
+  border-color: #8fabdd;
+}
+
+.topActionBtn button {
+  background-color: #82a2d9;
+  border-radius: 9999px;
+}
+
+.topActionBtn button.active, .topActionBtn button:hover {
+  background-color: #7396d4;
+}
+
+.border-l-success-500 {
+  border-left-color: rgb(34 197 94);
+}
+
+input[type="email"], input[type="password"], input[type="text"], select {
+  background-color: #fcfcfc;
+  //box-shadow: none;
+}
+
+input[type="email"]:focus, input[type="password"]:focus, input[type="text"]:focus, select:focus {
+  border: 0.1rem solid rgb(203 213 225/var(--tw-border-opacity));
+  //box-shadow: 2px 4px 5px 1px rgba(1,1 ,1, 0.1);
+  //background-color: #fcfcfc;
+}
+
+[multiple]:focus, [type="date"]:focus, [type="datetime-local"]:focus, [type="email"]:focus, [type="month"]:focus, [type="number"]:focus, [type="password"]:focus, [type="search"]:focus, [type="tel"]:focus, [type="text"]:focus, [type="time"]:focus, [type="url"]:focus, [type="week"]:focus, select:focus, textarea:focus {
+  border: 0.1rem solid rgb(203 213 225/var(--tw-border-opacity));
+  //box-shadow: 2px 4px 5px 1px rgba(1,1 ,1, 0.1);
+  //background-color: #fcfcfc;
+}
+
+input[type="email"]:read-only, input[type="password"]:read-only, input[type="text"]:read-only {
+  color: rgba(0, 0, 0, 0.4);
+  background-color: whitesmoke;
+}
+
+ul.device-section {
+    background-color: transparent;
+    margin-left:  -0.5rem;
+    padding-left: 0;
+}
+
+ul.device-section .info-container {
+    margin-left: -2rem;
+}
+ul.device-section .info-container.has-children {
+    margin-left: 2rem;
+    cursor:  pointer;
+}
+
+ul.device-section {
+    /*margin-left: 0.5rem;padding-left: 1.25rem;*/
+}
+ul.device-section {
+    /*margin-left: 0;*/
+}
+ul.device-section i {
+    margin-left: -2.25rem;
+    margin-right:  0.5rem;
+}
+
+input[type="email"], input[type="password"], input[type="text"], select {
+  --tw-shadow: none;
+}
+// ----------------------------------- STOP WORKAROUNDS
+
+
+
+// ----------------------------------- START TAB BTNS
+.sec-tab-btn {
+  border: solid 1px #8fabdd;
+}
+.sec-tab-btn:hover {
+  background-image: linear-gradient(rgb(1 1 1/1%) 0 0);
+}
+// ----------------------------------- STOP TAB BTNS
+
+
+
+// ----------------------------------- START LOOK N FEEL
+.top-underline {
+  border-top: rgba(231, 231, 231, 0.48) solid 0.2rem;
+}
+.bottom-underline {
+  border-bottom: rgba(231, 231, 231, 0.48) solid 0.2rem;
+}
+.top-underline-light {
+  border-top: #eaeaea solid 1px;
+}
+.bottom-underline-light {
+  border-bottom: #eaeaea solid 1px;
+}
+.btn-border {
+  border: solid 0.01rem var(--color-new) !important;
+}
+.border-gray {
+  border: solid 0.001rem #f7d9d9;
+}
+// ----------------------------------- STOP LOOK N FEEL
+
+
+
+// ----------------------------------- START CROSS BROWSERS
+select,
+option {
+  font-family: "UCP Normal", Arial, sans-serif;
+}
+// scrollbar
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #F2F2F2;
+}
+::-webkit-scrollbar-thumb {
+  background: #BDBDBD;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #6E6E6E;
+}
+// ----------------------------------- STOP CROSS BROWSERS
+
+// ----------------------------------- START BEHAVIOURS
+body.modal-open {
+  overflow: hidden;
+}
+// ----------------------------------- STOP BEHAVIOURS
+
+// ----------------------------------- START LABELS
+.drag-handle {
+    @apply bg-transparent justify-center items-center;
+    width: 1rem;
+    height: 1rem;
+    margin-left: -1.5rem;
+    margin-right: 0.5rem;
+    cursor: n-resize;
+}
+// ----------------------------------- STOP LABELS

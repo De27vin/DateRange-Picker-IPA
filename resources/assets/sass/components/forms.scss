@@ -1,0 +1,198 @@
+.form-group {
+  @apply relative h-16 overflow-hidden;
+}
+label.default {
+  @apply absolute left-0 right-0 uppercase tracking-normal text-gray-400 text-xs pt-2 px-3;
+}
+.fallback-tooltip {
+  @apply absolute hidden bg-amber-300 text-amber-800 rounded-none text-xs font-normal p-2 right-0 bottom-5;
+}
+.badge:hover > .fallback-tooltip {
+  @apply block z-50;
+}
+
+label.switch {
+  @apply inline-block items-center h-full text-gray-800;
+}
+input {
+  @apply text-sm;
+}
+input[type=text],
+input[type=email],
+input[type=password] {
+  @apply appearance-none block w-full text-gray-800 pb-2 pt-7 px-3 mb-1 border border-gray-300 shadow-md;
+}
+input[type=text],
+input[type=email],
+input[type=password],
+select {
+  @apply bg-gray-100 outline-none border-gray-300 shadow-md;
+}
+input[type=text].input-search {
+  @apply bg-white;
+}
+input[type=text]:focus,
+input[type=email]:focus,
+input[type=password]:focus,
+select:focus {
+  @apply bg-white outline-none ring-0 ring-transparent border-transparent;
+}
+input[type=text]:read-only,
+input[type=email]:read-only,
+input[type=password]:read-only {
+  @apply bg-transparent outline-none ring-0 ring-transparent;
+}
+input.searchfield {
+  @apply appearance-none block w-full text-gray-800 py-0 px-8 border border-gray-300 h-full outline-none rounded-full bg-white ;
+}
+
+input.daterangepicker[type=text]:read-only {
+  @apply appearance-none block w-full bg-gray-100 text-gray-800 pb-2 pt-7 px-3 mb-1 border border-gray-300;
+}
+
+i.icon-required {
+  @apply absolute right-0 px-4 text-xs text-red-600;
+}
+input[type=text].spotlight {
+  @apply bg-gray-800 text-gray-300 items-center py-4;
+}
+.eventbox {
+  @apply px-4 py-2 flex items-center text-sm space-x-3 whitespace-nowrap;
+  & .label_type {
+    @apply text-gray-600 font-medium;
+  }
+  & .label_value {
+    @apply text-gray-800 font-medium;
+  }
+  & .label_time {
+    @apply text-gray-600;
+  }
+  &.warning {
+    @apply bg-orange-200 bg-opacity-80 border border-orange-200 hover:border-orange-300;
+    & .label_type {
+      @apply text-orange-600 font-medium;
+    }
+    & .label_value {
+      @apply text-orange-800 font-medium;
+    }
+    & .label_time {
+      @apply text-orange-600;
+    }
+  }
+  &.error {
+    @apply bg-red-200 bg-opacity-80 border border-red-200 hover:border-red-300;
+    & .label_type {
+      @apply text-red-600 font-medium;
+    }
+    & .label_value {
+      @apply text-red-800 font-medium;
+    }
+    & .label_time {
+      @apply text-red-600;
+    }
+  }
+  &.success {
+    @apply bg-green-200 bg-opacity-80 border border-green-200 hover:border-green-300;
+    & .label_type {
+      @apply text-green-600 font-medium;
+    }
+    & .label_value {
+      @apply text-green-800 font-medium;
+    }
+    & .label_time {
+      @apply text-green-600;
+    }
+  }
+  &.critical {
+    @apply bg-pink-200 bg-opacity-50 border border-pink-200 hover:border-pink-300;
+    & .label_type {
+      @apply text-pink-600 font-medium;
+    }
+    & .label_value {
+      @apply text-pink-800 font-medium;
+    }
+    & .label_time {
+      @apply text-pink-600;
+    }
+  }
+
+  &.notice {
+    @apply bg-green-200 bg-opacity-80 border border-green-200 hover:border-green-300;
+    & .label_type {
+      @apply text-green-600 font-medium;
+    }
+    & .label_value {
+      @apply text-green-800 font-medium;
+    }
+    & .label_time {
+      @apply text-green-600;
+    }
+  }
+
+  &.startend {
+    @apply bg-blue-200 bg-opacity-50 border border-blue-200 hover:border-blue-300;
+    & .label_type {
+      @apply text-blue-600 font-medium;
+    }
+    & .label_value {
+      @apply text-blue-800 font-medium;
+    }
+    & .label_time {
+      @apply text-blue-600;
+    }
+  }
+
+  &.info {
+    @apply bg-gray-400 bg-opacity-20 border border-gray-200 hover:border-gray-300;
+    & .label_type {
+      @apply text-gray-500 font-medium;
+    }
+    & .label_value {
+      @apply text-gray-800 font-medium;
+    }
+    & .label_time {
+      @apply text-gray-500;
+    }
+  }
+}
+
+#groupselect {
+  background-color: rgba(243,244,246,var(--tw-bg-opacity));
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  -webkit-print-color-adjust: exact;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+  background-position: right .5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  color-adjust: exact;
+}
+
+/* since nested groupes are not supported we have to use 
+ regular css for the nested dropdowns 
+*/
+#groupselect li>ul                 { transform: translatex(100%) scale(0) }
+#groupselect li:hover>ul           { transform: translatex(101%) scale(1) }
+#groupselect li > button svg       { transform: rotate(0deg) }
+#groupselect li:hover > button svg { transform: rotate(-180deg) }
+
+/* Below styles fake what can be achieved with the tailwind config
+ you need to add the group-hover variant to scale and define your custom
+ min width style.
+ See https://codesandbox.io/s/tailwindcss-multilevel-dropdown-y91j7?file=/index.html
+ for implementation with config file
+*/
+#groupselect.group:hover .group-hover\:scale-100 { transform: scale(1) }
+#groupselect.group:hover .group-hover\:-rotate-180 { transform: rotate(180deg) }
+#groupselect .scale-0 { transform: scale(0) }
+#groupselect .min-w-32 { min-width: 8rem }
+
+.combobox {
+  @apply border border-gray-300 shadow-md;
+}
+.combobox-dropdown {
+  @apply bg-white text-base w-full shadow-lg p-4 my-1 absolute;
+}
+.combobox-item {
+  @apply  text-gray-400 hover:text-gray-800 flex items-center;
+}
