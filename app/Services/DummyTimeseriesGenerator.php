@@ -3,27 +3,22 @@
 namespace App\Services;
 
 use Carbon\CarbonImmutable;
+use App\Services\DayRange;
 
 class DummyTimeseriesGenerator
 {
     /**
      * @return array<int, array{ts: string, value: int}>
      */
-    public function generate(string $chart, CarbonImmutable $startDay, CarbonImmutable $endDayInclusive): array
-    {
-        // Timeseries generated in UTC to avoid timezone issues
-        $start = $startDay->shiftTimezone('UTC')->startOfDay();
-        $endExclusive = $endDayInclusive->shiftTimezone('UTC')->addDay()->startOfDay();
+    public function generate(string $chart, CarbonImmutable $startDay, CarbonImmutable $endDayInclusive): array {
 
-        // Seed is random for reproducibility, based on chart and date range
-        $seedStr = $chart . '|' . $start->format('Y-m-d') . '|' . $endDayInclusive->format('Y-m-d');
-        $seed = $this->seedToInt($seedStr);
-        mt_srand($seed);
 
-        $value = mt_rand(20, 80);
+        $range = new DayRange($startDay, $endDayInclusive);
 
         $data = [];
-        for ($ts = $start; $ts->lt($endExclusive); $ts = $ts->addHour()) {
+        $value = mt_rand(0, 100); // Start value between 0 and 100
+        
+        for ($ts = $range->startHour; $ts->lt($range->endExclusiveHour); $ts = $ts->addHour()) {
             // Trend: random change between -10 and +10 per hour, clamped to 0-100
             $delta = mt_rand(-10, 10); // Max change +/-10 per hour
             $value = $this->clamp($value + $delta, 0, 100);
