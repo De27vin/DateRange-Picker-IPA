@@ -42,6 +42,7 @@
 <script>
 import axios from 'axios'
 import Chart from 'chart.js'
+import { normalizeHourlyTimeseries } from '../../../../utils/timeseries'
 
 
 const ALERT_DEFS = [
@@ -203,6 +204,14 @@ export default {
             try {
                 const res = await axios.get('/api/timeseries?hours=500')
                 this.fullSeries = res.data;
+                
+                // Normalize timeseries to ensure hourly data is consistent
+                const normalized = normalizeHourlyTimeseries(res.data.data ?? [], {
+                  dedupe: 'last',
+                  fill: 'carry',
+                  min: 0,
+                  max: 100,
+                });
 
             } catch (e) {
                 console.error('Timeseries fetch failed:', e)
