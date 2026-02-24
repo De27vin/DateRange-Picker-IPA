@@ -1,15 +1,23 @@
 <template>
   <div class="chart-container">
-    <!-- Time span button -->
-    <div class="resolution-selector">
-      <button class="timespan-btn" @click="showResolutionMenu = !showResolutionMenu">
-        {{ resolutionLabel }}
-      </button>
+    <div class="top-controls">
+      <!-- Date range picker -->
+      <date-picker
+        v-model="dateRange"
+        range
+        :clearable="false"
+        :editable="false"
+        format="DD.MM.YYYY"
+        value-type="date"
+        :disabled-date="disableFuture"
+        :append-to-body="false"
+        range-separator=" - "
+        input-class="date-range-input"
+        popup-class="single-panel-range force-below-popup"
+      />
+      
+      <div class="resolution-selector">
 
-      <div v-if="showResolutionMenu" class="resolution-menu">
-        <div @click="setResolution('hourly')">Hourly</div>
-        <div @click="setResolution('6h')">6 Hours</div>
-        <div @click="setResolution('daily')">Daily</div>
       </div>
     </div>
 
@@ -21,6 +29,8 @@
 import axios from 'axios'
 import Chart from 'chart.js'
 import { normalizeHourlyTimeseries } from '../../../../utils/timeseries'
+import DatePicker from 'vue2-datepicker'
+import 'vue2-datepicker/index.css'
 
 // Plugin to display value labels above data points
 const valueLabelPlugin = {
@@ -50,6 +60,7 @@ const valueLabelPlugin = {
 
 export default {
   name: 'EquipmentChart',
+  components: { DatePicker },
 
   // Props for live data from Charts.vue
   props: {
@@ -58,15 +69,28 @@ export default {
   },
 
   data() {
+    const today = new Date()
+    const start = new Date(today)
+    start.setDate(today.getDate() - 6)
+    start.setHours(0,0,0,0)
+
+    const end = new Date(today)
+    end.setHours(23,0,0,0)
+
     return {
       _chart: null,
-      chartData: [], // 5 dummy & 1 live
+      chartData: [],
 
-      // Time span selection
+      // resolution
       timeResolution: "hourly",
       showResolutionMenu: false,
+
+      // date range
+      dateRange: [start, end],
+
+      // data
       fullSeries: []
-    };
+    }
   },
 
   computed: {
@@ -301,7 +325,7 @@ export default {
   border: 1px solid rgba(240, 240, 240, 0.08);
   border-radius: 10px;
   box-shadow: 0 10px 30px rgba(11, 18, 51, 0.5);
-  overflow: hidden;
+  overflow: visible;
   animation: chartEnter 700ms cubic-bezier(.2, .9, .2, 1) both;
 }
 
@@ -333,54 +357,43 @@ canvas {
   }
 }
 
-/* Time Span Button Styles */
-.timespan-btn {
-  position: absolute;
-  top: 0;
-  left: 0;
-  margin: 0;
-  background: rgba(24, 44, 81, 0.15); 
-  border: 1px solid rgba(53, 64, 85, 0.4);
-  color: #354055; 
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.timespan-btn:hover {
-  background: rgba(24, 44, 81, 0.25); 
-}
-
-.resolution-selector {
+/* Date Picker Styles */
+.top-controls {
   position: absolute;
   top: 12px;
   left: 12px;
+  z-index: 30;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.resolution-selector {
+  position: relative;
   margin: 0;
   padding: 0;
   z-index: 20;
-  display: block;
-}
-
-.resolution-menu {
-  margin-top: 40px;
-  border: 1px solid rgba(53, 64, 85, 0.4);
-  border-radius: 6px;
-  overflow: hidden;
-  min-width: 120px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-}
-
-.resolution-menu>div {
-  padding: 8px 12px;
-  font-size: 13px;
-  color: #354055; 
-  cursor: pointer;
-}
-
-.resolution-menu>div:hover {
-  background: rgba(24, 44, 81, 0.25); 
 }
 </style>
- 
+
+<style>
+/* Custom style to show only one calendar panel */
+.single-panel-range .mx-range-wrapper .mx-calendar + .mx-calendar {
+  display: none;
+}
+
+/* Date range button styling */
+.date-range-input {
+  color: #000000 !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  height: 30px !important;
+  padding: 4px 30px 4px 8px !important;
+  border-radius: 8px !important;
+}
+
+.force-below-popup.mx-datepicker-popup {
+  top: calc(100% + 6px) !important;
+  bottom: auto !important;
+}
+</style>

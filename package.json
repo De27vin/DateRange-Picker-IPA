@@ -49,6 +49,7 @@
         "vue-click-outside": "^1.1.0",
         "vue-select": "^3.20.3",
         "vue-spinner": "^1.0.4",
+        "vue2-datepicker": "^3.11.1",
         "vuejs-datepicker": "^1.6.2"
     }
 }
