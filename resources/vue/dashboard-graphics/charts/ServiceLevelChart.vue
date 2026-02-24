@@ -2,19 +2,23 @@
   <div class="chart-container">
     <div class="top-controls">
       <!-- Date range picker -->
-      <date-picker
-        v-model="dateRange"
-        range
-        :clearable="false"
-        :editable="false"
-        format="DD.MM.YYYY"
-        value-type="date"
-        :disabled-date="disableFuture"
-        :append-to-body="false"
-        range-separator=" - "
-        input-class="date-range-input"
-        popup-class="single-panel-range force-below-popup shift-right-popup"
-      />
+      <div class="date-picker-wrap">
+        <date-picker
+          v-model="dateRange"
+          range
+          :clearable="false"
+          :editable="false"
+          format="DD.MM.YYYY"
+          value-type="date"
+          :disabled-date="disableFuture"
+          :append-to-body="false"
+          range-separator=" - "
+          input-class="date-range-input"
+          popup-class="single-panel-range force-below-popup shift-right-popup"
+          @change="onDateRangeChange"
+        />
+        <div v-if="dateError" class="date-error">{{ dateError }}</div>
+      </div>
       
       <div class="resolution-selector">
 
@@ -86,6 +90,8 @@ export default {
 
       // date range
       dateRange: [start, end],
+      dateError: '',
+      lastValidRange: [new Date(start), new Date(end)],
 
       // data
       fullSeries: []
@@ -108,6 +114,44 @@ export default {
   },
 
   methods: {
+      
+    // Method: Disable future dates in date picker
+    disableFuture(date) {
+      const now = new Date()
+      now.setHours(23, 59, 59, 999)
+      return date > now
+    },
+
+    // Method: Handle date range changes
+    onDateRangeChange(value) {
+      const [startRaw, endRaw] = value || this.dateRange || []
+      if (!startRaw || !endRaw) {
+        this.dateError = ''
+        return
+      }
+
+      const start = new Date(startRaw)
+      start.setHours(0, 0, 0, 0)
+      const end = new Date(endRaw)
+      end.setHours(23, 0, 0, 0)
+
+      if (start > end) {
+        this.dateError = 'Start date must be before end date.'
+        this.dateRange = [new Date(this.lastValidRange[0]), new Date(this.lastValidRange[1])]
+        return
+      }
+
+      const diffDays = Math.floor((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1
+      if (diffDays > 365) {
+        this.dateError = 'Date range must be 365 days or less.'
+        this.dateRange = [new Date(this.lastValidRange[0]), new Date(this.lastValidRange[1])]
+        return
+      }
+
+      this.dateError = ''
+      this.lastValidRange = [new Date(start), new Date(end)]
+    },
+
     async loadData() {
       try {
         const res = await axios.get('/api/timeseries?hours=500')
@@ -340,6 +384,12 @@ canvas {
   align-items: flex-start;
 }
 
+.date-picker-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
 .resolution-selector {
   position: relative;
   margin: 0;
@@ -371,5 +421,11 @@ canvas {
 
 .shift-right-popup.mx-datepicker-popup {
   left: 1px !important;
+}
+
+.date-error {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #b91c1c;
 }
 </style>
