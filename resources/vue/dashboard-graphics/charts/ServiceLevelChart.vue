@@ -18,6 +18,7 @@
           @change="onDateRangeChange"
         />
         <div v-if="dateError" class="date-error">{{ dateError }}</div>
+        <div v-if="fetchError" class="date-error">{{ fetchError }}</div>
       </div>
       
       <div class="resolution-selector">
@@ -33,34 +34,9 @@
 import axios from 'axios'
 import Chart from 'chart.js'
 import { normalizeHourlyTimeseries } from '../../../../utils/timeseries'
+import { aggregateTimeseries, pickResolution } from '../../../js/utils/timeseriesAggregation'
 import DatePicker from 'vue2-datepicker'
 import 'vue2-datepicker/index.css'
-
-// Plugin to display value labels above data points
-const valueLabelPlugin = {
-  afterDatasetsDraw(chart) {
-    const ctx = chart.ctx
-    ctx.save()
-    ctx.font = '12px sans-serif'
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'bottom'
-    ctx.fillStyle = '#354055'
-
-    chart.data.datasets.forEach((dataset, datasetIndex) => {
-      const meta = chart.getDatasetMeta(datasetIndex)
-      if (meta.hidden) return
-
-      meta.data.forEach((point, index) => {
-        const value = dataset.data[index]
-        if (value === null || value === undefined) return
-
-        ctx.fillText(value, point._model.x, point._model.y - 6)
-      })
-    })
-
-    ctx.restore()
-  }
-}
 
 export default {
   name: 'ServiceLevelChart',
@@ -82,15 +58,14 @@ export default {
 
     return {
       _chart: null,
-      chartData: [],
-
-      // resolution
-      timeResolution: "hourly",
-      showResolutionMenu: false,
+      rawSeries: [],
+      series: [],
+      seriesResolution: '1h',
 
       // date range
       dateRange: [start, end],
       dateError: '',
+      fetchError: '',
       lastValidRange: [new Date(start), new Date(end)],
 
       // data
@@ -98,19 +73,19 @@ export default {
     }
   },
   
-  computed: {
-    resolutionLabel() {
-      if (this.timeResolution === 'hourly') return 'Hourly'
-      if (this.timeResolution === '6h') return '6 Hours'
-      if (this.timeResolution === 'daily') return 'Daily'
-    }
+  watch: {
+    livePeriodic() {
+      this.injectLiveData()
+      this.renderChart()
+    },
+    liveLocal() {
+      this.injectLiveData()
+      this.renderChart()
+    },
   },
 
   async mounted() {
     await this.loadData()
-    this.chartData = this.resolveChartData()
-    this.injectLiveData()
-    this.renderChart()
   },
 
   methods: {
@@ -122,8 +97,33 @@ export default {
       return date > now
     },
 
+    toYmd(date) {
+      const y = date.getFullYear()
+      const m = String(date.getMonth() + 1).padStart(2, '0')
+      const d = String(date.getDate()).padStart(2, '0')
+      return `${y}-${m}-${d}`
+    },
+
+    daysInRange(start, end) {
+      const msPerDay = 24 * 60 * 60 * 1000
+      return Math.floor((end.getTime() - start.getTime()) / msPerDay) + 1
+    },
+
+    buildLabel(ts, resolution, isSingleDay) {
+      if (!ts) return 'Live'
+
+      const d = new Date(ts)
+      const hh = String(d.getHours()).padStart(2, '0')
+      const dd = String(d.getDate()).padStart(2, '0')
+      const mm = String(d.getMonth() + 1).padStart(2, '0')
+
+      if (resolution === '1d' || resolution === '1w') return `${dd}.${mm}`
+      if (isSingleDay && (resolution === '1h' || resolution === '6h')) return `${hh}:00`
+      return `${dd}.${mm} ${hh}:00`
+    },
+
     // Method: Handle date range changes
-    onDateRangeChange(value) {
+    async onDateRangeChange(value) {
       const [startRaw, endRaw] = value || this.dateRange || []
       if (!startRaw || !endRaw) {
         this.dateError = ''
@@ -135,136 +135,85 @@ export default {
       const end = new Date(endRaw)
       end.setHours(23, 0, 0, 0)
 
+      const diffDays = this.daysInRange(start, end)
       if (start > end) {
         this.dateError = 'Start date must be before end date.'
-        this.dateRange = [new Date(this.lastValidRange[0]), new Date(this.lastValidRange[1])]
         return
       }
-
-      const diffDays = Math.floor((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1
       if (diffDays > 365) {
         this.dateError = 'Date range must be 365 days or less.'
-        this.dateRange = [new Date(this.lastValidRange[0]), new Date(this.lastValidRange[1])]
         return
       }
 
       this.dateError = ''
       this.lastValidRange = [new Date(start), new Date(end)]
+      await this.loadData()
     },
 
     async loadData() {
-      try {
-        const res = await axios.get('/api/timeseries?hours=500')
-        this.fullSeries = res.data;
+      const [startRaw, endRaw] = this.dateRange || []
+      if (!startRaw || !endRaw) return
 
-        // Normalize timeseries to ensure hourly data is consistent
-        const normalized = normalizeHourlyTimeseries(res.data.data ?? [], {
-          dedupe: 'last',
-          fill: 'carry',
+      const start = new Date(startRaw)
+      start.setHours(0, 0, 0, 0)
+      const end = new Date(endRaw)
+      end.setHours(23, 0, 0, 0)
+
+      try {
+        this.fetchError = ''
+        const res = await axios.get('/api/timeseries', {
+          params: {
+            chart: 'ServiceLevelChart',
+            start: this.toYmd(start),
+            end: this.toYmd(end),
+          }
+        })
+        const sorted = (res.data.data ?? []).slice().sort((a, b) => String(a.ts).localeCompare(String(b.ts)))
+        const normalized = normalizeHourlyTimeseries(sorted, {
+          fill: 'null',
           min: 0,
           max: 100,
-        });
+        })
 
+        this.rawSeries = normalized
+        this.fullSeries = normalized
+        this.rebuildAggregatedSeries(start, end)
+        this.injectLiveData()
+        this.renderChart()
       } catch (e) {
         console.error('Timeseries fetch failed:', e)
+        this.rawSeries = []
+        this.series = []
         this.fullSeries = []
+        this.fetchError = e?.response?.status === 422 ? 'Invalid date range' : 'Failed to load data'
+        this.injectLiveData()
+        this.renderChart()
       }
     },
 
-    injectLiveData() {
-      // Remove existing live value if present
-      this.chartData = this.chartData.filter(x => x.timestamp !== null);
+    rebuildAggregatedSeries(start, end) {
+      const rangeDays = this.daysInRange(start, end)
+      this.seriesResolution = pickResolution(rangeDays)
+      const aggregated = aggregateTimeseries(this.rawSeries, { start, end })
+        .sort((a, b) => String(a.ts).localeCompare(String(b.ts)))
 
-      // Add new live point
-      this.chartData.push({
-        periodic_checks: Number(this.livePeriodic) || 0,
-        local_checks: Number(this.liveLocal) || 0,
-        timestamp: null
+      this.series = aggregated.map((row) => {
+        const periodic = Math.max(0, Math.min(100, Number(row.value) || 0))
+        return {
+          periodic_checks: periodic,
+          local_checks: 100 - periodic,
+          timestamp: row.ts,
+        }
       })
     },
 
-    // Method: Set time span resolution
-    setResolution(resolution) {
-      this.timeResolution = resolution
-      this.showResolutionMenu = false
-
-      // Generate historical data
-      this.chartData = this.resolveChartData();
-
-      // Add live value
-      this.injectLiveData();
-
-      // Re-render chart with new data
-      this.renderChart();
-
-    },
-
-    // Method: Returns chart data based on selected time resolution
-    resolveChartData() {
-      const now = new Date();
-      let result = [];
-
-      if (this.timeResolution === 'hourly') {
-        result = this.getLastFullHours(1);
-      } else if (this.timeResolution === '6h') {
-        result = this.getLastFullHours(6);
-      } else if (this.timeResolution === 'daily') {
-        result = this.getLastDays();
-      }
-
-      return result;
-    },
-
-    // Method: Get last full hours from timeseries
-    getLastFullHours(step) {
-      const result = []
-      const now = new Date()
-      now.setMinutes(0, 0, 0)
-
-      for (let i = 0; i <= 5; i++) {
-        const target = new Date(now)
-        target.setHours(now.getHours() - i * step)
-
-        const match = this.fullSeries.find(row => {
-          const t = new Date(row.timestamp)
-          return (
-            t.getFullYear() === target.getFullYear() &&
-            t.getMonth() === target.getMonth() &&
-            t.getDate() === target.getDate() &&
-            t.getHours() === target.getHours()
-          )
-        })
-
-        if (match) result.unshift(match)
-      }
-
-      return result
-    },
-
-    // Method: Get last days from timeseries
-    getLastDays() {
-      const result = []
-      const now = new Date()
-
-      for (let i = 1; i <= 5; i++) {
-        const target = new Date(now)
-        target.setDate(now.getDate() - i)
-        target.setHours(23, 0, 0, 0)
-
-        const match = this.fullSeries.find(row => {
-          const t = new Date(row.timestamp)
-          return (
-            t.getFullYear() === target.getFullYear() &&
-            t.getMonth() === target.getMonth() &&
-            t.getDate() === target.getDate() &&
-            t.getHours() === 23
-          )
-        })
-
-        if (match) result.unshift(match)
-      }
-
-      return result
+    injectLiveData() {
+      this.series = this.series.filter((x) => x.timestamp !== null)
+      this.series.push({
+        periodic_checks: Math.max(0, Math.min(100, Number(this.livePeriodic) || 0)),
+        local_checks: Math.max(0, Math.min(100, Number(this.liveLocal) || 0)),
+        timestamp: null
+      })
     },
 
     renderChart() {
@@ -278,16 +227,11 @@ export default {
       localGradient.addColorStop(0, 'rgba(193,117,121,0.45)')
       localGradient.addColorStop(1, 'rgba(193,117,121,0)')
 
-      const labels = this.chartData.map(item => {
-        if (!item.timestamp) return 'Live';
-        const d = new Date(item.timestamp);
+      const isSingleDay = this.toYmd(new Date(this.lastValidRange[0])) === this.toYmd(new Date(this.lastValidRange[1]))
+      const labels = this.series.map(item => this.buildLabel(item.timestamp, this.seriesResolution, isSingleDay))
 
-        if (this.timeResolution === 'daily') return d.toLocaleDateString();
-        return `${d.getHours().toString().padStart(2, '0')}:00`
-      });
-
-      const periodic = this.chartData.map(x => x.periodic_checks ?? 0)
-      const local = this.chartData.map(x => x.local_checks ?? 0)
+      const periodic = this.series.map(x => x.periodic_checks ?? 0)
+      const local = this.series.map(x => x.local_checks ?? 0)
 
       if (this._chart) this._chart.destroy()
 
@@ -318,11 +262,10 @@ export default {
             }
           ]
         },
-        plugins: [valueLabelPlugin],
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          tooltips: { enabled: false },
+          tooltips: { enabled: true },
           title: {
             display: true,
             text: 'Service Level',

@@ -17,6 +17,7 @@
                   @change="onDateRangeChange"
                 />
                 <div v-if="dateError" class="date-error">{{ dateError }}</div>
+                <div v-if="fetchError" class="date-error">{{ fetchError }}</div>
             </div>
 
             <div class="resolution-selector">
@@ -39,8 +40,7 @@
                 <div class="filter-grid">
                     <div v-for="(alert, i) in filterAlerts" :key="i" class="filter-cell">
                         <template v-if="alert">
-                            <input type="checkbox" :checked="selectedAlerts.includes(alert.key)"
-                                @change="toggleAlert(alert.key)" />
+                            <input type="checkbox" :value="alert.key" v-model="selectedAlerts" />
                             <span>{{ alert.label }}</span>
                         </template>
                     </div>
@@ -54,6 +54,7 @@
 import axios from 'axios'
 import Chart from 'chart.js'
 import { normalizeHourlyTimeseries } from '../../../../utils/timeseries'
+import { aggregateTimeseries, pickResolution } from '../../../js/utils/timeseriesAggregation'
 import DatePicker from 'vue2-datepicker'
 import 'vue2-datepicker/index.css'
 
@@ -109,32 +110,6 @@ function gradientColor(index, total) {
     return `rgba(${r}, ${g}, ${b}, 1)`
 }
 
-// Plugin to display value labels above data points
-const valueLabelPlugin = {
-    afterDatasetsDraw(chart) {
-        const ctx = chart.ctx
-        ctx.save()
-        ctx.font = '12px sans-serif'
-        ctx.textAlign = 'center'
-        ctx.textBaseline = 'bottom'
-        ctx.fillStyle = '#354055'
-
-        chart.data.datasets.forEach((dataset, datasetIndex) => {
-            const meta = chart.getDatasetMeta(datasetIndex)
-            if (meta.hidden) return
-
-            meta.data.forEach((point, index) => {
-                const value = dataset.data[index]
-                if (value === null || value === undefined) return
-
-                ctx.fillText(value, point._model.x, point._model.y - 6)
-            })
-        })
-
-        ctx.restore()
-    }
-}
-
 export default {
     name: 'AlertsChart',
     components: { DatePicker },
@@ -180,49 +155,36 @@ export default {
       end.setHours(23,0,0,0)
         return {
             _chart: null,
-            chartData: [],
+            rawSeries: [],
+            series: [],
+            seriesResolution: '1h',
             showFilters: false,
 
             // Alerts for UI filters-button
             filterAlerts: ALERT_DEFS,
 
-            // resolution
-            timeResolution: "hourly",
-            showResolutionMenu: false,
             fullSeries: [],
 
             // date range
             dateRange: [start, end],
             dateError: '',
+            fetchError: '',
             lastValidRange: [new Date(start), new Date(end)],
 
             selectedAlerts: []
         }
     },
 
-    computed: {
-        resolutionLabel() {
-            if (this.timeResolution === 'hourly') return 'Hourly'
-            if (this.timeResolution === '6h') return '6 Hours'
-            if (this.timeResolution === 'daily') return 'Daily'
-        }
-    },
-
     async mounted() {
         await this.loadData()
-        this.chartData = this.resolveChartData()
-        this.injectLiveData()
         this.initSelectedAlerts()
         this.renderChart()
+    },
 
-        console.log('LIVE PROPS', {
-            active_alarm: this.liveActiveAlarm,
-            battery_malfunction: this.liveBatteryMalfunction,
-            battery_low: this.liveBatteryLow,
-            button_malfunction: this.liveButtonMalfunction,
-            charge_malfunction: this.liveChargeMalfunction
-        })
-
+    watch: {
+        selectedAlerts() {
+            this.renderChart()
+        },
     },
 
     methods: {
@@ -234,8 +196,33 @@ export default {
             return date > now
         },
 
+        toYmd(date) {
+            const y = date.getFullYear()
+            const m = String(date.getMonth() + 1).padStart(2, '0')
+            const d = String(date.getDate()).padStart(2, '0')
+            return `${y}-${m}-${d}`
+        },
+
+        daysInRange(start, end) {
+            const msPerDay = 24 * 60 * 60 * 1000
+            return Math.floor((end.getTime() - start.getTime()) / msPerDay) + 1
+        },
+
+        buildLabel(ts, resolution, isSingleDay) {
+            if (!ts) return 'Live'
+
+            const d = new Date(ts)
+            const hh = String(d.getHours()).padStart(2, '0')
+            const dd = String(d.getDate()).padStart(2, '0')
+            const mm = String(d.getMonth() + 1).padStart(2, '0')
+
+            if (resolution === '1d' || resolution === '1w') return `${dd}.${mm}`
+            if (isSingleDay && (resolution === '1h' || resolution === '6h')) return `${hh}:00`
+            return `${dd}.${mm} ${hh}:00`
+        },
+
         // Method: Handle date range changes
-        onDateRangeChange(value) {
+        async onDateRangeChange(value) {
             const [startRaw, endRaw] = value || this.dateRange || []
             if (!startRaw || !endRaw) {
                 this.dateError = ''
@@ -247,48 +234,83 @@ export default {
             const end = new Date(endRaw)
             end.setHours(23, 0, 0, 0)
 
+            const diffDays = this.daysInRange(start, end)
             if (start > end) {
                 this.dateError = 'Start date must be before end date.'
-                this.dateRange = [new Date(this.lastValidRange[0]), new Date(this.lastValidRange[1])]
                 return
             }
-
-            const diffDays = Math.floor((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1
             if (diffDays > 365) {
                 this.dateError = 'Date range must be 365 days or less.'
-                this.dateRange = [new Date(this.lastValidRange[0]), new Date(this.lastValidRange[1])]
                 return
             }
 
             this.dateError = ''
             this.lastValidRange = [new Date(start), new Date(end)]
+            await this.loadData()
         },
 
         async loadData() {
-            try {
-                const res = await axios.get('/api/timeseries?hours=500')
-                this.fullSeries = res.data;
+            const [startRaw, endRaw] = this.dateRange || []
+            if (!startRaw || !endRaw) return
 
-                // Normalize timeseries to ensure hourly data is consistent
-                const normalized = normalizeHourlyTimeseries(res.data.data ?? [], {
-                    dedupe: 'last',
-                    fill: 'carry',
+            const start = new Date(startRaw)
+            start.setHours(0, 0, 0, 0)
+            const end = new Date(endRaw)
+            end.setHours(23, 0, 0, 0)
+
+            try {
+                this.fetchError = ''
+                const res = await axios.get('/api/timeseries', {
+                    params: {
+                        chart: 'AlertsChart',
+                        start: this.toYmd(start),
+                        end: this.toYmd(end),
+                    }
+                })
+                const sorted = (res.data.data ?? []).slice().sort((a, b) => String(a.ts).localeCompare(String(b.ts)))
+                const normalized = normalizeHourlyTimeseries(sorted, {
+                    fill: 'null',
                     min: 0,
                     max: 100,
-                });
+                })
 
+                this.rawSeries = normalized
+                this.fullSeries = normalized
+                this.rebuildAggregatedSeries(start, end)
+                this.injectLiveData()
+                this.renderChart()
             } catch (e) {
                 console.error('Timeseries fetch failed:', e)
+                this.rawSeries = []
+                this.series = []
                 this.fullSeries = []
+                this.fetchError = e?.response?.status === 422 ? 'Invalid date range' : 'Failed to load data'
+                this.injectLiveData()
+                this.renderChart()
             }
         },
 
-        injectLiveData() {
-            // Remove existing live value if present
-            this.chartData = this.chartData.filter(x => x.timestamp !== null);
+        rebuildAggregatedSeries(start, end) {
+            const rangeDays = this.daysInRange(start, end)
+            this.seriesResolution = pickResolution(rangeDays)
+            const aggregated = aggregateTimeseries(this.rawSeries, { start, end })
+                .sort((a, b) => String(a.ts).localeCompare(String(b.ts)))
 
-            // Add new live point
-            this.chartData.push({
+            this.series = aggregated.map((row) => {
+                const v = Math.max(0, Math.min(100, Number(row.value) || 0))
+                const base = { timestamp: row.ts }
+                for (let i = 0; i < ALERT_DEFS.length; i++) {
+                    const alert = ALERT_DEFS[i]
+                    const factor = 0.55 + (((i * 7) % 10) / 10) // 0.55 .. 1.45
+                    base[alert.key] = Math.max(0, Math.min(100, Math.round(v * factor)))
+                }
+                return base
+            })
+        },
+
+        injectLiveData() {
+            this.series = this.series.filter(x => x.timestamp !== null)
+            this.series.push({
                 Active_alarm: Number(this.liveActiveAlarm) || 0,
                 Battery_malfunction: Number(this.liveBatteryMalfunction) || 0,
                 Battery_low: Number(this.liveBatteryLow) || 0,
@@ -317,165 +339,26 @@ export default {
                 Speaker_malfunction: Number(this.liveSpeakerMalfunction) || 0,
                 Technician_check_overdue: Number(this.liveTechnicianCheckOverdue) || 0,
                 Voice_alarm: Number(this.liveVoiceAlarm) || 0,
-                timestamp: null
+                timestamp: null,
             })
-        },
-
-        // Method: Set time span resolution and re-render chart
-        setResolution(resolution) {
-            this.timeResolution = resolution
-            this.showResolutionMenu = false
-
-            // Generate historical data
-            this.chartData = this.resolveChartData()
-
-            // Add live value
-            this.injectLiveData()
-
-            // Re-render chart with new data
-            this.renderChart()
-        },
-
-        // Method: Returns chart data based on selected time resolution
-        resolveChartData() {
-            let result = []
-
-            if (this.timeResolution === 'hourly') {
-                result = this.getLastFullHours(1)
-            } else if (this.timeResolution === '6h') {
-                result = this.getLastFullHours(6)
-            } else if (this.timeResolution === 'daily') {
-                result = this.getLastDays()
-            }
-
-            return result
-        },
-
-        // Method: Get last full hours from timeseries
-        getLastFullHours(step) {
-            const result = []
-            const now = new Date()
-            now.setMinutes(0, 0, 0)
-
-            for (let i = 0; i <= 5; i++) {
-                const target = new Date(now)
-                target.setHours(now.getHours() - i * step)
-
-                const match = this.fullSeries.find(row => {
-                    const t = new Date(row.timestamp)
-                    return (
-                        t.getFullYear() === target.getFullYear() &&
-                        t.getMonth() === target.getMonth() &&
-                        t.getDate() === target.getDate() &&
-                        t.getHours() === target.getHours()
-                    )
-                })
-
-                if (match) result.unshift(match)
-            }
-
-            return result
-        },
-
-        // Method: Get last days from timeseries
-        getLastDays() {
-            const result = []
-            const now = new Date()
-
-            for (let i = 1; i <= 5; i++) {
-                const target = new Date(now)
-                target.setDate(now.getDate() - i)
-                target.setHours(23, 0, 0, 0)
-
-                const match = this.fullSeries.find(row => {
-                    const t = new Date(row.timestamp)
-                    return (
-                        t.getFullYear() === target.getFullYear() &&
-                        t.getMonth() === target.getMonth() &&
-                        t.getDate() === target.getDate() &&
-                        t.getHours() === 23
-                    )
-                })
-
-                if (match) result.unshift(match)
-            }
-
-            return result
         },
 
         // Method: Initially select 5 alerts
         initSelectedAlerts() {
-            const liveRow = this.chartData.at(-1)
-
-            this.selectedAlerts = ALERT_DEFS
-                .filter(a => (liveRow[a.key] ?? 0) > 0)
-                .slice(0, 5)
-                .map(a => a.key)
-        },
-
-        // Method: Toggle alert selection
-        toggleAlert(key) {
-            if (this.selectedAlerts.includes(key)) {
-                this.selectedAlerts = this.selectedAlerts.filter(k => k !== key)
-            } else {
-                this.selectedAlerts.push(key)
-            }
-
-            this.renderChart()
+            this.selectedAlerts = ALERT_DEFS.slice(0, 5).map(a => a.key)
         },
 
         renderChart() {
-            // Use resolved chart data based on selected time resolution
-            // const resolvedData = this.resolveChartData()
-            const data = this.chartData
+            const data = this.series
 
             const ctx = this.$refs.chart.getContext('2d')
 
-            const activeGradient = ctx.createLinearGradient(0, 0, 0, 400)
-            activeGradient.addColorStop(0, 'rgba(214,15,18,0.45)')
-            activeGradient.addColorStop(1, 'rgba(214,15,18,0)')
-
-            const secondaryGradient = ctx.createLinearGradient(0, 0, 0, 400)
-            secondaryGradient.addColorStop(0, 'rgba(193,117,121,0.45)')
-            secondaryGradient.addColorStop(1, 'rgba(193,117,121,0)')
-
             // Generate labels based on resolved data
+            const isSingleDay = this.toYmd(new Date(this.lastValidRange[0])) === this.toYmd(new Date(this.lastValidRange[1]))
             const labels = data.map(item => {
                 if (item.timestamp === null) return 'Live'
-                const d = new Date(item.timestamp)
-
-                if (this.timeResolution === 'daily') return d.toLocaleDateString()
-                return `${d.getHours().toString().padStart(2, '0')}:00`
+                return this.buildLabel(item.timestamp, this.seriesResolution, isSingleDay)
             })
-
-            const Active_alarm = this.chartData.map(x => x.Active_alarm ?? 0)
-            const Battery_malfunction = this.chartData.map(x => x.Battery_malfunction ?? 0)
-            const Battery_low = this.chartData.map(x => x.Battery_low ?? 0)
-            const Button_malfunction = this.chartData.map(x => x.Button_malfunction ?? 0)
-            const Charge_malfunction = this.chartData.map(x => x.Charge_malfunction ?? 0)
-            const Database_malfunction = this.chartData.map(x => x.Database_malfunction ?? 0)
-            const Disk_low = this.chartData.map(x => x.Disk_low ?? 0)
-            const Object_door_failure = this.chartData.map(x => x.Object_door_failure ?? 0)
-            const Elevator_failure = this.chartData.map(x => x.Elevator_failure ?? 0)
-            const Gateway_malfunction = this.chartData.map(x => x.Gateway_malfunction ?? 0)
-            const Identity_mismatch = this.chartData.map(x => x.Identity_mismatch ?? 0)
-            const Line_alarm = this.chartData.map(x => x.Line_alarm ?? 0)
-            const Location_alarm = this.chartData.map(x => x.Location_alarm ?? 0)
-            const Object_is_under_maintenance = this.chartData.map(x => x.Object_is_under_maintenance ?? 0)
-            const Microphone_malfunction = this.chartData.map(x => x.Microphone_malfunction ?? 0)
-            const Network_malfunction = this.chartData.map(x => x.Network_malfunction ?? 0)
-            const Periodical_call_overdue = this.chartData.map(x => x.Periodical_call_overdue ?? 0)
-            const Pin_mismatch = this.chartData.map(x => x.Pin_mismatch ?? 0)
-            const Power_malfunction = this.chartData.map(x => x.Power_malfunction ?? 0)
-            const Ram_low = this.chartData.map(x => x.Ram_low ?? 0)
-            const Reserved_device = this.chartData.map(x => x.Reserved_device ?? 0)
-            const Serial_port_malfunction = this.chartData.map(x => x.Serial_port_malfunction ?? 0)
-            const Shaft_failure = this.chartData.map(x => x.Shaft_failure ?? 0)
-            const Low_signal = this.chartData.map(x => x.Low_signal ?? 0)
-            const Sip_registration_failure = this.chartData.map(x => x.Sip_registration_failure ?? 0)
-            const Speaker_malfunction = this.chartData.map(x => x.Speaker_malfunction ?? 0)
-            const Technician_check_overdue = this.chartData.map(x => x.Technician_check_overdue ?? 0)
-            const Voice_alarm = this.chartData.map(x => x.Voice_alarm ?? 0)
 
             if (this._chart) this._chart.destroy()
 
@@ -500,11 +383,10 @@ export default {
                             }
                         })
                 },
-                plugins: [valueLabelPlugin],
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    tooltips: { enabled: false },
+                    tooltips: { enabled: true },
                     title: {
                         display: true,
                         text: 'Alerts',
