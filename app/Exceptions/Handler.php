@@ -3,10 +3,14 @@
 namespace App\Exceptions;
 
 use App\Services\AccountUpdateService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 use App\Exceptions\UcpException;
@@ -46,6 +50,10 @@ class Handler extends ExceptionHandler
             return parent::render($request, $exception);
         }
 
+        if ($this->isApiRequest($request)) {
+            return $this->renderApiException($request, $exception);
+        }
+
         if ($exception instanceof HttpException) {
             Log::error('Symfony Kernel HTTP Exception:', [
                 'url' => $request->fullUrl(),
@@ -82,6 +90,37 @@ class Handler extends ExceptionHandler
         }
     }
 
+    private function isApiRequest(Request $request): bool
+    {
+        return $request->is('api/*') || $request->expectsJson();
+    }
+
+    private function renderApiException(Request $request, Throwable $exception): JsonResponse
+    {
+        if ($exception instanceof ValidationException) {
+            return parent::render($request, $exception);
+        }
+
+        $requestId = $request->attributes->get('request_id') ?: $request->header('X-Request-Id');
+
+        if ($exception instanceof HttpExceptionInterface) {
+            $status = $exception->getStatusCode();
+            $message = SymfonyResponse::$statusTexts[$status] ?? 'HTTP error';
+
+            return response()->json([
+                'message' => $message,
+                'request_id' => $requestId,
+            ], $status);
+        }
+
+        $this->logApiException($request, $exception, 500);
+
+        return response()->json([
+            'message' => 'Internal server error',
+            'request_id' => $requestId,
+        ], 500);
+    }
+
 
     private function synchronizeErrorAction($request, $exception)
     {
@@ -113,15 +152,7 @@ class Handler extends ExceptionHandler
 
     private function defaultAction($request, $exception)
     {
-        $requestId = $request->attributes->get('request_id') ?: $request->header('X-Request-Id');
-        Log::channel('ipa')->error('api.exception', [
-            'event' => 'api.exception',
-            'request_id' => $requestId,
-            'path' => $request->getPathInfo(),
-            'exception_class' => get_class($exception),
-            'message' => $exception->getMessage(),
-            'status' => 500,
-        ]);
+        $this->logApiException($request, $exception, 500);
 
         Log::error($exception, ['Default error handler action performed']);
 
@@ -150,6 +181,19 @@ class Handler extends ExceptionHandler
         return response()->view('errors.ucp-error', [
             'message' => $this->toString($exception),
         ], 500);
+    }
+
+    private function logApiException(Request $request, Throwable $exception, int $status): void
+    {
+        $requestId = $request->attributes->get('request_id') ?: $request->header('X-Request-Id');
+        Log::channel('ipa')->error('api.exception', [
+            'event' => 'api.exception',
+            'request_id' => $requestId,
+            'path' => $request->getPathInfo(),
+            'exception_class' => get_class($exception),
+            'message' => $exception->getMessage(),
+            'status' => $status,
+        ]);
     }
 
 
