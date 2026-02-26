@@ -54,11 +54,14 @@ class TimeseriesRequest extends FormRequest
                 $v->errors()->add('start', 'The start field must be a valid ISO 8601 datetime (for example 2026-01-24T00:00:00Z).');
             }
             if (!$e) {
-                $v->errors()->add('end', 'The end field must be a valid ISO 8601 datetime (for example 2026-01-24T23:59:59Z).');
+                $v->errors()->add('end', 'The end field must be a valid ISO 8601 datetime (for example 2026-01-24T23:00:00Z).');
             }
             if (!$s || !$e) {
                 return;
             }
+
+            $s = $s->utc();
+            $e = $this->clampEndToNowFloorHourUtc($e->utc());
 
             if ($e->lessThanOrEqualTo($s)) {
                 $v->errors()->add('end', 'The end field must be after start.');
@@ -94,9 +97,23 @@ class TimeseriesRequest extends FormRequest
 
     public function endDayUtc(): CarbonImmutable
     {
-        return $this->parseDateTimeInput((string) $this->input('end'), true)
+        return $this->endUtc()->startOfDay();
+    }
+
+    public function startUtc(): CarbonImmutable
+    {
+        return $this->parseDateTimeInput((string) $this->input('start'), false)
             ->utc()
-            ->startOfDay();
+            ->startOfHour();
+    }
+
+    public function endUtc(): CarbonImmutable
+    {
+        $parsed = $this->parseDateTimeInput((string) $this->input('end'), true)
+            ->utc()
+            ->startOfHour();
+
+        return $this->clampEndToNowFloorHourUtc($parsed);
     }
 
     private function parseDateTimeInput(string $value, bool $isEnd): ?CarbonImmutable
@@ -121,5 +138,15 @@ class TimeseriesRequest extends FormRequest
         } catch (\Throwable) {
             return null;
         }
+    }
+
+    private function clampEndToNowFloorHourUtc(CarbonImmutable $end): CarbonImmutable
+    {
+        $nowFloorHourUtc = CarbonImmutable::now('UTC')->startOfHour();
+        if ($end->greaterThan($nowFloorHourUtc)) {
+            return $nowFloorHourUtc;
+        }
+
+        return $end;
     }
 }

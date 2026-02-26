@@ -2,10 +2,17 @@
 
 namespace Tests\Feature;
 
+use Carbon\CarbonImmutable;
 use Tests\TestCase;
 
 class TimeseriesValidationTest extends TestCase
 {
+    protected function tearDown(): void
+    {
+        CarbonImmutable::setTestNow();
+        parent::tearDown();
+    }
+
     public function test_missing_start_returns_422(): void
     {
         $res = $this->getJson('/api/timeseries?chart=EquipmentChart&end=2026-01-24T23:59:59Z');
@@ -69,6 +76,39 @@ class TimeseriesValidationTest extends TestCase
             ->assertJsonStructure([
                 'message',
                 'errors' => ['chart'],
+            ]);
+    }
+
+    public function test_today_end_is_allowed_and_returns_200(): void
+    {
+        CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-02-26T08:39:12Z'));
+
+        $res = $this->getJson('/api/timeseries?chart=EquipmentChart&start=2026-02-26T00:00:00Z&end=2026-02-26T23:00:00Z');
+
+        $res->assertOk()
+            ->assertJsonPath('meta.end', '2026-02-26T08:00:00+00:00');
+    }
+
+    public function test_future_end_is_clamped_to_now_floor_hour_utc(): void
+    {
+        CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-02-26T08:39:12Z'));
+
+        $res = $this->getJson('/api/timeseries?chart=EquipmentChart&start=2026-02-26T00:00:00Z&end=2026-02-27T12:00:00Z');
+
+        $res->assertOk()
+            ->assertJsonPath('meta.end', '2026-02-26T08:00:00+00:00');
+    }
+
+    public function test_end_before_start_after_clamping_returns_422(): void
+    {
+        CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-02-26T08:39:12Z'));
+
+        $res = $this->getJson('/api/timeseries?chart=EquipmentChart&start=2026-02-26T09:00:00Z&end=2026-02-26T23:00:00Z');
+
+        $res->assertStatus(422)
+            ->assertJsonStructure([
+                'message',
+                'errors' => ['end'],
             ]);
     }
 }

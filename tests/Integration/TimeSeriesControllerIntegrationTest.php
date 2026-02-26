@@ -33,8 +33,8 @@ class TimeSeriesControllerIntegrationTest extends TestCase {
 
         $res->assertOk()
             ->assertJsonPath('meta.chart', 'EquipmentChart')
-            ->assertJsonPath('meta.start', '2026-01-24')
-            ->assertJsonPath('meta.end', '2026-01-24')
+            ->assertJsonPath('meta.start', '2026-01-24T00:00:00+00:00')
+            ->assertJsonPath('meta.end', '2026-01-24T23:00:00+00:00')
             ->assertJsonPath('meta.resolution', '1h')
             ->assertJsonPath('meta.points', 2)
             ->assertJsonPath('data.0.value', 7)
@@ -64,8 +64,8 @@ class TimeSeriesControllerIntegrationTest extends TestCase {
         $res = $this->getJson('/api/timeseries?chart=AlarmChart&start=2026-02-01&end=2026-02-03');
 
         $res->assertOk()
-            ->assertJsonPath('meta.start', '2026-02-01')
-            ->assertJsonPath('meta.end', '2026-02-03')
+            ->assertJsonPath('meta.start', '2026-02-01T00:00:00+00:00')
+            ->assertJsonPath('meta.end', '2026-02-03T23:00:00+00:00')
             ->assertJsonPath('meta.points', 0);
 
         $this->assertSame(0, $fake->startDay?->hour);
