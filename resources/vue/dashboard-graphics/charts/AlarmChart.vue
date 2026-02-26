@@ -35,6 +35,13 @@ import axios from 'axios'
 import Chart from 'chart.js'
 import { normalizeHourlyTimeseries } from '../../../../utils/timeseries'
 import { aggregateTimeseries, pickResolution } from '../../../js/utils/timeseriesAggregation'
+import {
+  daysInRangeUtc,
+  disableFutureUtc,
+  toIso8601Utc,
+  toYmdUtc,
+  validateAndNormalizeRange,
+} from '../../../js/utils/timeseriesRangeValidation'
 import DatePicker from 'vue2-datepicker'
 import 'vue2-datepicker/index.css'
 
@@ -92,21 +99,19 @@ export default {
 
     // Method: Disable future dates in date picker
     disableFuture(date) {
-      const now = new Date()
-      now.setHours(23, 59, 59, 999)
-      return date > now
+      return disableFutureUtc(date)
     },
 
     toYmd(date) {
-      const y = date.getFullYear()
-      const m = String(date.getMonth() + 1).padStart(2, '0')
-      const d = String(date.getDate()).padStart(2, '0')
-      return `${y}-${m}-${d}`
+      return toYmdUtc(date)
+    },
+
+    toIso(date) {
+      return toIso8601Utc(date)
     },
 
     daysInRange(start, end) {
-      const msPerDay = 24 * 60 * 60 * 1000
-      return Math.floor((end.getTime() - start.getTime()) / msPerDay) + 1
+      return daysInRangeUtc(start, end)
     },
 
     buildLabel(ts, resolution, isSingleDay) {
@@ -125,26 +130,13 @@ export default {
     // Method: Handle date range changes
     async onDateRangeChange(value) {
       const [startRaw, endRaw] = value || this.dateRange || []
-      if (!startRaw || !endRaw) {
-        this.dateError = ''
+      const normalized = validateAndNormalizeRange(startRaw, endRaw)
+      if (!normalized.ok) {
+        this.dateError = normalized.error
         return
       }
 
-      const start = new Date(startRaw)
-      start.setHours(0, 0, 0, 0)
-      const end = new Date(endRaw)
-      end.setHours(23, 0, 0, 0)
-
-      const diffDays = this.daysInRange(start, end)
-      if (start > end) {
-        this.dateError = 'Start date must be before end date.'
-        return
-      }
-      if (diffDays > 365) {
-        this.dateError = 'Date range must be 365 days or less.'
-        return
-      }
-
+      const { startUtc: start, endUtc: end } = normalized
       this.dateError = ''
       this.lastValidRange = [new Date(start), new Date(end)]
       await this.loadData()
@@ -152,20 +144,22 @@ export default {
 
     async loadData() {
       const [startRaw, endRaw] = this.dateRange || []
-      if (!startRaw || !endRaw) return
+      const normalized = validateAndNormalizeRange(startRaw, endRaw)
+      if (!normalized.ok) {
+        this.dateError = normalized.error
+        return
+      }
 
-      const start = new Date(startRaw)
-      start.setHours(0, 0, 0, 0)
-      const end = new Date(endRaw)
-      end.setHours(23, 0, 0, 0)
+      const { startUtc: start, endUtc: end } = normalized
+      this.dateError = ''
 
       try {
         this.fetchError = ''
         const res = await axios.get('/api/timeseries', {
           params: {
             chart: 'AlarmChart',
-            start: this.toYmd(start),
-            end: this.toYmd(end),
+            start: this.toIso(start),
+            end: this.toIso(end),
           }
         })
         const sorted = (res.data.data ?? []).slice().sort((a, b) => String(a.ts).localeCompare(String(b.ts)))
