@@ -113,6 +113,16 @@ class Handler extends ExceptionHandler
 
     private function defaultAction($request, $exception)
     {
+        $requestId = $request->attributes->get('request_id') ?: $request->header('X-Request-Id');
+        Log::channel('ipa')->error('api.exception', [
+            'event' => 'api.exception',
+            'request_id' => $requestId,
+            'path' => $request->getPathInfo(),
+            'exception_class' => get_class($exception),
+            'message' => $exception->getMessage(),
+            'status' => 500,
+        ]);
+
         Log::error($exception, ['Default error handler action performed']);
 
         // Don't redirect if it's an API or non-HTML request

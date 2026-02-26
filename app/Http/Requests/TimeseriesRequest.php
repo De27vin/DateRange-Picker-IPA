@@ -3,7 +3,9 @@
 namespace App\Http\Requests;
 
 use Carbon\CarbonImmutable;
+use Illuminate\Contracts\Validation\Validator as ValidatorContract;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class TimeseriesRequest extends FormRequest
@@ -116,6 +118,33 @@ class TimeseriesRequest extends FormRequest
         return $this->clampEndToNowFloorHourUtc($parsed);
     }
 
+    public function endWasClamped(): bool
+    {
+        $parsed = $this->parseDateTimeInput((string) $this->input('end'), true);
+        if (!$parsed) {
+            return false;
+        }
+
+        $requested = $parsed->utc()->startOfHour();
+
+        return $requested->greaterThan($this->nowFloorHourUtc());
+    }
+
+    protected function failedValidation(ValidatorContract $validator): void
+    {
+        $requestId = $this->attributes->get('request_id') ?: $this->header('X-Request-Id');
+
+        Log::channel('ipa')->warning('timeseries.validation_failed', [
+            'event' => 'timeseries.validation_failed',
+            'request_id' => $requestId,
+            'path' => $this->getPathInfo(),
+            'invalid_fields' => array_keys($validator->errors()->toArray()),
+            'status' => 422,
+        ]);
+
+        parent::failedValidation($validator);
+    }
+
     private function parseDateTimeInput(string $value, bool $isEnd): ?CarbonImmutable
     {
         $trimmed = trim($value);
@@ -142,11 +171,16 @@ class TimeseriesRequest extends FormRequest
 
     private function clampEndToNowFloorHourUtc(CarbonImmutable $end): CarbonImmutable
     {
-        $nowFloorHourUtc = CarbonImmutable::now('UTC')->startOfHour();
+        $nowFloorHourUtc = $this->nowFloorHourUtc();
         if ($end->greaterThan($nowFloorHourUtc)) {
             return $nowFloorHourUtc;
         }
 
         return $end;
+    }
+
+    private function nowFloorHourUtc(): CarbonImmutable
+    {
+        return CarbonImmutable::now('UTC')->startOfHour();
     }
 }
