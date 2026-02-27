@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d2d970df5d8216d60d58be149bda1392",
+    "content-hash": "9147a1f40a5491cd9cc704fc6f666aa2",
     "packages": [
         {
             "name": "agatanga/flags",
@@ -7980,12 +7980,12 @@
             "version": "v3.15.4",
             "source": {
                 "type": "git",
-                "url": "https://github.com/barryvdh/laravel-debugbar.git",
+                "url": "https://github.com/fruitcake/laravel-debugbar.git",
                 "reference": "c0667ea91f7185f1e074402c5788195e96bf8106"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/barryvdh/laravel-debugbar/zipball/c0667ea91f7185f1e074402c5788195e96bf8106",
+                "url": "https://api.github.com/repos/fruitcake/laravel-debugbar/zipball/c0667ea91f7185f1e074402c5788195e96bf8106",
                 "reference": "c0667ea91f7185f1e074402c5788195e96bf8106",
                 "shasum": ""
             },
@@ -12016,8 +12016,8 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.1"
+        "php": "^8.2"
     },
-    "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "platform-dev": {},
+    "plugin-api-version": "2.6.0"
 }
