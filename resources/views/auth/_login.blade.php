@@ -1,5 +1,5 @@
-<x-layouts.guest-ucp2>
-    <x-auth-card>
+﻿<x-layouts.guest-ucp2>
+    <x-auth.card>
         <x-slot name="logo">
             <a href="/">
                 <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
@@ -57,5 +57,6 @@
 
             </div>
         </form>
-    </x-auth-card>
+    </x-auth.card>
 </x-layouts.guest-ucp2>
+
