@@ -35,6 +35,7 @@ import axios from 'axios'
 import Chart from 'chart.js'
 import { normalizeHourlyTimeseries } from '../../../../utils/timeseries'
 import { aggregateTimeseries, pickResolution } from '../../../js/utils/timeseriesAggregation'
+import { formatChartLabel } from '../../../js/utils/timeseriesDisplay'
 import {
   daysInRangeUtc,
   disableFutureUtc,
@@ -107,6 +108,7 @@ export default {
       return toYmdUtc(date)
     },
 
+    // Method: Convert date to ISO string in UTC
     toIso(date) {
       return toIso8601Utc(date)
     },
@@ -116,28 +118,15 @@ export default {
     },
 
     buildLabel(ts, resolution, isSingleDay) {
-      if (!ts) {
-        return 'Live'
-      }
-
-      const d = new Date(ts)
-      const hh = String(d.getHours()).padStart(2, '0')
-      if (resolution === '1d' || resolution === '1w') {
-        const dd = String(d.getDate()).padStart(2, '0')
-        const mm = String(d.getMonth() + 1).padStart(2, '0')
-        return `${dd}.${mm}`
-      }
-      if (isSingleDay && (resolution === '1h' || resolution === '6h')) {
-        return `${hh}:00`
-      }
-      const dd = String(d.getDate()).padStart(2, '0')
-      const mm = String(d.getMonth() + 1).padStart(2, '0')
-      return `${dd}.${mm} ${hh}:00`
+      return formatChartLabel(ts, resolution, isSingleDay, {
+        displayMode: 'local',
+      })
     },
 
     // Method: Handle date range changes
     async onDateRangeChange(value) {
       const [startRaw, endRaw] = value || this.dateRange || []
+      // Reuse the shared UTC validation before fetching new data
       const normalized = validateAndNormalizeRange(startRaw, endRaw)
       if (!normalized.ok) {
         this.dateError = normalized.error
@@ -152,6 +141,7 @@ export default {
 
     async loadData() {
       const [startRaw, endRaw] = this.dateRange || []
+      // Normalize, validate date range and handle errors
       const normalized = validateAndNormalizeRange(startRaw, endRaw)
       if (!normalized.ok) {
         this.dateError = normalized.error
@@ -163,6 +153,7 @@ export default {
 
       try {
         this.fetchError = ''
+        // Load timeseries data from API with axios
         const res = await axios.get('/api/timeseries', {
           params: {
             chart: 'EquipmentChart',
@@ -170,7 +161,9 @@ export default {
             end: this.toIso(end),
           }
         })
+        // Sort API data by timestamp
         const sorted = (res.data.data ?? []).slice().sort((a, b) => String(a.ts).localeCompare(String(b.ts)))
+        // Normalize data to hourly points and fill gaps with nulls
         const normalized = normalizeHourlyTimeseries(sorted, {
           fill: 'null',
           min: 0,
@@ -194,12 +187,14 @@ export default {
     },
 
     rebuildAggregatedSeries(start, end) {
+      // Aggregate raw series into buckets
       const rangeDays = this.daysInRange(start, end)
       this.seriesResolution = pickResolution(rangeDays)
       const aggregated = aggregateTimeseries(this.rawSeries, { start, end })
         .sort((a, b) => String(a.ts).localeCompare(String(b.ts)))
 
       this.series = aggregated.map((row) => {
+        // Convert one series into enabled/disabled values for the stacked chart
         const enabled = Math.max(0, Math.min(100, Number(row.value) || 0))
         return {
           enabled,
@@ -209,7 +204,9 @@ export default {
       })
     },
 
+    // Method: Inject live data point into series
     injectLiveData() {
+      // Replace the previous live point so only one live value is shown
       this.series = this.series.filter((x) => x.timestamp !== null)
       this.series.push({
         enabled: Math.max(0, Math.min(100, Number(this.liveEnabled) || 0)),
@@ -231,6 +228,7 @@ export default {
       disabledGradient.addColorStop(1, 'rgba(103,112,128,0)')
 
       const isSingleDay = this.toYmd(new Date(this.lastValidRange[0])) === this.toYmd(new Date(this.lastValidRange[1]))
+      // Labels depend on both the selected resolution and whether only one day is shown
       const labels = this.series.map(item => this.buildLabel(item.timestamp, this.seriesResolution, isSingleDay))
 
       const enabled = this.series.map(x => x.enabled);
@@ -238,6 +236,7 @@ export default {
 
       if (this._chart) this._chart.destroy();
 
+      // Render chart with Chart.js
       this._chart = new Chart(ctx, {
         type: 'line',
         data: {

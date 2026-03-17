@@ -35,6 +35,7 @@ import axios from 'axios'
 import Chart from 'chart.js'
 import { normalizeHourlyTimeseries } from '../../../../utils/timeseries'
 import { aggregateTimeseries, pickResolution } from '../../../js/utils/timeseriesAggregation'
+import { formatChartLabel } from '../../../js/utils/timeseriesDisplay'
 import {
   daysInRangeUtc,
   disableFutureUtc,
@@ -115,16 +116,9 @@ export default {
     },
 
     buildLabel(ts, resolution, isSingleDay) {
-      if (!ts) return 'Live'
-
-      const d = new Date(ts)
-      const hh = String(d.getHours()).padStart(2, '0')
-      const dd = String(d.getDate()).padStart(2, '0')
-      const mm = String(d.getMonth() + 1).padStart(2, '0')
-
-      if (resolution === '1d' || resolution === '1w') return `${dd}.${mm}`
-      if (isSingleDay && (resolution === '1h' || resolution === '6h')) return `${hh}:00`
-      return `${dd}.${mm} ${hh}:00`
+      return formatChartLabel(ts, resolution, isSingleDay, {
+        displayMode: 'local',
+      })
     },
 
     // Method: Handle date range changes
