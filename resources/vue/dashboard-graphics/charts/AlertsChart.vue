@@ -53,11 +53,8 @@
 <script>
 import axios from 'axios'
 import Chart from 'chart.js'
-import { normalizeHourlyTimeseries } from '../../../../utils/timeseries'
-import { aggregateTimeseries, pickResolution } from '../../../js/utils/timeseriesAggregation'
 import { formatChartLabel } from '../../../js/utils/timeseriesDisplay'
 import {
-    daysInRangeUtc,
     disableFutureUtc,
     toIso8601Utc,
     toYmdUtc,
@@ -163,16 +160,12 @@ export default {
       end.setHours(23,0,0,0)
         return {
             _chart: null,
-            rawSeries: [],
             series: [],
             seriesResolution: '1h',
             showFilters: false,
 
             // Alerts for UI filters-button
             filterAlerts: ALERT_DEFS,
-
-            fullSeries: [],
-
             // date range
             dateRange: [start, end],
             dateError: '',
@@ -208,10 +201,6 @@ export default {
 
         toIso(date) {
             return toIso8601Utc(date)
-        },
-
-        daysInRange(start, end) {
-            return daysInRangeUtc(start, end)
         },
 
         buildLabel(ts, resolution, isSingleDay) {
@@ -255,45 +244,26 @@ export default {
                         end: this.toIso(end),
                     }
                 })
-                const sorted = (res.data.data ?? []).slice().sort((a, b) => String(a.ts).localeCompare(String(b.ts)))
-                const normalized = normalizeHourlyTimeseries(sorted, {
-                    fill: 'null',
-                    min: 0,
-                    max: 100,
+                this.seriesResolution = res?.data?.meta?.resolution ?? '1h'
+                this.series = ((res.data.data ?? []).slice().sort((a, b) => String(a.ts).localeCompare(String(b.ts)))).map((row) => {
+                    const v = Math.max(0, Math.min(100, Number(row.value) || 0))
+                    const base = { timestamp: row.ts }
+                    for (let i = 0; i < ALERT_DEFS.length; i++) {
+                        const alert = ALERT_DEFS[i]
+                        const factor = 0.55 + (((i * 7) % 10) / 10)
+                        base[alert.key] = Math.max(0, Math.min(100, Math.round(v * factor)))
+                    }
+                    return base
                 })
-
-                this.rawSeries = normalized
-                this.fullSeries = normalized
-                this.rebuildAggregatedSeries(start, end)
                 this.injectLiveData()
                 this.renderChart()
             } catch (e) {
                 console.error('Timeseries fetch failed:', e)
-                this.rawSeries = []
                 this.series = []
-                this.fullSeries = []
                 this.fetchError = e?.response?.status === 422 ? 'Invalid date range' : 'Failed to load data'
                 this.injectLiveData()
                 this.renderChart()
             }
-        },
-
-        rebuildAggregatedSeries(start, end) {
-            const rangeDays = this.daysInRange(start, end)
-            this.seriesResolution = pickResolution(rangeDays)
-            const aggregated = aggregateTimeseries(this.rawSeries, { start, end })
-                .sort((a, b) => String(a.ts).localeCompare(String(b.ts)))
-
-            this.series = aggregated.map((row) => {
-                const v = Math.max(0, Math.min(100, Number(row.value) || 0))
-                const base = { timestamp: row.ts }
-                for (let i = 0; i < ALERT_DEFS.length; i++) {
-                    const alert = ALERT_DEFS[i]
-                    const factor = 0.55 + (((i * 7) % 10) / 10) // 0.55 .. 1.45
-                    base[alert.key] = Math.max(0, Math.min(100, Math.round(v * factor)))
-                }
-                return base
-            })
         },
 
         injectLiveData() {

@@ -9,6 +9,7 @@ class TimeseriesJSONStructureTest extends TestCase {
         $res = $this->getJSON('/api/timeseries?chart=EquipmentChart&start=2026-01-24&end=2026-01-24');
         $res->assertOk();
 
+        // Verify both the metadata block and the data points payload
         $res->assertJSONStructure([
             'meta' => ['chart', 'start', 'end', 'resolution', 'points'],
             'data' => [
@@ -21,6 +22,7 @@ class TimeseriesJSONStructureTest extends TestCase {
 
         $this->assertIsInt($points);
         $this->assertCount($points, $data);
+        $this->assertContains($res->json('meta.resolution'), ['1h', '6h', '1d', '1w']);
     }
 
     public function test_values_are_int(): void {
@@ -28,6 +30,7 @@ class TimeseriesJSONStructureTest extends TestCase {
         $res->assertOk();
 
         foreach ($res->JSON('data') as $point) {
+            // Timestamp must stay in ISO-like format for frontend parsing
             $this->assertIsString($point['ts']);
             $this->assertMatchesRegularExpression(
                 '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/',

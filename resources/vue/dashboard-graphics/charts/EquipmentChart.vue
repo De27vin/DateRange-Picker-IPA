@@ -33,11 +33,8 @@
 <script>
 import axios from 'axios'
 import Chart from 'chart.js'
-import { normalizeHourlyTimeseries } from '../../../../utils/timeseries'
-import { aggregateTimeseries, pickResolution } from '../../../js/utils/timeseriesAggregation'
 import { formatChartLabel } from '../../../js/utils/timeseriesDisplay'
 import {
-  daysInRangeUtc,
   disableFutureUtc,
   toIso8601Utc,
   toYmdUtc,
@@ -67,7 +64,6 @@ export default {
 
     return {
       _chart: null,
-      rawSeries: [],
       series: [],
       seriesResolution: '1h',
 
@@ -76,9 +72,6 @@ export default {
       dateError: '',
       fetchError: '',
       lastValidRange: [new Date(start), new Date(end)],
-
-      // data
-      fullSeries: []
     }
   },
 
@@ -111,10 +104,6 @@ export default {
     // Method: Convert date to ISO string in UTC
     toIso(date) {
       return toIso8601Utc(date)
-    },
-
-    daysInRange(start, end) {
-      return daysInRangeUtc(start, end)
     },
 
     buildLabel(ts, resolution, isSingleDay) {
@@ -161,47 +150,24 @@ export default {
             end: this.toIso(end),
           }
         })
-        // Sort API data by timestamp
-        const sorted = (res.data.data ?? []).slice().sort((a, b) => String(a.ts).localeCompare(String(b.ts)))
-        // Normalize data to hourly points and fill gaps with nulls
-        const normalized = normalizeHourlyTimeseries(sorted, {
-          fill: 'null',
-          min: 0,
-          max: 100,
+        this.seriesResolution = res?.data?.meta?.resolution ?? '1h'
+        this.series = ((res.data.data ?? []).slice().sort((a, b) => String(a.ts).localeCompare(String(b.ts)))).map((row) => {
+          const enabled = Math.max(0, Math.min(100, Number(row.value) || 0))
+          return {
+            enabled,
+            disabled: 100 - enabled,
+            timestamp: row.ts,
+          }
         })
-
-        this.rawSeries = normalized
-        this.fullSeries = normalized
-        this.rebuildAggregatedSeries(start, end)
         this.injectLiveData()
         this.renderChart()
       } catch (e) {
         console.error('Timeseries fetch failed:', e)
-        this.rawSeries = []
         this.series = []
-        this.fullSeries = []
         this.fetchError = e?.response?.status === 422 ? 'Invalid date range' : 'Failed to load data'
         this.injectLiveData()
         this.renderChart()
       }
-    },
-
-    rebuildAggregatedSeries(start, end) {
-      // Aggregate raw series into buckets
-      const rangeDays = this.daysInRange(start, end)
-      this.seriesResolution = pickResolution(rangeDays)
-      const aggregated = aggregateTimeseries(this.rawSeries, { start, end })
-        .sort((a, b) => String(a.ts).localeCompare(String(b.ts)))
-
-      this.series = aggregated.map((row) => {
-        // Convert one series into enabled/disabled values for the stacked chart
-        const enabled = Math.max(0, Math.min(100, Number(row.value) || 0))
-        return {
-          enabled,
-          disabled: 100 - enabled,
-          timestamp: row.ts,
-        }
-      })
     },
 
     // Method: Inject live data point into series

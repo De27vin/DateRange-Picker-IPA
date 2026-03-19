@@ -3,6 +3,7 @@
 namespace Tests\Integration;
 
 use App\Services\DummyTimeseriesGenerator;
+use App\Services\TimeseriesDataService;
 use Carbon\CarbonImmutable;
 use Tests\TestCase;
 
@@ -27,6 +28,8 @@ class TimeSeriesControllerIntegrationTest extends TestCase {
             }
         };
 
+        // Bind the fake generator into the container so the controller uses it
+        $this->app->forgetInstance(TimeseriesDataService::class);
         $this->app->instance(DummyTimeseriesGenerator::class, $fake);
 
         $res = $this->getJson('/api/timeseries?chart=EquipmentChart&start=2026-01-24&end=2026-01-24');
@@ -52,6 +55,7 @@ class TimeSeriesControllerIntegrationTest extends TestCase {
             public ?CarbonImmutable $endDay = null;
 
             public function generate(string $chart, CarbonImmutable $startDay, CarbonImmutable $endDayInclusive): array {
+                // Capture the normalized values passed in by the controller
                 $this->startDay = $startDay;
                 $this->endDay = $endDayInclusive;
 
@@ -59,6 +63,7 @@ class TimeSeriesControllerIntegrationTest extends TestCase {
             }
         };
 
+        $this->app->forgetInstance(TimeseriesDataService::class);
         $this->app->instance(DummyTimeseriesGenerator::class, $fake);
 
         $res = $this->getJson('/api/timeseries?chart=AlarmChart&start=2026-02-01&end=2026-02-03');
@@ -79,11 +84,13 @@ class TimeSeriesControllerIntegrationTest extends TestCase {
             public int $calls = 0;
 
             public function generate(string $chart, CarbonImmutable $startDay, CarbonImmutable $endDayInclusive): array {
+                // If validation works, this code path must never run
                 $this->calls++;
                 return [];
             }
         };
 
+        $this->app->forgetInstance(TimeseriesDataService::class);
         $this->app->instance(DummyTimeseriesGenerator::class, $fake);
 
         $res = $this->getJson('/api/timeseries?chart=InvalidChart&start=2026-01-24&end=2026-01-24');

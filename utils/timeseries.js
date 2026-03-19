@@ -15,6 +15,7 @@ export function normalizeHourlyTimeseries(input, options = {}) {
     const d = new Date(row.ts);
     if (Number.isNaN(d.getTime())) continue;
 
+    // Normalize every point to the beginning of its UTC hour
     d.setUTCMinutes(0, 0, 0);
     const hourKey = d.toISOString();
 
@@ -45,6 +46,7 @@ export function normalizeHourlyTimeseries(input, options = {}) {
       out.push({ ts: key, value });
       lastValue = value;
     } else {
+      // Fill missing buckets depending on the selected strategy
       let value = null;
       if (fill === "zero") value = 0;
       if (fill === "forward-fill") value = lastValue;

@@ -13,11 +13,12 @@ class TimeseriesTest extends TestCase {
             ->assertJsonCount(24, 'data');
     }
 
-    public function test_valid_request_returns_96_points_for_4_days_inclusive(): void {
+    public function test_valid_request_returns_16_points_for_4_days_inclusive(): void {
         $res = $this->getJson('/api/timeseries?chart=EquipmentChart&start=2026-01-24&end=2026-01-27');
         $res->assertOk()
-            ->assertJsonPath('meta.points', 96)
-            ->assertJsonCount(96, 'data');
+            ->assertJsonPath('meta.resolution', '6h')
+            ->assertJsonPath('meta.points', 16)
+            ->assertJsonCount(16, 'data');
     }
 
     public function test_values_are_int_between_0_and_100(): void {
@@ -25,6 +26,7 @@ class TimeseriesTest extends TestCase {
         $res->assertOk();
 
         $data = $res->json('data');
+        // Every dummy datapoint is expected to stay inside the chart range
         foreach ($data as $point) {
             $this->assertIsInt($point['value']);
             $this->assertGreaterThanOrEqual(0, $point['value']);
@@ -32,6 +34,7 @@ class TimeseriesTest extends TestCase {
         }
     }
 
+    // General tests for request validation, not specific
     public function test_invalid_chart_is_422(): void {
         $res = $this->getJson('/api/timeseries?chart=NonexistantChart&start=2026-01-24&end=2026-01-24');
         $res->assertStatus(422);

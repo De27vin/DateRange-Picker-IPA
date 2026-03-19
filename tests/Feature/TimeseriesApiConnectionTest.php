@@ -8,11 +8,13 @@ class TimeseriesApiConnectionTest extends TestCase {
     public function test_all_supported_charts_are_accepted(): void {
         $charts = ['EquipmentChart', 'AlarmChart', 'AlertsChart', 'ServiceLevelChart'];
 
+        // All configured chart names should use the same endpoint successfully
         foreach ($charts as $chart) {
             $res = $this->getJson("/api/timeseries?chart={$chart}&start=2026-01-24&end=2026-01-24");
 
             $res->assertOk()
                 ->assertJsonPath('meta.chart', $chart)
+                ->assertJsonPath('meta.resolution', '1h')
                 ->assertJsonPath('meta.points', 24)
                 ->assertJsonCount(24, 'data');
         }
@@ -23,6 +25,7 @@ class TimeseriesApiConnectionTest extends TestCase {
         $res->assertOk();
 
         $points = $res->json('data');
+        // Compare original order against a separately sorted copy
         $timestamps = array_column($points, 'ts');
         $sorted = $timestamps;
         sort($sorted);
@@ -45,8 +48,8 @@ class TimeseriesApiConnectionTest extends TestCase {
         $res = $this->getJson('/api/timeseries?chart=EquipmentChart&start=2025-01-01&end=2025-12-31');
 
         $res->assertOk()
-            ->assertJsonPath('meta.points', 365 * 24)
-            ->assertJsonCount(365 * 24, 'data');
+            ->assertJsonPath('meta.resolution', '1w')
+            ->assertJsonPath('meta.points', 53)
+            ->assertJsonCount(53, 'data');
     }
 }
-
