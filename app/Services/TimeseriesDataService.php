@@ -7,7 +7,7 @@ use Carbon\CarbonImmutable;
 class TimeseriesDataService
 {
     public function __construct(
-        private readonly DummyTimeseriesGenerator $generator,
+        private readonly DatabaseTimeseriesLoader $loader,
         private readonly TimeseriesResolutionService $resolutionService,
         private readonly TimeseriesAggregatorService $aggregatorService,
     ) {
@@ -18,7 +18,7 @@ class TimeseriesDataService
      */
     public function fetch(string $chart, CarbonImmutable $startUtc, CarbonImmutable $endUtc): array
     {
-        $rawData = $this->generator->generate($chart, $startUtc->startOfDay(), $endUtc->startOfDay());
+        $rawData = $this->loader->load($chart, $startUtc, $endUtc);
         $resolution = $this->resolutionService->forRange($startUtc, $endUtc);
         $data = $this->aggregatorService->aggregate($rawData, $startUtc, $endUtc, $resolution);
 

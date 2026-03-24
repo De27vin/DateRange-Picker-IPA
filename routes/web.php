@@ -170,11 +170,6 @@ if (env('EXTERNAL_LINK_URL') && $json = json_decode(env('EXTERNAL_LINK_URL'), tr
 }
 
 
-Route::get('/api/timeseries', [App\Http\Controllers\TimeSeriesController::class, 'fetch'])
-    ->middleware(\App\Http\Middleware\RequestContextLoggingMiddleware::class)
-    ->name('api.timeseries');
-
-
 // todo: before generating ask Ben about the correct modules mapping and account id
 //Route::get('import_basf_devices', function () {
 //    try {

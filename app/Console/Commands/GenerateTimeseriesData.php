@@ -2,71 +2,103 @@
 
 namespace App\Console\Commands;
 
+use App\Models\TimeseriesPoint;
+use App\Services\RealisticTimeseriesGenerator;
+use Carbon\CarbonImmutable;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class GenerateTimeseriesData extends Command
 {
-    protected $signature = 'timeseries:generate {hours=48}';
-    protected $description = 'Generate randomized time-series snapshots for testing';
+    protected $signature = 'timeseries:generate
+        {--start= : UTC start timestamp, default is now minus one year at the start of the hour}
+        {--end= : UTC end timestamp, default is now at the start of the hour}
+        {--chart=* : Limit generation to one or more supported chart names}
+        {--truncate : Delete existing timeseries rows before generating}';
+    protected $description = 'Generate one year of realistic hourly UTC time-series test data in the database';
 
-    public function handle()
+    public function __construct(
+        private readonly RealisticTimeseriesGenerator $generator,
+    ) {
+        parent::__construct();
+    }
+
+    public function handle(): int
     {
-        $hours = (int) $this->argument('hours');
-
-        for ($i = $hours; $i >= 0; $i--) {
-
-            $timestamp = now()->subHours($i)->startOfHour()->toDateTimeString();
-
-            $data = [
-                'enabled' => rand(30, 120),
-                'disabled' => rand(0, 30),
-
-                'inbound_calls' => rand(0, 50),
-                'active_alarms' => rand(0, 100),
-
-                'periodic_checks' => rand(0, 100),
-                'local_checks' => rand(0, 100),
-
-                'Active_alarm' => rand(0, 50),
-                'Battery_malfunction' => rand(0, 50),
-                'Battery_low' => rand(0, 50),
-                'Button_malfunction' => rand(0, 50),
-                'Charge_malfunction' => rand(0, 50),
-                'Database_malfunction' => rand(0, 50),
-                'Disk_low' => rand(0, 50),
-                'Object_door_failure' => rand(0, 50),
-                'Elevator_failure' => rand(0, 50),
-                'Gateway_malfunction' => rand(0, 50),
-                'Identity_mismatch' => rand(0, 50),
-                'Object_is_not_level' => rand(0, 50),
-                'Light_malfunction' => rand(0, 50),
-                'Line_alarm' => rand(0, 50),
-                'Location_alarm' => rand(0, 50),
-                'Object_is_under_maintenance' => rand(0, 50),
-                'Microphone_malfunction' => rand(0, 50),
-                'Network_malfunction' => rand(0, 50),
-                'Periodical_call_overdue' => rand(0, 50),
-                'PIN_mismatch' => rand(0, 50),
-                'Power_malfunction' => rand(0, 50),
-                'RAM_low' => rand(0, 50),
-                'Reserved_device' => rand(0, 50),
-                'Serial_port_malfunction' => rand(0, 50),
-                'Shaft_failure' => rand(0, 50),
-                'Low_signal' => rand(0, 50),
-                'SIP_registration_failure' => rand(0, 50),
-                'Speaker_malfunction' => rand(0, 50),
-                'Technician_check_overdue' => rand(0, 50),
-                'Voice_alarm' => rand(0, 50),
-            ];
-
-            DB::table('timeseries')->updateOrInsert(
-                ['ts_timestamp' => $timestamp],
-                ['ts_data' => json_encode($data, JSON_UNESCAPED_UNICODE)]
-            );
+        try {
+            $startUtc = $this->resolveStartUtc();
+            $endUtc = $this->resolveEndUtc();
+            $charts = $this->resolveCharts();
+        } catch (\Throwable $e) {
+            $this->error($e->getMessage());
+            return self::FAILURE;
         }
 
-        $this->info("Generated snapshots for the last {$hours} hours.");
-        return 0;
+        if ($endUtc->lt($startUtc)) {
+            $this->error('The end option must be after or equal to start.');
+            return self::FAILURE;
+        }
+
+        if ($this->option('truncate')) {
+            TimeseriesPoint::query()->delete();
+            $this->info('Deleted existing timeseries data.');
+        }
+
+        foreach ($charts as $chart) {
+            foreach (array_chunk($this->generator->generate($chart, $startUtc, $endUtc), 500) as $chunk) {
+                TimeseriesPoint::query()->upsert($chunk, ['chart', 'ts_utc'], ['value', 'updated_at']);
+            }
+
+            $this->line(sprintf(
+                '%s: %d hourly points generated from %s to %s',
+                $chart,
+                $endUtc->diffInHours($startUtc) + 1,
+                $startUtc->toIso8601String(),
+                $endUtc->toIso8601String()
+            ));
+        }
+
+        $this->info('Timeseries generation completed.');
+
+        return self::SUCCESS;
+    }
+
+    private function resolveStartUtc(): CarbonImmutable
+    {
+        $start = $this->option('start');
+        if (is_string($start) && $start !== '') {
+            return CarbonImmutable::parse($start, 'UTC')->utc()->startOfHour();
+        }
+
+        return CarbonImmutable::now('UTC')->subYear()->startOfHour();
+    }
+
+    private function resolveEndUtc(): CarbonImmutable
+    {
+        $end = $this->option('end');
+        if (is_string($end) && $end !== '') {
+            return CarbonImmutable::parse($end, 'UTC')->utc()->startOfHour();
+        }
+
+        return CarbonImmutable::now('UTC')->startOfHour();
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function resolveCharts(): array
+    {
+        $charts = array_values(array_filter($this->option('chart'), static fn (mixed $chart): bool => is_string($chart) && $chart !== ''));
+        if ($charts === []) {
+            return $this->generator->supportedCharts();
+        }
+
+        $supported = $this->generator->supportedCharts();
+        $invalid = array_values(array_diff($charts, $supported));
+
+        if ($invalid !== []) {
+            throw new \InvalidArgumentException('Unsupported chart option(s): ' . implode(', ', $invalid));
+        }
+
+        return $charts;
     }
 }
