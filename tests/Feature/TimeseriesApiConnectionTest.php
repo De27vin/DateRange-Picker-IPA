@@ -2,13 +2,25 @@
 
 namespace Tests\Feature;
 
+use Tests\SeedsTimeseriesPoints;
 use Tests\TestCase;
 
 class TimeseriesApiConnectionTest extends TestCase {
+    use SeedsTimeseriesPoints;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->resetTimeseriesPointsTable();
+        foreach (['EquipmentChart', 'AlarmChart', 'AlertsChart', 'ServiceLevelChart'] as $chart) {
+            $this->seedHourlyChartData($chart, '2025-01-01T00:00:00Z', '2026-12-31T23:00:00Z');
+        }
+    }
+
     public function test_all_supported_charts_are_accepted(): void {
         $charts = ['EquipmentChart', 'AlarmChart', 'AlertsChart', 'ServiceLevelChart'];
 
-        // All configured chart names should use the same endpoint successfully
         foreach ($charts as $chart) {
             $res = $this->getJson("/api/timeseries?chart={$chart}&start=2026-01-24&end=2026-01-24");
 
@@ -25,7 +37,6 @@ class TimeseriesApiConnectionTest extends TestCase {
         $res->assertOk();
 
         $points = $res->json('data');
-        // Compare original order against a separately sorted copy
         $timestamps = array_column($points, 'ts');
         $sorted = $timestamps;
         sort($sorted);
@@ -34,7 +45,6 @@ class TimeseriesApiConnectionTest extends TestCase {
     }
 
     public function test_range_over_365_days_returns_422(): void {
-        // 366 inclusive days
         $res = $this->getJson('/api/timeseries?chart=EquipmentChart&start=2025-01-01&end=2026-01-01');
 
         $res->assertStatus(422)

@@ -3,10 +3,21 @@
 namespace Tests\Feature;
 
 use Carbon\CarbonImmutable;
+use Tests\SeedsTimeseriesPoints;
 use Tests\TestCase;
 
 class TimeseriesValidationTest extends TestCase
 {
+    use SeedsTimeseriesPoints;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->resetTimeseriesPointsTable();
+        $this->seedHourlyChartData('EquipmentChart', '2025-01-01T00:00:00Z', '2026-12-31T23:00:00Z');
+    }
+
     protected function tearDown(): void
     {
         CarbonImmutable::setTestNow();

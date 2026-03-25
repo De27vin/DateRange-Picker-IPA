@@ -2,24 +2,24 @@
 
 namespace Tests\Integration;
 
-use App\Services\DummyTimeseriesGenerator;
+use App\Services\DatabaseTimeseriesLoader;
 use App\Services\TimeseriesDataService;
 use Carbon\CarbonImmutable;
 use Tests\TestCase;
 
 class TimeSeriesControllerIntegrationTest extends TestCase {
-    public function test_it_uses_container_bound_generator_and_returns_its_payload(): void {
-        $fake = new class extends DummyTimeseriesGenerator {
+    public function test_it_uses_container_bound_loader_and_returns_its_payload(): void {
+        $fake = new class extends DatabaseTimeseriesLoader {
             public int $calls = 0;
             public ?string $chart = null;
-            public ?CarbonImmutable $startDay = null;
-            public ?CarbonImmutable $endDay = null;
+            public ?CarbonImmutable $startUtc = null;
+            public ?CarbonImmutable $endUtc = null;
 
-            public function generate(string $chart, CarbonImmutable $startDay, CarbonImmutable $endDayInclusive): array {
+            public function load(string $chart, CarbonImmutable $startUtc, CarbonImmutable $endUtc): array {
                 $this->calls++;
                 $this->chart = $chart;
-                $this->startDay = $startDay;
-                $this->endDay = $endDayInclusive;
+                $this->startUtc = $startUtc;
+                $this->endUtc = $endUtc;
 
                 return [
                     ['ts' => '2026-01-24T00:00:00+00:00', 'value' => 7],
@@ -28,9 +28,8 @@ class TimeSeriesControllerIntegrationTest extends TestCase {
             }
         };
 
-        // Bind the fake generator into the container so the controller uses it
         $this->app->forgetInstance(TimeseriesDataService::class);
-        $this->app->instance(DummyTimeseriesGenerator::class, $fake);
+        $this->app->instance(DatabaseTimeseriesLoader::class, $fake);
 
         $res = $this->getJson('/api/timeseries?chart=EquipmentChart&start=2026-01-24&end=2026-01-24');
 
@@ -45,26 +44,25 @@ class TimeSeriesControllerIntegrationTest extends TestCase {
 
         $this->assertSame(1, $fake->calls);
         $this->assertSame('EquipmentChart', $fake->chart);
-        $this->assertSame('2026-01-24 00:00:00', $fake->startDay?->toDateTimeString());
-        $this->assertSame('2026-01-24 00:00:00', $fake->endDay?->toDateTimeString());
+        $this->assertSame('2026-01-24 00:00:00', $fake->startUtc?->toDateTimeString());
+        $this->assertSame('2026-01-24 23:00:00', $fake->endUtc?->toDateTimeString());
     }
 
-    public function test_it_normalizes_start_and_end_dates_to_start_of_day_before_generation(): void {
-        $fake = new class extends DummyTimeseriesGenerator {
-            public ?CarbonImmutable $startDay = null;
-            public ?CarbonImmutable $endDay = null;
+    public function test_it_passes_hour_normalized_utc_range_to_loader(): void {
+        $fake = new class extends DatabaseTimeseriesLoader {
+            public ?CarbonImmutable $startUtc = null;
+            public ?CarbonImmutable $endUtc = null;
 
-            public function generate(string $chart, CarbonImmutable $startDay, CarbonImmutable $endDayInclusive): array {
-                // Capture the normalized values passed in by the controller
-                $this->startDay = $startDay;
-                $this->endDay = $endDayInclusive;
+            public function load(string $chart, CarbonImmutable $startUtc, CarbonImmutable $endUtc): array {
+                $this->startUtc = $startUtc;
+                $this->endUtc = $endUtc;
 
                 return [];
             }
         };
 
         $this->app->forgetInstance(TimeseriesDataService::class);
-        $this->app->instance(DummyTimeseriesGenerator::class, $fake);
+        $this->app->instance(DatabaseTimeseriesLoader::class, $fake);
 
         $res = $this->getJson('/api/timeseries?chart=AlarmChart&start=2026-02-01&end=2026-02-03');
 
@@ -73,25 +71,24 @@ class TimeSeriesControllerIntegrationTest extends TestCase {
             ->assertJsonPath('meta.end', '2026-02-03T23:00:00+00:00')
             ->assertJsonPath('meta.points', 0);
 
-        $this->assertSame(0, $fake->startDay?->hour);
-        $this->assertSame(0, $fake->startDay?->minute);
-        $this->assertSame(0, $fake->endDay?->hour);
-        $this->assertSame(0, $fake->endDay?->minute);
+        $this->assertSame(0, $fake->startUtc?->hour);
+        $this->assertSame(0, $fake->startUtc?->minute);
+        $this->assertSame(23, $fake->endUtc?->hour);
+        $this->assertSame(0, $fake->endUtc?->minute);
     }
 
-    public function test_validation_failure_prevents_generator_execution(): void {
-        $fake = new class extends DummyTimeseriesGenerator {
+    public function test_validation_failure_prevents_loader_execution(): void {
+        $fake = new class extends DatabaseTimeseriesLoader {
             public int $calls = 0;
 
-            public function generate(string $chart, CarbonImmutable $startDay, CarbonImmutable $endDayInclusive): array {
-                // If validation works, this code path must never run
+            public function load(string $chart, CarbonImmutable $startUtc, CarbonImmutable $endUtc): array {
                 $this->calls++;
                 return [];
             }
         };
 
         $this->app->forgetInstance(TimeseriesDataService::class);
-        $this->app->instance(DummyTimeseriesGenerator::class, $fake);
+        $this->app->instance(DatabaseTimeseriesLoader::class, $fake);
 
         $res = $this->getJson('/api/timeseries?chart=InvalidChart&start=2026-01-24&end=2026-01-24');
 

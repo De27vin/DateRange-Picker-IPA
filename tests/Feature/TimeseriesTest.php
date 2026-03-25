@@ -2,9 +2,19 @@
 
 namespace Tests\Feature;
 
+use Tests\SeedsTimeseriesPoints;
 use Tests\TestCase;
 
 class TimeseriesTest extends TestCase {
+    use SeedsTimeseriesPoints;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->resetTimeseriesPointsTable();
+        $this->seedHourlyChartData('EquipmentChart', '2025-01-01T00:00:00Z', '2026-12-31T23:00:00Z');
+    }
     
     public function test_valid_request_returns_24_points_for_single_day(): void {
         $res = $this->getJson('/api/timeseries?chart=EquipmentChart&start=2026-01-24&end=2026-01-24');
@@ -26,7 +36,6 @@ class TimeseriesTest extends TestCase {
         $res->assertOk();
 
         $data = $res->json('data');
-        // Every dummy datapoint is expected to stay inside the chart range
         foreach ($data as $point) {
             $this->assertIsInt($point['value']);
             $this->assertGreaterThanOrEqual(0, $point['value']);

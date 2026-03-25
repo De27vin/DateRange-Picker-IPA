@@ -2,9 +2,21 @@
 
 namespace Tests\Feature;
 
+use Tests\SeedsTimeseriesPoints;
 use Tests\TestCase;
 
 class TimeseriesJSONStructureTest extends TestCase {
+    use SeedsTimeseriesPoints;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->resetTimeseriesPointsTable();
+        $this->seedHourlyChartData('EquipmentChart', '2026-01-24T00:00:00Z', '2026-01-24T23:00:00Z');
+        $this->seedHourlyChartData('AlarmChart', '2026-01-24T00:00:00Z', '2026-01-24T23:00:00Z');
+    }
+
     public function test_response_has_expected_json_structure(): void {
         $res = $this->getJSON('/api/timeseries?chart=EquipmentChart&start=2026-01-24&end=2026-01-24');
         $res->assertOk();
@@ -30,7 +42,6 @@ class TimeseriesJSONStructureTest extends TestCase {
         $res->assertOk();
 
         foreach ($res->JSON('data') as $point) {
-            // Timestamp must stay in ISO-like format for frontend parsing
             $this->assertIsString($point['ts']);
             $this->assertMatchesRegularExpression(
                 '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/',
