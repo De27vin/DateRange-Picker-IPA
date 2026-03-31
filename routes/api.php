@@ -1,6 +1,10 @@
 <?php
 
+use App\Http\Middleware\EncryptCookies;
+use App\Http\Middleware\SetupAccountDataForSession;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Http\Request;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BasfController;
 use App\Http\Controllers\TimeSeriesController;
@@ -24,4 +28,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/timeseries', [TimeSeriesController::class, 'fetch'])->name('api.timeseries');
+Route::middleware([
+    EncryptCookies::class,
+    AddQueuedCookiesToResponse::class,
+    StartSession::class,
+    SetupAccountDataForSession::class,
+])->get('/timeseries', [TimeSeriesController::class, 'fetch'])->name('api.timeseries');
