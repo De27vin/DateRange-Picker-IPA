@@ -7,8 +7,8 @@ use Carbon\CarbonImmutable;
 class TimeseriesAggregatorService
 {
     /**
-     * @param array<int, array{ts?: string, timestamp?: string, value?: int|float|string|null, enabled?: int|float|string|null}> $points
-     * @return array<int, array{ts: string, value: int}>
+     * @param array<int, array{ts?: string, timestamp?: string, series?: array<string, int|float|string|null>}> $points
+     * @return array<int, array{ts: string, series: array<string, int>}>
      */
     public function aggregate(array $points, CarbonImmutable $startUtc, CarbonImmutable $endUtc, string $resolution): array
     {
@@ -36,27 +36,35 @@ class TimeseriesAggregatorService
 
             $bucketStart = $this->bucketStartUtc($ts, $resolution);
             $key = $bucketStart->toIso8601String();
-            $value = $this->clamp0To100($point['value'] ?? $point['enabled'] ?? null);
+            $series = $this->normalizeSeries($point['series'] ?? null);
 
             if (!isset($map[$key])) {
                 $map[$key] = [
                     'ts' => $key,
-                    'sum' => $value,
+                    'sum' => [],
                     'count' => 1,
                 ];
-                continue;
+            } else {
+                $map[$key]['count']++;
             }
 
-            $map[$key]['sum'] += $value;
-            $map[$key]['count']++;
+            $seriesKeys = array_unique(array_merge(array_keys($map[$key]['sum']), array_keys($series)));
+            foreach ($seriesKeys as $seriesKey) {
+                $map[$key]['sum'][$seriesKey] = ($map[$key]['sum'][$seriesKey] ?? 0) + ($series[$seriesKey] ?? 0);
+            }
         }
 
         ksort($map);
 
-        return array_map(static function (array $entry): array {
+        return array_map(function (array $entry): array {
+            $aggregatedSeries = [];
+            foreach ($entry['sum'] as $seriesKey => $sum) {
+                $aggregatedSeries[$seriesKey] = (int) round($sum / $entry['count']);
+            }
+
             return [
                 'ts' => $entry['ts'],
-                'value' => (int) round($entry['sum'] / $entry['count']),
+                'series' => $aggregatedSeries,
             ];
         }, array_values($map));
     }
@@ -94,5 +102,29 @@ class TimeseriesAggregatorService
         }
 
         return max(0, min(100, (int) round((float) $value)));
+    }
+
+    /**
+     * @param mixed $series
+     * @return array<string, int>
+     */
+    private function normalizeSeries(mixed $series): array
+    {
+        if (!is_array($series)) {
+            return [];
+        }
+
+        $normalized = [];
+        foreach ($series as $key => $value) {
+            if (!is_string($key) || $key === '') {
+                continue;
+            }
+
+            $normalized[$key] = $this->clamp0To100($value);
+        }
+
+        ksort($normalized);
+
+        return $normalized;
     }
 }

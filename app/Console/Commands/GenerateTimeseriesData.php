@@ -2,7 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Models\TimeseriesPoint;
+use App\Models\Account;
+use App\Models\TimeseriesSnapshot;
 use App\Services\RealisticTimeseriesGenerator;
 use Carbon\CarbonImmutable;
 use Illuminate\Console\Command;
@@ -12,9 +13,9 @@ class GenerateTimeseriesData extends Command
     protected $signature = 'timeseries:generate
         {--start= : UTC start timestamp, default is now minus one year at the start of the hour}
         {--end= : UTC end timestamp, default is now at the start of the hour}
-        {--chart=* : Limit generation to one or more supported chart names}
-        {--truncate : Delete existing timeseries rows before generating}';
-    protected $description = 'Generate one year of realistic hourly UTC time-series test data in the database';
+        {--account=* : Limit generation to one or more account ids}
+        {--truncate : Delete existing snapshot rows before generating}';
+    protected $description = 'Generate one year of realistic hourly UTC snapshot data in the database';
 
     public function __construct(
         private readonly RealisticTimeseriesGenerator $generator,
@@ -27,7 +28,7 @@ class GenerateTimeseriesData extends Command
         try {
             $startUtc = $this->resolveStartUtc();
             $endUtc = $this->resolveEndUtc();
-            $charts = $this->resolveCharts();
+            $accountIds = $this->resolveAccountIds();
         } catch (\Throwable $e) {
             $this->error($e->getMessage());
             return self::FAILURE;
@@ -39,18 +40,18 @@ class GenerateTimeseriesData extends Command
         }
 
         if ($this->option('truncate')) {
-            TimeseriesPoint::query()->delete();
-            $this->info('Deleted existing timeseries data.');
+            TimeseriesSnapshot::query()->delete();
+            $this->info('Deleted existing timeseries snapshot data.');
         }
 
-        foreach ($charts as $chart) {
-            foreach (array_chunk($this->generator->generate($chart, $startUtc, $endUtc), 500) as $chunk) {
-                TimeseriesPoint::query()->upsert($chunk, ['chart', 'ts_utc'], ['value', 'updated_at']);
+        foreach ($accountIds as $accountId) {
+            foreach (array_chunk($this->generator->generateForAccount($accountId, $startUtc, $endUtc), 500) as $chunk) {
+                TimeseriesSnapshot::query()->upsert($chunk, ['account_id', 'ts_utc'], ['data', 'updated_at']);
             }
 
             $this->line(sprintf(
-                '%s: %d hourly points generated from %s to %s',
-                $chart,
+                'account %d: %d hourly snapshots generated from %s to %s',
+                $accountId,
                 $endUtc->diffInHours($startUtc) + 1,
                 $startUtc->toIso8601String(),
                 $endUtc->toIso8601String()
@@ -83,22 +84,29 @@ class GenerateTimeseriesData extends Command
     }
 
     /**
-     * @return array<int, string>
+     * @return array<int, int>
      */
-    private function resolveCharts(): array
+    private function resolveAccountIds(): array
     {
-        $charts = array_values(array_filter($this->option('chart'), static fn (mixed $chart): bool => is_string($chart) && $chart !== ''));
-        if ($charts === []) {
-            return $this->generator->supportedCharts();
+        $accounts = array_values(array_filter(
+            array_map(static fn (mixed $accountId): int => (int) $accountId, $this->option('account')),
+            static fn (int $accountId): bool => $accountId > 0
+        ));
+
+        if ($accounts !== []) {
+            return $accounts;
         }
 
-        $supported = $this->generator->supportedCharts();
-        $invalid = array_values(array_diff($charts, $supported));
+        $allAccountIds = Account::query()
+            ->orderBy('account_id')
+            ->pluck('account_id')
+            ->map(static fn (mixed $id): int => (int) $id)
+            ->all();
 
-        if ($invalid !== []) {
-            throw new \InvalidArgumentException('Unsupported chart option(s): ' . implode(', ', $invalid));
+        if ($allAccountIds === []) {
+            throw new \InvalidArgumentException('No accounts found. Use --account=<id> or create an account first.');
         }
 
-        return $charts;
+        return $allAccountIds;
     }
 }

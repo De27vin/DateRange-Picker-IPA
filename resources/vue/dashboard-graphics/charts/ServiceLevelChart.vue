@@ -34,6 +34,7 @@
 import axios from 'axios'
 import Chart from 'chart.js'
 import { formatChartLabel } from '../../../js/utils/timeseriesDisplay'
+import { buildLiveSeriesRow, normalizeSeriesRows } from '../../../js/utils/timeseriesSeries'
 import {
   disableFutureUtc,
   toIso8601Utc,
@@ -42,6 +43,8 @@ import {
 } from '../../../js/utils/timeseriesRangeValidation'
 import DatePicker from 'vue2-datepicker'
 import 'vue2-datepicker/index.css'
+
+const SERVICE_LEVEL_SERIES_KEYS = ['periodical_calls', 'local_checks']
 
 export default {
   name: 'ServiceLevelChart',
@@ -146,14 +149,7 @@ export default {
           }
         })
         this.seriesResolution = res?.data?.meta?.resolution ?? '1h'
-        this.series = ((res.data.data ?? []).slice().sort((a, b) => String(a.ts).localeCompare(String(b.ts)))).map((row) => {
-          const periodic = Math.max(0, Math.min(100, Number(row.value) || 0))
-          return {
-            periodic_checks: periodic,
-            local_checks: 100 - periodic,
-            timestamp: row.ts,
-          }
-        })
+        this.series = normalizeSeriesRows(res?.data?.data, SERVICE_LEVEL_SERIES_KEYS)
         this.injectLiveData()
         this.renderChart()
       } catch (e) {
@@ -167,11 +163,10 @@ export default {
 
     injectLiveData() {
       this.series = this.series.filter((x) => x.timestamp !== null)
-      this.series.push({
-        periodic_checks: Math.max(0, Math.min(100, Number(this.livePeriodic) || 0)),
-        local_checks: Math.max(0, Math.min(100, Number(this.liveLocal) || 0)),
-        timestamp: null
-      })
+      this.series.push(buildLiveSeriesRow({
+        periodical_calls: this.livePeriodic,
+        local_checks: this.liveLocal,
+      }))
     },
 
     renderChart() {
@@ -188,7 +183,7 @@ export default {
       const isSingleDay = this.toYmd(new Date(this.lastValidRange[0])) === this.toYmd(new Date(this.lastValidRange[1]))
       const labels = this.series.map(item => this.buildLabel(item.timestamp, this.seriesResolution, isSingleDay))
 
-      const periodic = this.series.map(x => x.periodic_checks ?? 0)
+      const periodic = this.series.map(x => x.periodical_calls ?? 0)
       const local = this.series.map(x => x.local_checks ?? 0)
 
       if (this._chart) this._chart.destroy()

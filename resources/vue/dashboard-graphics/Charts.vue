@@ -15,7 +15,6 @@
       :live-gateway-malfunction="alertsStats.Gateway_malfunction"
       :live-identity-mismatch="alertsStats.Identity_mismatch"
       :live-line-alarm="alertsStats.Line_alarm"
-      :live-location-alarm="alertsStats.Location_alarm"
       :live-object-is-under-maintenance="alertsStats.Object_is_under_maintenance"
       :live-microphone-malfunction="alertsStats.Microphone_malfunction"
       :live-network-malfunction="alertsStats.Network_malfunction"
@@ -88,7 +87,7 @@ export default {
         Speaker_malfunction: 0,
         Technician_check_overdue: 0,
         Voice_alarm: 0 },
-      serviceStats: (typeof window !== 'undefined' && window.SERVICE_STATS) ? window.SERVICE_STATS : { periodic: 0, local: 0 }
+      serviceStats: (typeof window !== 'undefined' && window.SERVICE_STATS) ? window.SERVICE_STATS : { periodicalCalls: 0, localChecks: 0 }
     };
   },
   mounted() {

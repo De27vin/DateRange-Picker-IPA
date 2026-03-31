@@ -6,78 +6,101 @@ use Carbon\CarbonImmutable;
 
 class RealisticTimeseriesGenerator
 {
-    private const CHART_PROFILES = [
-        'EquipmentChart' => [
-            'baseline' => 78.0,
-            'dailyAmplitude' => 9.0,
-            'weeklyAmplitude' => 6.0,
-            'trendStep' => 2.5,
-            'noise' => 4,
-        ],
-        'AlarmChart' => [
-            'baseline' => 34.0,
-            'dailyAmplitude' => 14.0,
-            'weeklyAmplitude' => 10.0,
-            'trendStep' => 3.5,
-            'noise' => 6,
-        ],
-        'AlertsChart' => [
-            'baseline' => 42.0,
-            'dailyAmplitude' => 11.0,
-            'weeklyAmplitude' => 8.0,
-            'trendStep' => 4.0,
-            'noise' => 7,
-        ],
-        'ServiceLevelChart' => [
-            'baseline' => 88.0,
-            'dailyAmplitude' => 5.0,
-            'weeklyAmplitude' => 4.0,
-            'trendStep' => 2.0,
-            'noise' => 3,
-        ],
-    ];
+    private const DEVICES_PROFILE = ['baseline' => 78.0, 'dailyAmplitude' => 9.0, 'weeklyAmplitude' => 6.0, 'trendStep' => 2.5, 'noise' => 4];
+    private const ALARMS_PROFILE = ['baseline' => 34.0, 'dailyAmplitude' => 14.0, 'weeklyAmplitude' => 10.0, 'trendStep' => 3.5, 'noise' => 6];
+    private const SERVICE_PROFILE = ['baseline' => 88.0, 'dailyAmplitude' => 5.0, 'weeklyAmplitude' => 4.0, 'trendStep' => 2.0, 'noise' => 3];
+
+    public function __construct(
+        private readonly TimeseriesSnapshotChartMapper $chartMapper,
+    ) {
+    }
 
     /**
-     * @return array<int, array{chart: string, ts_utc: string, value: int, created_at: string, updated_at: string}>
+     * @return array<int, array{account_id: int, ts_utc: string, data: string, created_at: string, updated_at: string}>
      */
-    public function generate(string $chart, CarbonImmutable $startUtc, CarbonImmutable $endUtc): array
+    public function generateForAccount(int $accountId, CarbonImmutable $startUtc, CarbonImmutable $endUtc): array
     {
-        $profile = self::CHART_PROFILES[$chart] ?? self::CHART_PROFILES['EquipmentChart'];
-        $points = [];
-        $drift = $this->seededInitialValue($chart);
+        $rows = [];
+        $devicesDrift = $this->seededInitialValue('devices.enabled.' . $accountId);
+        $alarmsDrift = $this->seededInitialValue('alarms.inbound_calls.' . $accountId);
+        $serviceDrift = $this->seededInitialValue('service_level.periodical_calls.' . $accountId);
 
         for ($ts = $startUtc->startOfHour(); $ts->lte($endUtc->startOfHour()); $ts = $ts->addHour()) {
-            $drift = $this->clamp(
-                $drift + mt_rand((int) (-$profile['trendStep'] * 10), (int) ($profile['trendStep'] * 10)) / 10,
-                0,
-                100
-            );
+            $devicesEnabled = $this->metricValue(self::DEVICES_PROFILE, $devicesDrift, $ts);
+            $devicesDrift = $devicesEnabled;
 
-            $hourOfDay = $ts->hour;
-            $dayOfWeek = $ts->dayOfWeekIso;
-            $daily = sin((($hourOfDay / 24) * 2 * M_PI) - M_PI_2) * $profile['dailyAmplitude'];
-            $weekly = sin((($dayOfWeek / 7) * 2 * M_PI) - M_PI_2) * $profile['weeklyAmplitude'];
-            $noise = mt_rand(-$profile['noise'], $profile['noise']);
-            $value = (int) round($this->clamp(($profile['baseline'] * 0.45) + ($drift * 0.35) + $daily + $weekly + $noise, 0, 100));
+            $inboundCalls = $this->metricValue(self::ALARMS_PROFILE, $alarmsDrift, $ts);
+            $alarmsDrift = $inboundCalls;
 
-            $points[] = [
-                'chart' => $chart,
+            $periodicalCalls = $this->metricValue(self::SERVICE_PROFILE, $serviceDrift, $ts);
+            $serviceDrift = $periodicalCalls;
+
+            $snapshot = [
+                'devices' => [
+                    'enabled' => $devicesEnabled,
+                    'disabled' => 100 - $devicesEnabled,
+                ],
+                'alarms' => [
+                    'inbound_calls' => $inboundCalls,
+                    'active_alarms' => 100 - $inboundCalls,
+                ],
+                'alerts' => [
+                    'alert_type' => $this->alertTypeValues($ts, $accountId),
+                ],
+                'service_level' => [
+                    'periodical_calls' => $periodicalCalls,
+                    'local_checks' => 100 - $periodicalCalls,
+                ],
+            ];
+
+            $rows[] = [
+                'account_id' => $accountId,
                 'ts_utc' => $ts->toDateTimeString(),
-                'value' => $value,
+                'data' => json_encode($snapshot, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
                 'created_at' => $ts->toDateTimeString(),
                 'updated_at' => $ts->toDateTimeString(),
             ];
         }
 
-        return $points;
+        return $rows;
     }
 
     /**
-     * @return array<int, string>
+     * @return array<string, int>
      */
-    public function supportedCharts(): array
+    private function alertTypeValues(CarbonImmutable $ts, int $accountId): array
     {
-        return array_keys(self::CHART_PROFILES);
+        $values = [];
+        $hourSeed = $ts->dayOfYear * 24 + $ts->hour;
+
+        foreach ($this->chartMapper->supportedAlertTypes() as $index => $type) {
+            $seed = abs((int) crc32($type . '.' . $accountId));
+            $cycle = (($hourSeed + ($seed % 17)) % 24) / 24;
+            $swing = sin(($cycle * 2 * M_PI) - M_PI_2);
+            $base = ($seed % 7) + ($index % 5);
+            $noise = (($seed + $hourSeed) % 5) - 2;
+
+            $values[$type] = max(0, min(100, (int) round($base + ($swing * (($seed % 9) + 1)) + $noise)));
+        }
+
+        return $values;
+    }
+
+    private function metricValue(array $profile, float $drift, CarbonImmutable $ts): int
+    {
+        $nextDrift = $this->clamp(
+            $drift + mt_rand((int) (-$profile['trendStep'] * 10), (int) ($profile['trendStep'] * 10)) / 10,
+            0,
+            100
+        );
+
+        $hourOfDay = $ts->hour;
+        $dayOfWeek = $ts->dayOfWeekIso;
+        $daily = sin((($hourOfDay / 24) * 2 * M_PI) - M_PI_2) * $profile['dailyAmplitude'];
+        $weekly = sin((($dayOfWeek / 7) * 2 * M_PI) - M_PI_2) * $profile['weeklyAmplitude'];
+        $noise = mt_rand(-$profile['noise'], $profile['noise']);
+
+        return (int) round($this->clamp(($profile['baseline'] * 0.45) + ($nextDrift * 0.35) + $daily + $weekly + $noise, 0, 100));
     }
 
     private function clamp(float $value, int $min, int $max): float
@@ -85,8 +108,8 @@ class RealisticTimeseriesGenerator
         return max($min, min($max, $value));
     }
 
-    private function seededInitialValue(string $chart): float
+    private function seededInitialValue(string $key): float
     {
-        return (float) (abs((int) crc32($chart)) % 101);
+        return (float) (abs((int) crc32($key)) % 101);
     }
 }

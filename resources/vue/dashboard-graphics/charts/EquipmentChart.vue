@@ -34,6 +34,7 @@
 import axios from 'axios'
 import Chart from 'chart.js'
 import { formatChartLabel } from '../../../js/utils/timeseriesDisplay'
+import { buildLiveSeriesRow, normalizeSeriesRows } from '../../../js/utils/timeseriesSeries'
 import {
   disableFutureUtc,
   toIso8601Utc,
@@ -42,6 +43,8 @@ import {
 } from '../../../js/utils/timeseriesRangeValidation'
 import DatePicker from 'vue2-datepicker'
 import 'vue2-datepicker/index.css'
+
+const EQUIPMENT_SERIES_KEYS = ['enabled', 'disabled']
 
 export default {
   name: 'EquipmentChart',
@@ -151,14 +154,7 @@ export default {
           }
         })
         this.seriesResolution = res?.data?.meta?.resolution ?? '1h'
-        this.series = ((res.data.data ?? []).slice().sort((a, b) => String(a.ts).localeCompare(String(b.ts)))).map((row) => {
-          const enabled = Math.max(0, Math.min(100, Number(row.value) || 0))
-          return {
-            enabled,
-            disabled: 100 - enabled,
-            timestamp: row.ts,
-          }
-        })
+        this.series = normalizeSeriesRows(res?.data?.data, EQUIPMENT_SERIES_KEYS)
         this.injectLiveData()
         this.renderChart()
       } catch (e) {
@@ -174,11 +170,10 @@ export default {
     injectLiveData() {
       // Replace the previous live point so only one live value is shown
       this.series = this.series.filter((x) => x.timestamp !== null)
-      this.series.push({
-        enabled: Math.max(0, Math.min(100, Number(this.liveEnabled) || 0)),
-        disabled: Math.max(0, Math.min(100, Number(this.liveDisabled) || 0)),
-        timestamp: null,
-      })
+      this.series.push(buildLiveSeriesRow({
+        enabled: this.liveEnabled,
+        disabled: this.liveDisabled,
+      }))
     },
 
     // line chart rendering

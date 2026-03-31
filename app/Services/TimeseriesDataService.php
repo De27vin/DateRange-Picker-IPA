@@ -14,7 +14,7 @@ class TimeseriesDataService
     }
 
     /**
-     * @return array{resolution: string, data: array<int, array{ts: string, value: int}>}
+     * @return array{resolution: string, data: array<int, array{ts: string, series: array<string, int>}>}
      */
     public function fetch(string $chart, CarbonImmutable $startUtc, CarbonImmutable $endUtc): array
     {

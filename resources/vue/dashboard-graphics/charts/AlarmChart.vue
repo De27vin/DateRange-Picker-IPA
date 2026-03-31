@@ -34,6 +34,7 @@
 import axios from 'axios'
 import Chart from 'chart.js'
 import { formatChartLabel } from '../../../js/utils/timeseriesDisplay'
+import { buildLiveSeriesRow, normalizeSeriesRows } from '../../../js/utils/timeseriesSeries'
 import {
   disableFutureUtc,
   toIso8601Utc,
@@ -42,6 +43,8 @@ import {
 } from '../../../js/utils/timeseriesRangeValidation'
 import DatePicker from 'vue2-datepicker'
 import 'vue2-datepicker/index.css'
+
+const ALARM_SERIES_KEYS = ['inbound_calls', 'active_alarms']
 
 export default {
   name: 'AlarmChart',
@@ -146,14 +149,7 @@ export default {
           }
         })
         this.seriesResolution = res?.data?.meta?.resolution ?? '1h'
-        this.series = ((res.data.data ?? []).slice().sort((a, b) => String(a.ts).localeCompare(String(b.ts)))).map((row) => {
-          const inbound = Math.max(0, Math.min(100, Number(row.value) || 0))
-          return {
-            inbound_calls: inbound,
-            active_alarms: 100 - inbound,
-            timestamp: row.ts,
-          }
-        })
+        this.series = normalizeSeriesRows(res?.data?.data, ALARM_SERIES_KEYS)
         this.injectLiveData()
         this.renderChart()
       } catch (e) {
@@ -167,11 +163,10 @@ export default {
 
     injectLiveData() {
       this.series = this.series.filter((x) => x.timestamp !== null)
-      this.series.push({
-        inbound_calls: Math.max(0, Math.min(100, Number(this.liveInbound) || 0)),
-        active_alarms: Math.max(0, Math.min(100, Number(this.liveActive) || 0)),
-        timestamp: null
-      })
+      this.series.push(buildLiveSeriesRow({
+        inbound_calls: this.liveInbound,
+        active_alarms: this.liveActive,
+      }))
     },
 
     renderChart() {

@@ -1,41 +1,37 @@
 <template>
     <div class="chart-container">
         <div class="top-controls">
-            <!-- Date range picker -->
             <div class="date-picker-wrap">
-                <date-picker 
-                  v-model="dateRange" range 
-                  :clearable="false" 
-                  :editable="false" 
-                  format="DD.MM.YYYY"
-                  value-type="date" 
-                  :disabled-date="disableFuture" 
-                  :append-to-body="false"
-                  range-separator=" - " 
-                  input-class="date-range-input"
-                  popup-class="single-panel-range force-below-popup" 
-                  @change="onDateRangeChange"
+                <date-picker
+                    v-model="dateRange"
+                    range
+                    :clearable="false"
+                    :editable="false"
+                    format="DD.MM.YYYY"
+                    value-type="date"
+                    :disabled-date="disableFuture"
+                    :append-to-body="false"
+                    range-separator=" - "
+                    input-class="date-range-input"
+                    popup-class="single-panel-range force-below-popup"
+                    @change="onDateRangeChange"
                 />
                 <div v-if="dateError" class="date-error">{{ dateError }}</div>
                 <div v-if="fetchError" class="date-error">{{ fetchError }}</div>
             </div>
 
-            <div class="resolution-selector">
-
-            </div>
+            <div class="resolution-selector"></div>
         </div>
 
-        <!-- Filter button -->
         <button class="filter-btn" @click="showFilters = true">
             Filters
         </button>
 
         <canvas ref="chart"></canvas>
 
-        <!-- Filters pop-up -->
         <div v-if="showFilters" class="filter-overlay">
             <div class="filter-modal">
-                <button class="close-btn" @click="showFilters = false">✕</button>
+                <button class="close-btn" @click="showFilters = false">x</button>
 
                 <div class="filter-grid">
                     <div v-for="(alert, i) in filterAlerts" :key="i" class="filter-cell">
@@ -54,6 +50,7 @@
 import axios from 'axios'
 import Chart from 'chart.js'
 import { formatChartLabel } from '../../../js/utils/timeseriesDisplay'
+import { buildLiveSeriesRow, normalizeSeriesRows } from '../../../js/utils/timeseriesSeries'
 import {
     disableFutureUtc,
     toIso8601Utc,
@@ -63,51 +60,47 @@ import {
 import DatePicker from 'vue2-datepicker'
 import 'vue2-datepicker/index.css'
 
-
 const ALERT_DEFS = [
-    { key: 'Active_alarm', label: 'Active alarm', color: '#ff7a18', prop: 'liveActiveAlarm' },
-    { key: 'Battery_malfunction', label: 'Battery malfunction', color: '#e11d48', prop: 'liveBatteryMalfunction' },
-    { key: 'Battery_low', label: 'Battery low', color: '#10b981', prop: 'liveBatteryLow' },
-    { key: 'Button_malfunction', label: 'Button malfunction', color: '#3b82f6', prop: 'liveButtonMalfunction' },
-    { key: 'Charge_malfunction', label: 'Charge malfunction', color: '#8b5cf6', prop: 'liveChargeMalfunction' },
-    { key: 'Database_malfunction', label: 'Database malfunction', color: '#f59e0b', prop: 'liveDatabaseMalfunction' },
-    { key: 'Disk_low', label: 'Disk low', color: '#ef4444', prop: 'liveDiskLow' },
-    { key: 'Object_door_failure', label: 'Object door failure', color: '#22c55e', prop: 'liveObjectDoorFailure' },
-    { key: 'Elevator_failure', label: 'Elevator failure', color: '#3b82f6', prop: 'liveElevatorFailure' },
-    { key: 'Gateway_malfunction', label: 'Gateway malfunction', color: '#8b5cf6', prop: 'liveGatewayMalfunction' },
-    { key: 'Identity_mismatch', label: 'Identity mismatch', color: '#f59e0b', prop: 'liveIdentityMismatch' },
-    { key: 'Line_alarm', label: 'Line alarm', color: '#ef4444', prop: 'liveLineAlarm' },
-    { key: 'Location_alarm', label: 'Location alarm', color: '#22c55e', prop: 'liveLocationAlarm' },
-    { key: 'Object_is_under_maintenance', label: 'Object under maintenance', color: '#3b82f6', prop: 'liveObjectIsUnderMaintenance' },
-    { key: 'Microphone_malfunction', label: 'Microphone malfunction', color: '#8b5cf6', prop: 'liveMicrophoneMalfunction' },
-    { key: 'Network_malfunction', label: 'Network malfunction', color: '#f59e0b', prop: 'liveNetworkMalfunction' },
-    { key: 'Periodical_call_overdue', label: 'Periodical call overdue', color: '#ef4444', prop: 'livePeriodicalCallOverdue' },
-    { key: 'Pin_mismatch', label: 'Pin mismatch', color: '#22c55e', prop: 'livePinMismatch' },
-    { key: 'Power_malfunction', label: 'Power malfunction', color: '#3b82f6', prop: 'livePowerMalfunction' },
-    { key: 'Ram_low', label: 'Ram low', color: '#8b5cf6', prop: 'liveRamLow' },
-    { key: 'Reserved_device', label: 'Reserved device', color: '#f59e0b', prop: 'liveReservedDevice' },
-    { key: 'Serial_port_malfunction', label: 'Serial port malfunction', color: '#ef4444', prop: 'liveSerialPortMalfunction' },
-    { key: 'Shaft_failure', label: 'Shaft failure', color: '#22c55e', prop: 'liveShaftFailure' },
-    { key: 'Low_signal', label: 'Low signal', color: '#3b82f6', prop: 'liveLowSignal' },
-    { key: 'Sip_registration_failure', label: 'Sip registration failure', color: '#8b5cf6', prop: 'liveSipRegistrationFailure' },
-    { key: 'Speaker_malfunction', label: 'Speaker malfunction', color: '#f59e0b', prop: 'liveSpeakerMalfunction' },
-    { key: 'Technician_check_overdue', label: 'Technician check overdue', color: '#ef4444', prop: 'liveTechnicianCheckOverdue' },
-    { key: 'Voice_alarm', label: 'Voice alarm', color: '#22c55e', prop: 'liveVoiceAlarm' },
+    { key: 'active_alarm', label: 'Active alarm' },
+    { key: 'battery_malfunction', label: 'Battery malfunction' },
+    { key: 'battery_low', label: 'Battery low' },
+    { key: 'button_malfunction', label: 'Button malfunction' },
+    { key: 'charge_malfunction', label: 'Charge malfunction' },
+    { key: 'database_malfunction', label: 'Database malfunction' },
+    { key: 'disk_low', label: 'Disk low' },
+    { key: 'object_door_failure', label: 'Object door failure' },
+    { key: 'elevator_failure', label: 'Elevator failure' },
+    { key: 'gateway_malfunction', label: 'Gateway malfunction' },
+    { key: 'identity_mismatch', label: 'Identity mismatch' },
+    { key: 'line_alarm', label: 'Line alarm' },
+    { key: 'object_is_under_maintenance', label: 'Object under maintenance' },
+    { key: 'microphone_malfunction', label: 'Microphone malfunction' },
+    { key: 'network_malfunction', label: 'Network malfunction' },
+    { key: 'periodical_call_overdue', label: 'Periodical call overdue' },
+    { key: 'pin_mismatch', label: 'Pin mismatch' },
+    { key: 'power_malfunction', label: 'Power malfunction' },
+    { key: 'ram_low', label: 'Ram low' },
+    { key: 'reserved_device', label: 'Reserved device' },
+    { key: 'serial_port_malfunction', label: 'Serial port malfunction' },
+    { key: 'shaft_failure', label: 'Shaft failure' },
+    { key: 'low_signal', label: 'Low signal' },
+    { key: 'sip_registration_failure', label: 'SIP registration failure' },
+    { key: 'speaker_malfunction', label: 'Speaker malfunction' },
+    { key: 'technician_check_overdue', label: 'Technician check overdue' },
+    { key: 'voice_alarm', label: 'Voice alarm' },
 ]
 
-// Function: Interpolate between two colors of the Serv24 colour gradient
 function interpolateColor(start, end, factor) {
-    return start.map((s, i) =>
-        Math.round(s + factor * (end[i] - s))
-    )
+    return start.map((s, i) => Math.round(s + factor * (end[i] - s)))
 }
 
-// Function: Generate gradient color between start and end colors
 function gradientColor(index, total) {
-    const start = [23, 44, 81] // Blue
-    const end = [162, 35, 42] // Red
+    const start = [23, 44, 81]
+    const end = [162, 35, 42]
 
-    if (total <= 1) return `rgba(${start.join(',')},1)`
+    if (total <= 1) {
+        return `rgba(${start.join(',')}, 1)`
+    }
 
     const factor = index / (total - 1)
     const [r, g, b] = interpolateColor(start, end, factor)
@@ -132,7 +125,6 @@ export default {
         'live-gateway-malfunction': Number,
         'live-identity-mismatch': Number,
         'live-line-alarm': Number,
-        'live-location-alarm': Number,
         'live-object-is-under-maintenance': Number,
         'live-microphone-malfunction': Number,
         'live-network-malfunction': Number,
@@ -151,28 +143,25 @@ export default {
     },
 
     data() {
-      const today = new Date()
-      const start = new Date(today)
-      start.setDate(today.getDate() - 6)
-      start.setHours(0,0,0,0)
+        const today = new Date()
+        const start = new Date(today)
+        start.setDate(today.getDate() - 6)
+        start.setHours(0, 0, 0, 0)
 
-      const end = new Date(today)
-      end.setHours(23,0,0,0)
+        const end = new Date(today)
+        end.setHours(23, 0, 0, 0)
+
         return {
             _chart: null,
             series: [],
             seriesResolution: '1h',
             showFilters: false,
-
-            // Alerts for UI filters-button
             filterAlerts: ALERT_DEFS,
-            // date range
             dateRange: [start, end],
             dateError: '',
             fetchError: '',
             lastValidRange: [new Date(start), new Date(end)],
-
-            selectedAlerts: []
+            selectedAlerts: [],
         }
     },
 
@@ -189,8 +178,6 @@ export default {
     },
 
     methods: {
-
-        // Method: Disable future dates in date picker
         disableFuture(date) {
             return disableFutureUtc(date)
         },
@@ -209,7 +196,6 @@ export default {
             })
         },
 
-        // Method: Handle date range changes
         async onDateRangeChange(value) {
             const [startRaw, endRaw] = value || this.dateRange || []
             const normalized = validateAndNormalizeRange(startRaw, endRaw)
@@ -244,17 +230,9 @@ export default {
                         end: this.toIso(end),
                     }
                 })
+
                 this.seriesResolution = res?.data?.meta?.resolution ?? '1h'
-                this.series = ((res.data.data ?? []).slice().sort((a, b) => String(a.ts).localeCompare(String(b.ts)))).map((row) => {
-                    const v = Math.max(0, Math.min(100, Number(row.value) || 0))
-                    const base = { timestamp: row.ts }
-                    for (let i = 0; i < ALERT_DEFS.length; i++) {
-                        const alert = ALERT_DEFS[i]
-                        const factor = 0.55 + (((i * 7) % 10) / 10)
-                        base[alert.key] = Math.max(0, Math.min(100, Math.round(v * factor)))
-                    }
-                    return base
-                })
+                this.series = normalizeSeriesRows(res?.data?.data, ALERT_DEFS.map((alert) => alert.key))
                 this.injectLiveData()
                 this.renderChart()
             } catch (e) {
@@ -267,54 +245,51 @@ export default {
         },
 
         injectLiveData() {
-            this.series = this.series.filter(x => x.timestamp !== null)
-            this.series.push({
-                Active_alarm: Number(this.liveActiveAlarm) || 0,
-                Battery_malfunction: Number(this.liveBatteryMalfunction) || 0,
-                Battery_low: Number(this.liveBatteryLow) || 0,
-                Button_malfunction: Number(this.liveButtonMalfunction) || 0,
-                Charge_malfunction: Number(this.liveChargeMalfunction) || 0,
-                Database_malfunction: Number(this.liveDatabaseMalfunction) || 0,
-                Disk_low: Number(this.liveDiskLow) || 0,
-                Object_door_failure: Number(this.liveObjectDoorFailure) || 0,
-                Elevator_failure: Number(this.liveElevatorFailure) || 0,
-                Gateway_malfunction: Number(this.liveGatewayMalfunction) || 0,
-                Identity_mismatch: Number(this.liveIdentityMismatch) || 0,
-                Line_alarm: Number(this.liveLineAlarm) || 0,
-                Location_alarm: Number(this.liveLocationAlarm) || 0,
-                Object_is_under_maintenance: Number(this.liveObjectIsUnderMaintenance) || 0,
-                Microphone_malfunction: Number(this.liveMicrophoneMalfunction) || 0,
-                Network_malfunction: Number(this.liveNetworkMalfunction) || 0,
-                Periodical_call_overdue: Number(this.livePeriodicalCallOverdue) || 0,
-                Pin_mismatch: Number(this.livePinMismatch) || 0,
-                Power_malfunction: Number(this.livePowerMalfunction) || 0,
-                Ram_low: Number(this.liveRamLow) || 0,
-                Reserved_device: Number(this.liveReservedDevice) || 0,
-                Serial_port_malfunction: Number(this.liveSerialPortMalfunction) || 0,
-                Shaft_failure: Number(this.liveShaftFailure) || 0,
-                Low_signal: Number(this.liveLowSignal) || 0,
-                Sip_registration_failure: Number(this.liveSipRegistrationFailure) || 0,
-                Speaker_malfunction: Number(this.liveSpeakerMalfunction) || 0,
-                Technician_check_overdue: Number(this.liveTechnicianCheckOverdue) || 0,
-                Voice_alarm: Number(this.liveVoiceAlarm) || 0,
-                timestamp: null,
-            })
+            this.series = this.series.filter((x) => x.timestamp !== null)
+            this.series.push(buildLiveSeriesRow({
+                active_alarm: this.liveActiveAlarm,
+                battery_malfunction: this.liveBatteryMalfunction,
+                battery_low: this.liveBatteryLow,
+                button_malfunction: this.liveButtonMalfunction,
+                charge_malfunction: this.liveChargeMalfunction,
+                database_malfunction: this.liveDatabaseMalfunction,
+                disk_low: this.liveDiskLow,
+                object_door_failure: this.liveObjectDoorFailure,
+                elevator_failure: this.liveElevatorFailure,
+                gateway_malfunction: this.liveGatewayMalfunction,
+                identity_mismatch: this.liveIdentityMismatch,
+                line_alarm: this.liveLineAlarm,
+                object_is_under_maintenance: this.liveObjectIsUnderMaintenance,
+                microphone_malfunction: this.liveMicrophoneMalfunction,
+                network_malfunction: this.liveNetworkMalfunction,
+                periodical_call_overdue: this.livePeriodicalCallOverdue,
+                pin_mismatch: this.livePinMismatch,
+                power_malfunction: this.livePowerMalfunction,
+                ram_low: this.liveRamLow,
+                reserved_device: this.liveReservedDevice,
+                serial_port_malfunction: this.liveSerialPortMalfunction,
+                shaft_failure: this.liveShaftFailure,
+                low_signal: this.liveLowSignal,
+                sip_registration_failure: this.liveSipRegistrationFailure,
+                speaker_malfunction: this.liveSpeakerMalfunction,
+                technician_check_overdue: this.liveTechnicianCheckOverdue,
+                voice_alarm: this.liveVoiceAlarm,
+            }))
         },
 
-        // Method: Initially select 5 alerts
         initSelectedAlerts() {
-            this.selectedAlerts = ALERT_DEFS.slice(0, 5).map(a => a.key)
+            this.selectedAlerts = ALERT_DEFS.slice(0, 5).map((alert) => alert.key)
         },
 
         renderChart() {
             const data = this.series
-
             const ctx = this.$refs.chart.getContext('2d')
-
-            // Generate labels based on resolved data
             const isSingleDay = this.toYmd(new Date(this.lastValidRange[0])) === this.toYmd(new Date(this.lastValidRange[1]))
-            const labels = data.map(item => {
-                if (item.timestamp === null) return 'Live'
+            const labels = data.map((item) => {
+                if (item.timestamp === null) {
+                    return 'Live'
+                }
+
                 return this.buildLabel(item.timestamp, this.seriesResolution, isSingleDay)
             })
 
@@ -325,21 +300,21 @@ export default {
                 data: {
                     labels,
                     datasets: ALERT_DEFS
-                        .filter(a => this.selectedAlerts.includes(a.key))
-                        .map((a, index, arr) => {
+                        .filter((alert) => this.selectedAlerts.includes(alert.key))
+                        .map((alert, index, arr) => {
                             const color = gradientColor(index, arr.length)
 
                             return {
-                                label: a.label,
-                                data: data.map(x => x[a.key] ?? 0),
+                                label: alert.label,
+                                data: data.map((point) => point[alert.key] ?? 0),
                                 borderColor: color,
                                 pointBackgroundColor: color,
                                 backgroundColor: color.replace(', 1)', ', 0.25)'),
                                 fill: true,
                                 tension: 0,
-                                pointRadius: 4
+                                pointRadius: 4,
                             }
-                        })
+                        }),
                 },
                 options: {
                     responsive: true,
@@ -409,8 +384,6 @@ canvas {
     }
 }
 
-
-/* Filter Button Styles */
 .filter-btn {
     position: absolute;
     top: 4px;
@@ -456,7 +429,7 @@ canvas {
 .close-btn {
     position: absolute;
     top: -6px;
-    right: 0px;
+    right: 0;
     background: transparent;
     border: none;
     color: #cbd5e1;
@@ -482,7 +455,7 @@ canvas {
     align-items: center;
     gap: 8px;
     background: rgba(255, 255, 255, 0.05);
-    padding: 0px 10px;
+    padding: 0 10px;
     border-radius: 6px;
     color: #e5e7eb;
     font-size: 12px;
@@ -496,7 +469,6 @@ canvas {
     border-radius: 4px;
 }
 
-/* Date Picker Styles */
 .top-controls {
     position: absolute;
     top: 12px;
@@ -522,12 +494,10 @@ canvas {
 </style>
 
 <style>
-/* Custom style to show only one calendar panel */
-.single-panel-range .mx-range-wrapper .mx-calendar+.mx-calendar {
+.single-panel-range .mx-range-wrapper .mx-calendar + .mx-calendar {
     display: none;
 }
 
-/* Date range button styling */
 .date-range-input {
     color: #000000 !important;
     font-size: 13px !important;
