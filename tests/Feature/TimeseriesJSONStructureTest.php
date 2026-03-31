@@ -25,7 +25,7 @@ class TimeseriesJSONStructureTest extends TestCase {
         $res->assertJSONStructure([
             'meta' => ['chart', 'start', 'end', 'resolution', 'points'],
             'data' => [
-                '*' => ['ts', 'value'],
+                '*' => ['ts', 'series'],
             ],
         ]);
 
@@ -48,7 +48,10 @@ class TimeseriesJSONStructureTest extends TestCase {
                 $point['ts']
             );
 
-            $this->assertIsInt($point['value']);
+            $this->assertIsArray($point['series']);
+            foreach ($point['series'] as $value) {
+                $this->assertIsInt($value);
+            }
         }
     }
 
@@ -57,9 +60,30 @@ class TimeseriesJSONStructureTest extends TestCase {
         $res->assertOk();
 
         foreach ($res->JSON('data') as $point) {
-            $this->assertGreaterThanOrEqual(0, $point['value']);
-            $this->assertLessThanOrEqual(100, $point['value']);
+            foreach ($point['series'] as $value) {
+                $this->assertGreaterThanOrEqual(0, $value);
+                $this->assertLessThanOrEqual(100, $value);
+            }
         }
+    }
+
+    public function test_alerts_chart_returns_individual_alert_type_series(): void
+    {
+        $this->resetTimeseriesPointsTable();
+        $this->seedHourlyChartData('AlertsChart', '2026-01-24T00:00:00Z', '2026-01-24T23:00:00Z', static function ($ts, $index): array {
+            return [
+                'battery_low' => $index,
+                'network_malfunction' => $index + 1,
+                'low_signal' => $index + 2,
+            ];
+        });
+
+        $res = $this->getJSON('/api/timeseries?chart=AlertsChart&start=2026-01-24&end=2026-01-24');
+        $res->assertOk()
+            ->assertJsonPath('data.0.series.battery_low', 0)
+            ->assertJsonPath('data.0.series.network_malfunction', 1)
+            ->assertJsonPath('data.0.series.low_signal', 2)
+            ->assertJsonPath('data.0.series.active_alarm', 0);
     }
 
     public function test_missing_parameter_returns_422_with_errors(): void {

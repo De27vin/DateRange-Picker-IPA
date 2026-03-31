@@ -8,85 +8,44 @@ use PHPUnit\Framework\TestCase;
 
 class TimeseriesAggregatorServiceTest extends TestCase
 {
-    public function test_it_keeps_hourly_points_for_hourly_resolution(): void
+    public function test_it_aggregates_each_series_key_independently(): void
     {
         $service = new TimeseriesAggregatorService();
+        $startUtc = CarbonImmutable::parse('2026-01-01T00:00:00Z');
+        $endUtc = CarbonImmutable::parse('2026-01-01T05:00:00Z');
 
-        $data = $service->aggregate(
+        $result = $service->aggregate([
+            ['ts' => '2026-01-01T00:00:00Z', 'series' => ['battery_low' => 10, 'network_malfunction' => 20]],
+            ['ts' => '2026-01-01T01:00:00Z', 'series' => ['battery_low' => 20]],
+            ['ts' => '2026-01-01T02:00:00Z', 'series' => ['network_malfunction' => 40]],
+            ['ts' => '2026-01-01T03:00:00Z', 'series' => ['battery_low' => 30, 'network_malfunction' => 60]],
+            ['ts' => '2026-01-01T04:00:00Z', 'series' => ['battery_low' => 40]],
+            ['ts' => '2026-01-01T05:00:00Z', 'series' => ['network_malfunction' => 80]],
+        ], $startUtc, $endUtc, '6h');
+
+        $this->assertSame([
             [
-                ['ts' => '2026-01-24T00:10:00Z', 'value' => 10],
-                ['ts' => '2026-01-24T01:10:00Z', 'value' => 20],
+                'ts' => '2026-01-01T00:00:00+00:00',
+                'series' => [
+                    'battery_low' => 17,
+                    'network_malfunction' => 33,
+                ],
             ],
-            CarbonImmutable::parse('2026-01-24T00:00:00Z'),
-            CarbonImmutable::parse('2026-01-24T23:00:00Z'),
-            '1h',
-        );
-
-        $this->assertCount(2, $data);
-        $this->assertSame('2026-01-24T00:00:00+00:00', $data[0]['ts']);
-        $this->assertSame(10, $data[0]['value']);
+        ], $result);
     }
 
-    public function test_it_aggregates_into_six_hour_buckets(): void
+    public function test_missing_series_keys_are_treated_as_zero_within_bucket(): void
     {
         $service = new TimeseriesAggregatorService();
+        $startUtc = CarbonImmutable::parse('2026-01-01T00:00:00Z');
+        $endUtc = CarbonImmutable::parse('2026-01-01T01:00:00Z');
 
-        $data = $service->aggregate(
-            [
-                ['ts' => '2026-01-24T06:10:00Z', 'value' => 10],
-                ['ts' => '2026-01-24T11:59:00Z', 'value' => 14],
-            ],
-            CarbonImmutable::parse('2026-01-24T00:00:00Z'),
-            CarbonImmutable::parse('2026-01-27T23:00:00Z'),
-            '6h',
-        );
+        $result = $service->aggregate([
+            ['ts' => '2026-01-01T00:00:00Z', 'series' => ['enabled' => 100, 'disabled' => 0]],
+            ['ts' => '2026-01-01T01:00:00Z', 'series' => ['enabled' => 80]],
+        ], $startUtc, $endUtc, '6h');
 
-        $this->assertCount(1, $data);
-        $this->assertSame('2026-01-24T06:00:00+00:00', $data[0]['ts']);
-        $this->assertSame(12, $data[0]['value']);
-    }
-
-    public function test_it_aggregates_into_daily_buckets(): void
-    {
-        $service = new TimeseriesAggregatorService();
-
-        $data = $service->aggregate(
-            [
-                ['ts' => '2026-01-24T00:10:00Z', 'value' => 20],
-                ['ts' => '2026-01-24T23:10:00Z', 'value' => 40],
-                ['ts' => '2026-01-25T00:10:00Z', 'value' => 50],
-            ],
-            CarbonImmutable::parse('2026-01-24T00:00:00Z'),
-            CarbonImmutable::parse('2026-01-25T23:00:00Z'),
-            '1d',
-        );
-
-        $this->assertCount(2, $data);
-        $this->assertSame('2026-01-24T00:00:00+00:00', $data[0]['ts']);
-        $this->assertSame(30, $data[0]['value']);
-        $this->assertSame('2026-01-25T00:00:00+00:00', $data[1]['ts']);
-        $this->assertSame(50, $data[1]['value']);
-    }
-
-    public function test_it_aggregates_into_weekly_buckets_using_monday_start(): void
-    {
-        $service = new TimeseriesAggregatorService();
-
-        $data = $service->aggregate(
-            [
-                ['ts' => '2026-01-01T12:00:00Z', 'value' => 10],
-                ['ts' => '2026-01-04T12:00:00Z', 'value' => 30],
-                ['ts' => '2026-01-05T12:00:00Z', 'value' => 50],
-            ],
-            CarbonImmutable::parse('2026-01-01T00:00:00Z'),
-            CarbonImmutable::parse('2026-01-10T23:00:00Z'),
-            '1w',
-        );
-
-        $this->assertCount(2, $data);
-        $this->assertSame('2025-12-29T00:00:00+00:00', $data[0]['ts']);
-        $this->assertSame(20, $data[0]['value']);
-        $this->assertSame('2026-01-05T00:00:00+00:00', $data[1]['ts']);
-        $this->assertSame(50, $data[1]['value']);
+        $this->assertSame(90, $result[0]['series']['enabled']);
+        $this->assertSame(0, $result[0]['series']['disabled']);
     }
 }

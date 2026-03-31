@@ -22,8 +22,8 @@ class TimeSeriesControllerIntegrationTest extends TestCase {
                 $this->endUtc = $endUtc;
 
                 return [
-                    ['ts' => '2026-01-24T00:00:00+00:00', 'value' => 7],
-                    ['ts' => '2026-01-24T01:00:00+00:00', 'value' => 9],
+                    ['ts' => '2026-01-24T00:00:00+00:00', 'series' => ['enabled' => 7, 'disabled' => 93]],
+                    ['ts' => '2026-01-24T01:00:00+00:00', 'series' => ['enabled' => 9, 'disabled' => 91]],
                 ];
             }
         };
@@ -39,8 +39,10 @@ class TimeSeriesControllerIntegrationTest extends TestCase {
             ->assertJsonPath('meta.end', '2026-01-24T23:00:00+00:00')
             ->assertJsonPath('meta.resolution', '1h')
             ->assertJsonPath('meta.points', 2)
-            ->assertJsonPath('data.0.value', 7)
-            ->assertJsonPath('data.1.value', 9);
+            ->assertJsonPath('data.0.series.enabled', 7)
+            ->assertJsonPath('data.0.series.disabled', 93)
+            ->assertJsonPath('data.1.series.enabled', 9)
+            ->assertJsonPath('data.1.series.disabled', 91);
 
         $this->assertSame(1, $fake->calls);
         $this->assertSame('EquipmentChart', $fake->chart);

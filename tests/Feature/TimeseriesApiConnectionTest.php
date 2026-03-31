@@ -32,6 +32,41 @@ class TimeseriesApiConnectionTest extends TestCase {
         }
     }
 
+    public function test_chart_response_contains_expected_series_keys(): void
+    {
+        $equipment = $this->getJson('/api/timeseries?chart=EquipmentChart&start=2026-01-24&end=2026-01-24');
+        $equipment->assertOk()
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => ['series' => ['enabled', 'disabled']],
+                ],
+            ]);
+
+        $alarm = $this->getJson('/api/timeseries?chart=AlarmChart&start=2026-01-24&end=2026-01-24');
+        $alarm->assertOk()
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => ['series' => ['inbound_calls', 'active_alarms']],
+                ],
+            ]);
+
+        $service = $this->getJson('/api/timeseries?chart=ServiceLevelChart&start=2026-01-24&end=2026-01-24');
+        $service->assertOk()
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => ['series' => ['periodical_calls', 'local_checks']],
+                ],
+            ]);
+
+        $alerts = $this->getJson('/api/timeseries?chart=AlertsChart&start=2026-01-24&end=2026-01-24');
+        $alerts->assertOk()
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => ['series' => ['active_alarm', 'battery_low', 'network_malfunction', 'low_signal']],
+                ],
+            ]);
+    }
+
     public function test_response_data_is_sorted_by_ts_ascending(): void {
         $res = $this->getJson('/api/timeseries?chart=EquipmentChart&start=2026-01-24&end=2026-01-27');
         $res->assertOk();

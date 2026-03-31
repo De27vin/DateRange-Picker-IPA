@@ -18,10 +18,12 @@ abstract class TestCase extends BaseTestCase
         Config::set('database.connections.sqlite.foreign_key_constraints', true);
         Config::set('app.allowed_hosts', ['localhost', '127.0.0.1']);
         Config::set('cache.default', 'array');
+        Config::set('cache.limiter', 'array');
         Config::set('session.driver', 'array');
         Config::set('queue.default', 'sync');
         $this->app->forgetInstance('cache');
         $this->app->forgetInstance('cache.store');
+        $this->app->forgetInstance(\Illuminate\Cache\RateLimiter::class);
         $this->app->forgetInstance('session');
 
         Config::set('logging.default', 'null');
@@ -49,6 +51,12 @@ abstract class TestCase extends BaseTestCase
         Config::set('logging.channels.emergency', [
             'driver' => 'monolog',
             'handler' => \Monolog\Handler\NullHandler::class,
+        ]);
+
+        $this->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequests::class);
+
+        $this->withSession([
+            'account' => ['id' => 1, 'slug' => 'test-account'],
         ]);
     }
 }

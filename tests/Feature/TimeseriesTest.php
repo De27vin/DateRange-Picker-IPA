@@ -37,9 +37,12 @@ class TimeseriesTest extends TestCase {
 
         $data = $res->json('data');
         foreach ($data as $point) {
-            $this->assertIsInt($point['value']);
-            $this->assertGreaterThanOrEqual(0, $point['value']);
-            $this->assertLessThanOrEqual(100, $point['value']);
+            $this->assertIsArray($point['series']);
+            foreach ($point['series'] as $value) {
+                $this->assertIsInt($value);
+                $this->assertGreaterThanOrEqual(0, $value);
+                $this->assertLessThanOrEqual(100, $value);
+            }
         }
     }
 
