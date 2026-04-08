@@ -182,11 +182,11 @@ export default {
 
       const enabledGradient = ctx.createLinearGradient(0, 0, 0, 400)
       enabledGradient.addColorStop(0, 'rgba(214,15,18,0.45)')
-      enabledGradient.addColorStop(1, 'rgba(214,15,18,0)')
+      enabledGradient.addColorStop(0, 'rgba(214,15,18,0)')
 
       const disabledGradient = ctx.createLinearGradient(0, 0, 0, 400)
       disabledGradient.addColorStop(0, 'rgba(103,112,128,0.35)')
-      disabledGradient.addColorStop(1, 'rgba(103,112,128,0)')
+      disabledGradient.addColorStop(0, 'rgba(103,112,128,0)')
 
       const isSingleDay = this.toYmd(new Date(this.lastValidRange[0])) === this.toYmd(new Date(this.lastValidRange[1]))
       // Labels depend on both the selected resolution and whether only one day is shown

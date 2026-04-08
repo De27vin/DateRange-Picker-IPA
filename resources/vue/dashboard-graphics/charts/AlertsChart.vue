@@ -309,7 +309,7 @@ export default {
                                 data: data.map((point) => point[alert.key] ?? 0),
                                 borderColor: color,
                                 pointBackgroundColor: color,
-                                backgroundColor: color.replace(', 1)', ', 0.25)'),
+                                backgroundColor: color.replace(', 1)', ', 0)'),
                                 fill: true,
                                 tension: 0,
                                 pointRadius: 4,

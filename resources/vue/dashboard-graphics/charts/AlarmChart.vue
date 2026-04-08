@@ -174,11 +174,11 @@ export default {
 
       const inboundGradient = ctx.createLinearGradient(0, 0, 0, 400)
       inboundGradient.addColorStop(0, 'rgba(193,117,121,0.45)')
-      inboundGradient.addColorStop(1, 'rgba(193,117,121,0)')
+      inboundGradient.addColorStop(0, 'rgba(193,117,121,0)')
 
       const activeGradient = ctx.createLinearGradient(0, 0, 0, 400)
       activeGradient.addColorStop(0, 'rgba(162,35,42,0.55)')
-      activeGradient.addColorStop(1, 'rgba(162,35,42,0)')
+      activeGradient.addColorStop(0, 'rgba(162,35,42,0)')
 
       const isSingleDay = this.toYmd(new Date(this.lastValidRange[0])) === this.toYmd(new Date(this.lastValidRange[1]))
       const labels = this.series.map(item => this.buildLabel(item.timestamp, this.seriesResolution, isSingleDay))
