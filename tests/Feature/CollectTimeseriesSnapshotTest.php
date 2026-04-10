@@ -9,7 +9,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
-class CollectTimeseriesSnapshotJobTest extends TestCase
+class CollectTimeseriesSnapshotTest extends TestCase
 {
     protected function setUp(): void
     {
@@ -42,33 +42,10 @@ class CollectTimeseriesSnapshotJobTest extends TestCase
             ],
             'alerts' => [
                 'alert_type' => [
-                    'active_alarm' => 1,
-                    'battery_malfunction' => 1,
-                    'battery_low' => 0,
-                    'button_malfunction' => 0,
-                    'charge_malfunction' => 0,
-                    'database_malfunction' => 0,
-                    'disk_low' => 0,
-                    'object_door_failure' => 0,
-                    'elevator_failure' => 0,
-                    'gateway_malfunction' => 0,
-                    'identity_mismatch' => 0,
-                    'line_alarm' => 0,
-                    'object_is_under_maintenance' => 0,
-                    'microphone_malfunction' => 0,
-                    'network_malfunction' => 0,
-                    'periodical_call_overdue' => 0,
-                    'pin_mismatch' => 0,
-                    'power_malfunction' => 0,
-                    'ram_low' => 0,
-                    'reserved_device' => 0,
-                    'serial_port_malfunction' => 0,
-                    'shaft_failure' => 0,
-                    'low_signal' => 0,
-                    'sip_registration_failure' => 0,
-                    'speaker_malfunction' => 0,
-                    'technician_check_overdue' => 2,
-                    'voice_alarm' => 1,
+                    'ALARM' => 1,
+                    'VOICE' => 1,
+                    'BATDEF' => 1,
+                    'TECH' => 2,
                 ],
             ],
             'service_level' => [

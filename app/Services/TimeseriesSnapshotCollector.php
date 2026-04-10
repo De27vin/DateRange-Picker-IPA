@@ -11,41 +11,6 @@ use Illuminate\Support\Facades\Log;
 
 class TimeseriesSnapshotCollector
 {
-    private const ALERT_TYPE_MAP = [
-        'active_alarm' => 'ALARM',
-        'battery_malfunction' => 'BATDEF',
-        'battery_low' => 'BATLOW',
-        'button_malfunction' => 'BUTTON',
-        'charge_malfunction' => 'CHARGE',
-        'database_malfunction' => 'DB',
-        'disk_low' => 'DISK',
-        'object_door_failure' => 'LOCATION',
-        'elevator_failure' => 'ELEVATOR',
-        'gateway_malfunction' => 'GATEWAY',
-        'identity_mismatch' => 'IDENTITY',
-        'line_alarm' => 'LINE',
-        'object_is_under_maintenance' => 'MAINTENANCE',
-        'microphone_malfunction' => 'MIC',
-        'network_malfunction' => 'NETWORK',
-        'periodical_call_overdue' => 'PERIODICAL',
-        'pin_mismatch' => 'PIN',
-        'power_malfunction' => 'POWER',
-        'ram_low' => 'RAM',
-        'reserved_device' => 'RESERVE',
-        'serial_port_malfunction' => 'SERIAL',
-        'shaft_failure' => 'SHAFT',
-        'low_signal' => 'SIGNAL',
-        'sip_registration_failure' => 'SIP',
-        'speaker_malfunction' => 'SPEAKER',
-        'technician_check_overdue' => 'TECH',
-        'voice_alarm' => 'VOICE',
-    ];
-
-    public function __construct(
-        private readonly TimeseriesSnapshotChartMapper $chartMapper,
-    ) {
-    }
-
     public function collectHourlySnapshots(?CarbonImmutable $tsUtc = null): int
     {
         $snapshotTs = ($tsUtc ?? CarbonImmutable::now('UTC'))->utc()->startOfHour();
@@ -97,7 +62,7 @@ class TimeseriesSnapshotCollector
                 ),
             ],
             'alerts' => [
-                'alert_type' => $this->mappedAlertSnapshotCounts($alertCounts),
+                'alert_type' => $alertCounts,
             ],
             'service_level' => [
                 'periodical_calls' => (int) ($alertCounts['PERIODICAL'] ?? 0),
@@ -217,21 +182,6 @@ class TimeseriesSnapshotCollector
                 ->map(static fn (mixed $deviceId): int => (int) $deviceId)
                 ->all())
             ->all();
-    }
-
-    /**
-     * @return array<string, int>
-     */
-    private function mappedAlertSnapshotCounts(array $alertCounts): array
-    {
-        $snapshotCounts = [];
-
-        foreach ($this->chartMapper->supportedAlertTypes() as $snapshotKey) {
-            $alertType = self::ALERT_TYPE_MAP[$snapshotKey] ?? null;
-            $snapshotCounts[$snapshotKey] = $alertType === null ? 0 : (int) ($alertCounts[$alertType] ?? 0);
-        }
-
-        return $snapshotCounts;
     }
 
     /**

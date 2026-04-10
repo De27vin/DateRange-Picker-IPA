@@ -4,6 +4,36 @@ namespace App\Services;
 
 class TimeseriesSnapshotChartMapper
 {
+    private const ALERT_TYPE_MAP = [
+        'active_alarm' => 'ALARM',
+        'battery_malfunction' => 'BATDEF',
+        'battery_low' => 'BATLOW',
+        'button_malfunction' => 'BUTTON',
+        'charge_malfunction' => 'CHARGE',
+        'database_malfunction' => 'DB',
+        'disk_low' => 'DISK',
+        'object_door_failure' => 'LOCATION',
+        'elevator_failure' => 'ELEVATOR',
+        'gateway_malfunction' => 'GATEWAY',
+        'identity_mismatch' => 'IDENTITY',
+        'line_alarm' => 'LINE',
+        'object_is_under_maintenance' => 'MAINTENANCE',
+        'microphone_malfunction' => 'MIC',
+        'network_malfunction' => 'NETWORK',
+        'periodical_call_overdue' => 'PERIODICAL',
+        'pin_mismatch' => 'PIN',
+        'power_malfunction' => 'POWER',
+        'ram_low' => 'RAM',
+        'reserved_device' => 'RESERVE',
+        'serial_port_malfunction' => 'SERIAL',
+        'shaft_failure' => 'SHAFT',
+        'low_signal' => 'SIGNAL',
+        'sip_registration_failure' => 'SIP',
+        'speaker_malfunction' => 'SPEAKER',
+        'technician_check_overdue' => 'TECH',
+        'voice_alarm' => 'VOICE',
+    ];
+
     private const ALERT_TYPES = [
         'active_alarm',
         'battery_malfunction',
@@ -73,7 +103,9 @@ class TimeseriesSnapshotChartMapper
         $alerts = $this->path($snapshotData, ['alerts', 'alert_type']);
         $series = [];
         foreach (self::ALERT_TYPES as $type) {
-            $series[$type] = $this->intValue(is_array($alerts) ? ($alerts[$type] ?? 0) : 0);
+            $legacyValue = is_array($alerts) ? ($alerts[$type] ?? null) : null;
+            $rawValue = is_array($alerts) ? ($alerts[self::ALERT_TYPE_MAP[$type] ?? ''] ?? null) : null;
+            $series[$type] = $this->intValue($legacyValue ?? $rawValue ?? 0);
         }
 
         return $series;
