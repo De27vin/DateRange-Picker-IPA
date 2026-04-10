@@ -2,7 +2,7 @@
 /vendor
 /vendor/**
 /public/hot
-/public/storage
+/public/storage/framework/sessions/*
 
 /storage/*.key
 /storage/pail
@@ -34,3 +34,4 @@ Thumbs.db
 
 /.vscode/*
 !/.vscode/extensions.json
+storage/logs/*.log
