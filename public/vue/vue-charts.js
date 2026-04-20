@@ -2141,8 +2141,8 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
         Voice_alarm: 0
       },
       serviceStats: typeof window !== 'undefined' && window.SERVICE_STATS ? window.SERVICE_STATS : {
-        periodic: 0,
-        local: 0
+        periodicalCalls: 0,
+        localChecks: 0
       }
     };
   }
@@ -2171,8 +2171,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! chart.js */ "./node_modules/chart.js/dist/Chart.js");
 /* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(chart_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _utils_timeseries__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../utils/timeseries */ "./utils/timeseries.js");
-/* harmony import */ var _js_utils_timeseriesAggregation__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../js/utils/timeseriesAggregation */ "./resources/js/utils/timeseriesAggregation.js");
+/* harmony import */ var _js_utils_timeseriesDisplay__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../js/utils/timeseriesDisplay */ "./resources/js/utils/timeseriesDisplay.js");
+/* harmony import */ var _js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../js/utils/timeseriesSeries */ "./resources/js/utils/timeseriesSeries.js");
 /* harmony import */ var _js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../js/utils/timeseriesRangeValidation */ "./resources/js/utils/timeseriesRangeValidation.js");
 /* harmony import */ var vue2_datepicker__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vue2-datepicker */ "./node_modules/vue2-datepicker/index.esm.js");
 /* harmony import */ var vue2_datepicker_index_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vue2-datepicker/index.css */ "./node_modules/vue2-datepicker/index.css");
@@ -2201,6 +2201,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
 
 
 
+var ALARM_SERIES_KEYS = ['inbound_calls', 'active_alarms'];
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: 'AlarmChart',
   components: {
@@ -2219,16 +2220,13 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
     end.setHours(23, 0, 0, 0);
     return {
       _chart: null,
-      rawSeries: [],
       series: [],
       seriesResolution: '1h',
       // date range
       dateRange: [start, end],
       dateError: '',
       fetchError: '',
-      lastValidRange: [new Date(start), new Date(end)],
-      // data
-      fullSeries: []
+      lastValidRange: [new Date(start), new Date(end)]
     };
   },
   watch: {
@@ -2267,18 +2265,10 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
     toIso: function toIso(date) {
       return (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.toIso8601Utc)(date);
     },
-    daysInRange: function daysInRange(start, end) {
-      return (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.daysInRangeUtc)(start, end);
-    },
     buildLabel: function buildLabel(ts, resolution, isSingleDay) {
-      if (!ts) return 'Live';
-      var d = new Date(ts);
-      var hh = String(d.getHours()).padStart(2, '0');
-      var dd = String(d.getDate()).padStart(2, '0');
-      var mm = String(d.getMonth() + 1).padStart(2, '0');
-      if (resolution === '1d' || resolution === '1w') return "".concat(dd, ".").concat(mm);
-      if (isSingleDay && (resolution === '1h' || resolution === '6h')) return "".concat(hh, ":00");
-      return "".concat(dd, ".").concat(mm, " ").concat(hh, ":00");
+      return (0,_js_utils_timeseriesDisplay__WEBPACK_IMPORTED_MODULE_2__.formatChartLabel)(ts, resolution, isSingleDay, {
+        displayMode: 'local'
+      });
     },
     // Method: Handle date range changes
     onDateRangeChange: function onDateRangeChange(value) {
@@ -2312,7 +2302,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
     loadData: function loadData() {
       var _this3 = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-        var _ref3, _ref4, startRaw, endRaw, normalized, start, end, _res$data$data, res, sorted, _normalized, _e$response;
+        var _ref3, _ref4, startRaw, endRaw, normalized, start, end, _res$data$meta$resolu, _res$data, _res$data$meta, _res$data2, res, _e$response;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
@@ -2339,75 +2329,45 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
               });
             case 11:
               res = _context3.sent;
-              sorted = ((_res$data$data = res.data.data) !== null && _res$data$data !== void 0 ? _res$data$data : []).slice().sort(function (a, b) {
-                return String(a.ts).localeCompare(String(b.ts));
-              });
-              _normalized = (0,_utils_timeseries__WEBPACK_IMPORTED_MODULE_2__.normalizeHourlyTimeseries)(sorted, {
-                fill: 'null',
-                min: 0,
-                max: 100
-              });
-              _this3.rawSeries = _normalized;
-              _this3.fullSeries = _normalized;
-              _this3.rebuildAggregatedSeries(start, end);
+              _this3.seriesResolution = (_res$data$meta$resolu = res === null || res === void 0 ? void 0 : (_res$data = res.data) === null || _res$data === void 0 ? void 0 : (_res$data$meta = _res$data.meta) === null || _res$data$meta === void 0 ? void 0 : _res$data$meta.resolution) !== null && _res$data$meta$resolu !== void 0 ? _res$data$meta$resolu : '1h';
+              _this3.series = (0,_js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__.normalizeSeriesRows)(res === null || res === void 0 ? void 0 : (_res$data2 = res.data) === null || _res$data2 === void 0 ? void 0 : _res$data2.data, ALARM_SERIES_KEYS);
               _this3.injectLiveData();
               _this3.renderChart();
-              _context3.next = 30;
+              _context3.next = 25;
               break;
-            case 21:
-              _context3.prev = 21;
+            case 18:
+              _context3.prev = 18;
               _context3.t0 = _context3["catch"](7);
               console.error('Timeseries fetch failed:', _context3.t0);
-              _this3.rawSeries = [];
               _this3.series = [];
-              _this3.fullSeries = [];
               _this3.fetchError = (_context3.t0 === null || _context3.t0 === void 0 ? void 0 : (_e$response = _context3.t0.response) === null || _e$response === void 0 ? void 0 : _e$response.status) === 422 ? 'Invalid date range' : 'Failed to load data';
               _this3.injectLiveData();
               _this3.renderChart();
-            case 30:
+            case 25:
             case "end":
               return _context3.stop();
           }
-        }, _callee3, null, [[7, 21]]);
+        }, _callee3, null, [[7, 18]]);
       }))();
-    },
-    rebuildAggregatedSeries: function rebuildAggregatedSeries(start, end) {
-      var rangeDays = this.daysInRange(start, end);
-      this.seriesResolution = (0,_js_utils_timeseriesAggregation__WEBPACK_IMPORTED_MODULE_3__.pickResolution)(rangeDays);
-      var aggregated = (0,_js_utils_timeseriesAggregation__WEBPACK_IMPORTED_MODULE_3__.aggregateTimeseries)(this.rawSeries, {
-        start: start,
-        end: end
-      }).sort(function (a, b) {
-        return String(a.ts).localeCompare(String(b.ts));
-      });
-      this.series = aggregated.map(function (row) {
-        var inbound = Math.max(0, Math.min(100, Number(row.value) || 0));
-        return {
-          inbound_calls: inbound,
-          active_alarms: 100 - inbound,
-          timestamp: row.ts
-        };
-      });
     },
     injectLiveData: function injectLiveData() {
       this.series = this.series.filter(function (x) {
         return x.timestamp !== null;
       });
-      this.series.push({
-        inbound_calls: Math.max(0, Math.min(100, Number(this.liveInbound) || 0)),
-        active_alarms: Math.max(0, Math.min(100, Number(this.liveActive) || 0)),
-        timestamp: null
-      });
+      this.series.push((0,_js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__.buildLiveSeriesRow)({
+        inbound_calls: this.liveInbound,
+        active_alarms: this.liveActive
+      }));
     },
     renderChart: function renderChart() {
       var _this4 = this;
       var ctx = this.$refs.chart.getContext('2d');
       var inboundGradient = ctx.createLinearGradient(0, 0, 0, 400);
       inboundGradient.addColorStop(0, 'rgba(193,117,121,0.45)');
-      inboundGradient.addColorStop(1, 'rgba(193,117,121,0)');
+      inboundGradient.addColorStop(0, 'rgba(193,117,121,0)');
       var activeGradient = ctx.createLinearGradient(0, 0, 0, 400);
       activeGradient.addColorStop(0, 'rgba(162,35,42,0.55)');
-      activeGradient.addColorStop(1, 'rgba(162,35,42,0)');
+      activeGradient.addColorStop(0, 'rgba(162,35,42,0)');
       var isSingleDay = this.toYmd(new Date(this.lastValidRange[0])) === this.toYmd(new Date(this.lastValidRange[1]));
       var labels = this.series.map(function (item) {
         return _this4.buildLabel(item.timestamp, _this4.seriesResolution, isSingleDay);
@@ -2512,8 +2472,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! chart.js */ "./node_modules/chart.js/dist/Chart.js");
 /* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(chart_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _utils_timeseries__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../utils/timeseries */ "./utils/timeseries.js");
-/* harmony import */ var _js_utils_timeseriesAggregation__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../js/utils/timeseriesAggregation */ "./resources/js/utils/timeseriesAggregation.js");
+/* harmony import */ var _js_utils_timeseriesDisplay__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../js/utils/timeseriesDisplay */ "./resources/js/utils/timeseriesDisplay.js");
+/* harmony import */ var _js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../js/utils/timeseriesSeries */ "./resources/js/utils/timeseriesSeries.js");
 /* harmony import */ var _js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../js/utils/timeseriesRangeValidation */ "./resources/js/utils/timeseriesRangeValidation.js");
 /* harmony import */ var vue2_datepicker__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vue2-datepicker */ "./node_modules/vue2-datepicker/index.esm.js");
 /* harmony import */ var vue2_datepicker_index_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vue2-datepicker/index.css */ "./node_modules/vue2-datepicker/index.css");
@@ -2543,160 +2503,98 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
 var ALERT_DEFS = [{
-  key: 'Active_alarm',
-  label: 'Active alarm',
-  color: '#ff7a18',
-  prop: 'liveActiveAlarm'
+  key: 'active_alarm',
+  label: 'Active alarm'
 }, {
-  key: 'Battery_malfunction',
-  label: 'Battery malfunction',
-  color: '#e11d48',
-  prop: 'liveBatteryMalfunction'
+  key: 'battery_malfunction',
+  label: 'Battery malfunction'
 }, {
-  key: 'Battery_low',
-  label: 'Battery low',
-  color: '#10b981',
-  prop: 'liveBatteryLow'
+  key: 'battery_low',
+  label: 'Battery low'
 }, {
-  key: 'Button_malfunction',
-  label: 'Button malfunction',
-  color: '#3b82f6',
-  prop: 'liveButtonMalfunction'
+  key: 'button_malfunction',
+  label: 'Button malfunction'
 }, {
-  key: 'Charge_malfunction',
-  label: 'Charge malfunction',
-  color: '#8b5cf6',
-  prop: 'liveChargeMalfunction'
+  key: 'charge_malfunction',
+  label: 'Charge malfunction'
 }, {
-  key: 'Database_malfunction',
-  label: 'Database malfunction',
-  color: '#f59e0b',
-  prop: 'liveDatabaseMalfunction'
+  key: 'database_malfunction',
+  label: 'Database malfunction'
 }, {
-  key: 'Disk_low',
-  label: 'Disk low',
-  color: '#ef4444',
-  prop: 'liveDiskLow'
+  key: 'disk_low',
+  label: 'Disk low'
 }, {
-  key: 'Object_door_failure',
-  label: 'Object door failure',
-  color: '#22c55e',
-  prop: 'liveObjectDoorFailure'
+  key: 'object_door_failure',
+  label: 'Object door failure'
 }, {
-  key: 'Elevator_failure',
-  label: 'Elevator failure',
-  color: '#3b82f6',
-  prop: 'liveElevatorFailure'
+  key: 'elevator_failure',
+  label: 'Elevator failure'
 }, {
-  key: 'Gateway_malfunction',
-  label: 'Gateway malfunction',
-  color: '#8b5cf6',
-  prop: 'liveGatewayMalfunction'
+  key: 'gateway_malfunction',
+  label: 'Gateway malfunction'
 }, {
-  key: 'Identity_mismatch',
-  label: 'Identity mismatch',
-  color: '#f59e0b',
-  prop: 'liveIdentityMismatch'
+  key: 'identity_mismatch',
+  label: 'Identity mismatch'
 }, {
-  key: 'Line_alarm',
-  label: 'Line alarm',
-  color: '#ef4444',
-  prop: 'liveLineAlarm'
+  key: 'line_alarm',
+  label: 'Line alarm'
 }, {
-  key: 'Location_alarm',
-  label: 'Location alarm',
-  color: '#22c55e',
-  prop: 'liveLocationAlarm'
+  key: 'object_is_under_maintenance',
+  label: 'Object under maintenance'
 }, {
-  key: 'Object_is_under_maintenance',
-  label: 'Object under maintenance',
-  color: '#3b82f6',
-  prop: 'liveObjectIsUnderMaintenance'
+  key: 'microphone_malfunction',
+  label: 'Microphone malfunction'
 }, {
-  key: 'Microphone_malfunction',
-  label: 'Microphone malfunction',
-  color: '#8b5cf6',
-  prop: 'liveMicrophoneMalfunction'
+  key: 'network_malfunction',
+  label: 'Network malfunction'
 }, {
-  key: 'Network_malfunction',
-  label: 'Network malfunction',
-  color: '#f59e0b',
-  prop: 'liveNetworkMalfunction'
+  key: 'periodical_call_overdue',
+  label: 'Periodical call overdue'
 }, {
-  key: 'Periodical_call_overdue',
-  label: 'Periodical call overdue',
-  color: '#ef4444',
-  prop: 'livePeriodicalCallOverdue'
+  key: 'pin_mismatch',
+  label: 'Pin mismatch'
 }, {
-  key: 'Pin_mismatch',
-  label: 'Pin mismatch',
-  color: '#22c55e',
-  prop: 'livePinMismatch'
+  key: 'power_malfunction',
+  label: 'Power malfunction'
 }, {
-  key: 'Power_malfunction',
-  label: 'Power malfunction',
-  color: '#3b82f6',
-  prop: 'livePowerMalfunction'
+  key: 'ram_low',
+  label: 'Ram low'
 }, {
-  key: 'Ram_low',
-  label: 'Ram low',
-  color: '#8b5cf6',
-  prop: 'liveRamLow'
+  key: 'reserved_device',
+  label: 'Reserved device'
 }, {
-  key: 'Reserved_device',
-  label: 'Reserved device',
-  color: '#f59e0b',
-  prop: 'liveReservedDevice'
+  key: 'serial_port_malfunction',
+  label: 'Serial port malfunction'
 }, {
-  key: 'Serial_port_malfunction',
-  label: 'Serial port malfunction',
-  color: '#ef4444',
-  prop: 'liveSerialPortMalfunction'
+  key: 'shaft_failure',
+  label: 'Shaft failure'
 }, {
-  key: 'Shaft_failure',
-  label: 'Shaft failure',
-  color: '#22c55e',
-  prop: 'liveShaftFailure'
+  key: 'low_signal',
+  label: 'Low signal'
 }, {
-  key: 'Low_signal',
-  label: 'Low signal',
-  color: '#3b82f6',
-  prop: 'liveLowSignal'
+  key: 'sip_registration_failure',
+  label: 'SIP registration failure'
 }, {
-  key: 'Sip_registration_failure',
-  label: 'Sip registration failure',
-  color: '#8b5cf6',
-  prop: 'liveSipRegistrationFailure'
+  key: 'speaker_malfunction',
+  label: 'Speaker malfunction'
 }, {
-  key: 'Speaker_malfunction',
-  label: 'Speaker malfunction',
-  color: '#f59e0b',
-  prop: 'liveSpeakerMalfunction'
+  key: 'technician_check_overdue',
+  label: 'Technician check overdue'
 }, {
-  key: 'Technician_check_overdue',
-  label: 'Technician check overdue',
-  color: '#ef4444',
-  prop: 'liveTechnicianCheckOverdue'
-}, {
-  key: 'Voice_alarm',
-  label: 'Voice alarm',
-  color: '#22c55e',
-  prop: 'liveVoiceAlarm'
+  key: 'voice_alarm',
+  label: 'Voice alarm'
 }];
-
-// Function: Interpolate between two colors of the Serv24 colour gradient
 function interpolateColor(start, end, factor) {
   return start.map(function (s, i) {
     return Math.round(s + factor * (end[i] - s));
   });
 }
-
-// Function: Generate gradient color between start and end colors
 function gradientColor(index, total) {
-  var start = [23, 44, 81]; // Blue
-  var end = [162, 35, 42]; // Red
-
-  if (total <= 1) return "rgba(".concat(start.join(','), ",1)");
+  var start = [23, 44, 81];
+  var end = [162, 35, 42];
+  if (total <= 1) {
+    return "rgba(".concat(start.join(','), ", 1)");
+  }
   var factor = index / (total - 1);
   var _interpolateColor = interpolateColor(start, end, factor),
     _interpolateColor2 = _slicedToArray(_interpolateColor, 3),
@@ -2723,7 +2621,6 @@ function gradientColor(index, total) {
     'live-gateway-malfunction': Number,
     'live-identity-mismatch': Number,
     'live-line-alarm': Number,
-    'live-location-alarm': Number,
     'live-object-is-under-maintenance': Number,
     'live-microphone-malfunction': Number,
     'live-network-malfunction': Number,
@@ -2749,14 +2646,10 @@ function gradientColor(index, total) {
     end.setHours(23, 0, 0, 0);
     return {
       _chart: null,
-      rawSeries: [],
       series: [],
       seriesResolution: '1h',
       showFilters: false,
-      // Alerts for UI filters-button
       filterAlerts: ALERT_DEFS,
-      fullSeries: [],
-      // date range
       dateRange: [start, end],
       dateError: '',
       fetchError: '',
@@ -2788,7 +2681,6 @@ function gradientColor(index, total) {
     }
   },
   methods: {
-    // Method: Disable future dates in date picker
     disableFuture: function disableFuture(date) {
       return (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.disableFutureUtc)(date);
     },
@@ -2798,20 +2690,11 @@ function gradientColor(index, total) {
     toIso: function toIso(date) {
       return (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.toIso8601Utc)(date);
     },
-    daysInRange: function daysInRange(start, end) {
-      return (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.daysInRangeUtc)(start, end);
-    },
     buildLabel: function buildLabel(ts, resolution, isSingleDay) {
-      if (!ts) return 'Live';
-      var d = new Date(ts);
-      var hh = String(d.getHours()).padStart(2, '0');
-      var dd = String(d.getDate()).padStart(2, '0');
-      var mm = String(d.getMonth() + 1).padStart(2, '0');
-      if (resolution === '1d' || resolution === '1w') return "".concat(dd, ".").concat(mm);
-      if (isSingleDay && (resolution === '1h' || resolution === '6h')) return "".concat(hh, ":00");
-      return "".concat(dd, ".").concat(mm, " ").concat(hh, ":00");
+      return (0,_js_utils_timeseriesDisplay__WEBPACK_IMPORTED_MODULE_2__.formatChartLabel)(ts, resolution, isSingleDay, {
+        displayMode: 'local'
+      });
     },
-    // Method: Handle date range changes
     onDateRangeChange: function onDateRangeChange(value) {
       var _this2 = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
@@ -2843,7 +2726,7 @@ function gradientColor(index, total) {
     loadData: function loadData() {
       var _this3 = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-        var _ref3, _ref4, startRaw, endRaw, normalized, start, end, _res$data$data, res, sorted, _normalized, _e$response;
+        var _ref3, _ref4, startRaw, endRaw, normalized, start, end, _res$data$meta$resolu, _res$data, _res$data$meta, _res$data2, res, _e$response;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
@@ -2870,111 +2753,77 @@ function gradientColor(index, total) {
               });
             case 11:
               res = _context3.sent;
-              sorted = ((_res$data$data = res.data.data) !== null && _res$data$data !== void 0 ? _res$data$data : []).slice().sort(function (a, b) {
-                return String(a.ts).localeCompare(String(b.ts));
-              });
-              _normalized = (0,_utils_timeseries__WEBPACK_IMPORTED_MODULE_2__.normalizeHourlyTimeseries)(sorted, {
-                fill: 'null',
-                min: 0,
-                max: 100
-              });
-              _this3.rawSeries = _normalized;
-              _this3.fullSeries = _normalized;
-              _this3.rebuildAggregatedSeries(start, end);
+              _this3.seriesResolution = (_res$data$meta$resolu = res === null || res === void 0 ? void 0 : (_res$data = res.data) === null || _res$data === void 0 ? void 0 : (_res$data$meta = _res$data.meta) === null || _res$data$meta === void 0 ? void 0 : _res$data$meta.resolution) !== null && _res$data$meta$resolu !== void 0 ? _res$data$meta$resolu : '1h';
+              _this3.series = (0,_js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__.normalizeSeriesRows)(res === null || res === void 0 ? void 0 : (_res$data2 = res.data) === null || _res$data2 === void 0 ? void 0 : _res$data2.data, ALERT_DEFS.map(function (alert) {
+                return alert.key;
+              }));
               _this3.injectLiveData();
               _this3.renderChart();
-              _context3.next = 30;
+              _context3.next = 25;
               break;
-            case 21:
-              _context3.prev = 21;
+            case 18:
+              _context3.prev = 18;
               _context3.t0 = _context3["catch"](7);
               console.error('Timeseries fetch failed:', _context3.t0);
-              _this3.rawSeries = [];
               _this3.series = [];
-              _this3.fullSeries = [];
               _this3.fetchError = (_context3.t0 === null || _context3.t0 === void 0 ? void 0 : (_e$response = _context3.t0.response) === null || _e$response === void 0 ? void 0 : _e$response.status) === 422 ? 'Invalid date range' : 'Failed to load data';
               _this3.injectLiveData();
               _this3.renderChart();
-            case 30:
+            case 25:
             case "end":
               return _context3.stop();
           }
-        }, _callee3, null, [[7, 21]]);
+        }, _callee3, null, [[7, 18]]);
       }))();
-    },
-    rebuildAggregatedSeries: function rebuildAggregatedSeries(start, end) {
-      var rangeDays = this.daysInRange(start, end);
-      this.seriesResolution = (0,_js_utils_timeseriesAggregation__WEBPACK_IMPORTED_MODULE_3__.pickResolution)(rangeDays);
-      var aggregated = (0,_js_utils_timeseriesAggregation__WEBPACK_IMPORTED_MODULE_3__.aggregateTimeseries)(this.rawSeries, {
-        start: start,
-        end: end
-      }).sort(function (a, b) {
-        return String(a.ts).localeCompare(String(b.ts));
-      });
-      this.series = aggregated.map(function (row) {
-        var v = Math.max(0, Math.min(100, Number(row.value) || 0));
-        var base = {
-          timestamp: row.ts
-        };
-        for (var i = 0; i < ALERT_DEFS.length; i++) {
-          var alert = ALERT_DEFS[i];
-          var factor = 0.55 + i * 7 % 10 / 10; // 0.55 .. 1.45
-          base[alert.key] = Math.max(0, Math.min(100, Math.round(v * factor)));
-        }
-        return base;
-      });
     },
     injectLiveData: function injectLiveData() {
       this.series = this.series.filter(function (x) {
         return x.timestamp !== null;
       });
-      this.series.push({
-        Active_alarm: Number(this.liveActiveAlarm) || 0,
-        Battery_malfunction: Number(this.liveBatteryMalfunction) || 0,
-        Battery_low: Number(this.liveBatteryLow) || 0,
-        Button_malfunction: Number(this.liveButtonMalfunction) || 0,
-        Charge_malfunction: Number(this.liveChargeMalfunction) || 0,
-        Database_malfunction: Number(this.liveDatabaseMalfunction) || 0,
-        Disk_low: Number(this.liveDiskLow) || 0,
-        Object_door_failure: Number(this.liveObjectDoorFailure) || 0,
-        Elevator_failure: Number(this.liveElevatorFailure) || 0,
-        Gateway_malfunction: Number(this.liveGatewayMalfunction) || 0,
-        Identity_mismatch: Number(this.liveIdentityMismatch) || 0,
-        Line_alarm: Number(this.liveLineAlarm) || 0,
-        Location_alarm: Number(this.liveLocationAlarm) || 0,
-        Object_is_under_maintenance: Number(this.liveObjectIsUnderMaintenance) || 0,
-        Microphone_malfunction: Number(this.liveMicrophoneMalfunction) || 0,
-        Network_malfunction: Number(this.liveNetworkMalfunction) || 0,
-        Periodical_call_overdue: Number(this.livePeriodicalCallOverdue) || 0,
-        Pin_mismatch: Number(this.livePinMismatch) || 0,
-        Power_malfunction: Number(this.livePowerMalfunction) || 0,
-        Ram_low: Number(this.liveRamLow) || 0,
-        Reserved_device: Number(this.liveReservedDevice) || 0,
-        Serial_port_malfunction: Number(this.liveSerialPortMalfunction) || 0,
-        Shaft_failure: Number(this.liveShaftFailure) || 0,
-        Low_signal: Number(this.liveLowSignal) || 0,
-        Sip_registration_failure: Number(this.liveSipRegistrationFailure) || 0,
-        Speaker_malfunction: Number(this.liveSpeakerMalfunction) || 0,
-        Technician_check_overdue: Number(this.liveTechnicianCheckOverdue) || 0,
-        Voice_alarm: Number(this.liveVoiceAlarm) || 0,
-        timestamp: null
-      });
+      this.series.push((0,_js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__.buildLiveSeriesRow)({
+        active_alarm: this.liveActiveAlarm,
+        battery_malfunction: this.liveBatteryMalfunction,
+        battery_low: this.liveBatteryLow,
+        button_malfunction: this.liveButtonMalfunction,
+        charge_malfunction: this.liveChargeMalfunction,
+        database_malfunction: this.liveDatabaseMalfunction,
+        disk_low: this.liveDiskLow,
+        object_door_failure: this.liveObjectDoorFailure,
+        elevator_failure: this.liveElevatorFailure,
+        gateway_malfunction: this.liveGatewayMalfunction,
+        identity_mismatch: this.liveIdentityMismatch,
+        line_alarm: this.liveLineAlarm,
+        object_is_under_maintenance: this.liveObjectIsUnderMaintenance,
+        microphone_malfunction: this.liveMicrophoneMalfunction,
+        network_malfunction: this.liveNetworkMalfunction,
+        periodical_call_overdue: this.livePeriodicalCallOverdue,
+        pin_mismatch: this.livePinMismatch,
+        power_malfunction: this.livePowerMalfunction,
+        ram_low: this.liveRamLow,
+        reserved_device: this.liveReservedDevice,
+        serial_port_malfunction: this.liveSerialPortMalfunction,
+        shaft_failure: this.liveShaftFailure,
+        low_signal: this.liveLowSignal,
+        sip_registration_failure: this.liveSipRegistrationFailure,
+        speaker_malfunction: this.liveSpeakerMalfunction,
+        technician_check_overdue: this.liveTechnicianCheckOverdue,
+        voice_alarm: this.liveVoiceAlarm
+      }));
     },
-    // Method: Initially select 5 alerts
     initSelectedAlerts: function initSelectedAlerts() {
-      this.selectedAlerts = ALERT_DEFS.slice(0, 5).map(function (a) {
-        return a.key;
+      this.selectedAlerts = ALERT_DEFS.slice(0, 5).map(function (alert) {
+        return alert.key;
       });
     },
     renderChart: function renderChart() {
       var _this4 = this;
       var data = this.series;
       var ctx = this.$refs.chart.getContext('2d');
-
-      // Generate labels based on resolved data
       var isSingleDay = this.toYmd(new Date(this.lastValidRange[0])) === this.toYmd(new Date(this.lastValidRange[1]));
       var labels = data.map(function (item) {
-        if (item.timestamp === null) return 'Live';
+        if (item.timestamp === null) {
+          return 'Live';
+        }
         return _this4.buildLabel(item.timestamp, _this4.seriesResolution, isSingleDay);
       });
       if (this._chart) this._chart.destroy();
@@ -2982,19 +2831,19 @@ function gradientColor(index, total) {
         type: 'line',
         data: {
           labels: labels,
-          datasets: ALERT_DEFS.filter(function (a) {
-            return _this4.selectedAlerts.includes(a.key);
-          }).map(function (a, index, arr) {
+          datasets: ALERT_DEFS.filter(function (alert) {
+            return _this4.selectedAlerts.includes(alert.key);
+          }).map(function (alert, index, arr) {
             var color = gradientColor(index, arr.length);
             return {
-              label: a.label,
-              data: data.map(function (x) {
-                var _x$a$key;
-                return (_x$a$key = x[a.key]) !== null && _x$a$key !== void 0 ? _x$a$key : 0;
+              label: alert.label,
+              data: data.map(function (point) {
+                var _point$alert$key;
+                return (_point$alert$key = point[alert.key]) !== null && _point$alert$key !== void 0 ? _point$alert$key : 0;
               }),
               borderColor: color,
               pointBackgroundColor: color,
-              backgroundColor: color.replace(', 1)', ', 0.25)'),
+              backgroundColor: color.replace(', 1)', ', 0)'),
               fill: true,
               tension: 0,
               pointRadius: 4
@@ -3076,8 +2925,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! chart.js */ "./node_modules/chart.js/dist/Chart.js");
 /* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(chart_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _utils_timeseries__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../utils/timeseries */ "./utils/timeseries.js");
-/* harmony import */ var _js_utils_timeseriesAggregation__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../js/utils/timeseriesAggregation */ "./resources/js/utils/timeseriesAggregation.js");
+/* harmony import */ var _js_utils_timeseriesDisplay__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../js/utils/timeseriesDisplay */ "./resources/js/utils/timeseriesDisplay.js");
+/* harmony import */ var _js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../js/utils/timeseriesSeries */ "./resources/js/utils/timeseriesSeries.js");
 /* harmony import */ var _js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../js/utils/timeseriesRangeValidation */ "./resources/js/utils/timeseriesRangeValidation.js");
 /* harmony import */ var vue2_datepicker__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vue2-datepicker */ "./node_modules/vue2-datepicker/index.esm.js");
 /* harmony import */ var vue2_datepicker_index_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vue2-datepicker/index.css */ "./node_modules/vue2-datepicker/index.css");
@@ -3106,6 +2955,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
 
 
 
+var EQUIPMENT_SERIES_KEYS = ['enabled', 'disabled'];
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: 'EquipmentChart',
   components: {
@@ -3125,16 +2975,13 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
     end.setHours(23, 0, 0, 0);
     return {
       _chart: null,
-      rawSeries: [],
       series: [],
       seriesResolution: '1h',
       // date range
       dateRange: [start, end],
       dateError: '',
       fetchError: '',
-      lastValidRange: [new Date(start), new Date(end)],
-      // data
-      fullSeries: []
+      lastValidRange: [new Date(start), new Date(end)]
     };
   },
   watch: {
@@ -3170,29 +3017,14 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
     toYmd: function toYmd(date) {
       return (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.toYmdUtc)(date);
     },
+    // Method: Convert date to ISO string in UTC
     toIso: function toIso(date) {
       return (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.toIso8601Utc)(date);
     },
-    daysInRange: function daysInRange(start, end) {
-      return (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.daysInRangeUtc)(start, end);
-    },
     buildLabel: function buildLabel(ts, resolution, isSingleDay) {
-      if (!ts) {
-        return 'Live';
-      }
-      var d = new Date(ts);
-      var hh = String(d.getHours()).padStart(2, '0');
-      if (resolution === '1d' || resolution === '1w') {
-        var _dd = String(d.getDate()).padStart(2, '0');
-        var _mm = String(d.getMonth() + 1).padStart(2, '0');
-        return "".concat(_dd, ".").concat(_mm);
-      }
-      if (isSingleDay && (resolution === '1h' || resolution === '6h')) {
-        return "".concat(hh, ":00");
-      }
-      var dd = String(d.getDate()).padStart(2, '0');
-      var mm = String(d.getMonth() + 1).padStart(2, '0');
-      return "".concat(dd, ".").concat(mm, " ").concat(hh, ":00");
+      return (0,_js_utils_timeseriesDisplay__WEBPACK_IMPORTED_MODULE_2__.formatChartLabel)(ts, resolution, isSingleDay, {
+        displayMode: 'local'
+      });
     },
     // Method: Handle date range changes
     onDateRangeChange: function onDateRangeChange(value) {
@@ -3202,7 +3034,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
-              _ref = value || _this2.dateRange || [], _ref2 = _slicedToArray(_ref, 2), startRaw = _ref2[0], endRaw = _ref2[1];
+              _ref = value || _this2.dateRange || [], _ref2 = _slicedToArray(_ref, 2), startRaw = _ref2[0], endRaw = _ref2[1]; // Reuse the shared UTC validation before fetching new data
               normalized = (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.validateAndNormalizeRange)(startRaw, endRaw);
               if (normalized.ok) {
                 _context2.next = 5;
@@ -3226,11 +3058,11 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
     loadData: function loadData() {
       var _this3 = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-        var _ref3, _ref4, startRaw, endRaw, normalized, start, end, _res$data$data, res, sorted, _normalized, _e$response;
+        var _ref3, _ref4, startRaw, endRaw, normalized, start, end, _res$data$meta$resolu, _res$data, _res$data$meta, _res$data2, res, _e$response;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
-              _ref3 = _this3.dateRange || [], _ref4 = _slicedToArray(_ref3, 2), startRaw = _ref4[0], endRaw = _ref4[1];
+              _ref3 = _this3.dateRange || [], _ref4 = _slicedToArray(_ref3, 2), startRaw = _ref4[0], endRaw = _ref4[1]; // Normalize, validate date range and handle errors
               normalized = (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.validateAndNormalizeRange)(startRaw, endRaw);
               if (normalized.ok) {
                 _context3.next = 5;
@@ -3243,6 +3075,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
               _this3.dateError = '';
               _context3.prev = 7;
               _this3.fetchError = '';
+              // Load timeseries data from API with axios
               _context3.next = 11;
               return axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/timeseries', {
                 params: {
@@ -3253,65 +3086,37 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
               });
             case 11:
               res = _context3.sent;
-              sorted = ((_res$data$data = res.data.data) !== null && _res$data$data !== void 0 ? _res$data$data : []).slice().sort(function (a, b) {
-                return String(a.ts).localeCompare(String(b.ts));
-              });
-              _normalized = (0,_utils_timeseries__WEBPACK_IMPORTED_MODULE_2__.normalizeHourlyTimeseries)(sorted, {
-                fill: 'null',
-                min: 0,
-                max: 100
-              });
-              _this3.rawSeries = _normalized;
-              _this3.fullSeries = _normalized;
-              _this3.rebuildAggregatedSeries(start, end);
+              _this3.seriesResolution = (_res$data$meta$resolu = res === null || res === void 0 ? void 0 : (_res$data = res.data) === null || _res$data === void 0 ? void 0 : (_res$data$meta = _res$data.meta) === null || _res$data$meta === void 0 ? void 0 : _res$data$meta.resolution) !== null && _res$data$meta$resolu !== void 0 ? _res$data$meta$resolu : '1h';
+              _this3.series = (0,_js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__.normalizeSeriesRows)(res === null || res === void 0 ? void 0 : (_res$data2 = res.data) === null || _res$data2 === void 0 ? void 0 : _res$data2.data, EQUIPMENT_SERIES_KEYS);
               _this3.injectLiveData();
               _this3.renderChart();
-              _context3.next = 30;
+              _context3.next = 25;
               break;
-            case 21:
-              _context3.prev = 21;
+            case 18:
+              _context3.prev = 18;
               _context3.t0 = _context3["catch"](7);
               console.error('Timeseries fetch failed:', _context3.t0);
-              _this3.rawSeries = [];
               _this3.series = [];
-              _this3.fullSeries = [];
               _this3.fetchError = (_context3.t0 === null || _context3.t0 === void 0 ? void 0 : (_e$response = _context3.t0.response) === null || _e$response === void 0 ? void 0 : _e$response.status) === 422 ? 'Invalid date range' : 'Failed to load data';
               _this3.injectLiveData();
               _this3.renderChart();
-            case 30:
+            case 25:
             case "end":
               return _context3.stop();
           }
-        }, _callee3, null, [[7, 21]]);
+        }, _callee3, null, [[7, 18]]);
       }))();
     },
-    rebuildAggregatedSeries: function rebuildAggregatedSeries(start, end) {
-      var rangeDays = this.daysInRange(start, end);
-      this.seriesResolution = (0,_js_utils_timeseriesAggregation__WEBPACK_IMPORTED_MODULE_3__.pickResolution)(rangeDays);
-      var aggregated = (0,_js_utils_timeseriesAggregation__WEBPACK_IMPORTED_MODULE_3__.aggregateTimeseries)(this.rawSeries, {
-        start: start,
-        end: end
-      }).sort(function (a, b) {
-        return String(a.ts).localeCompare(String(b.ts));
-      });
-      this.series = aggregated.map(function (row) {
-        var enabled = Math.max(0, Math.min(100, Number(row.value) || 0));
-        return {
-          enabled: enabled,
-          disabled: 100 - enabled,
-          timestamp: row.ts
-        };
-      });
-    },
+    // Method: Inject live data point into series
     injectLiveData: function injectLiveData() {
+      // Replace the previous live point so only one live value is shown
       this.series = this.series.filter(function (x) {
         return x.timestamp !== null;
       });
-      this.series.push({
-        enabled: Math.max(0, Math.min(100, Number(this.liveEnabled) || 0)),
-        disabled: Math.max(0, Math.min(100, Number(this.liveDisabled) || 0)),
-        timestamp: null
-      });
+      this.series.push((0,_js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__.buildLiveSeriesRow)({
+        enabled: this.liveEnabled,
+        disabled: this.liveDisabled
+      }));
     },
     // line chart rendering
     renderChart: function renderChart() {
@@ -3319,11 +3124,12 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       var ctx = this.$refs.barChart.getContext('2d');
       var enabledGradient = ctx.createLinearGradient(0, 0, 0, 400);
       enabledGradient.addColorStop(0, 'rgba(214,15,18,0.45)');
-      enabledGradient.addColorStop(1, 'rgba(214,15,18,0)');
+      enabledGradient.addColorStop(0, 'rgba(214,15,18,0)');
       var disabledGradient = ctx.createLinearGradient(0, 0, 0, 400);
       disabledGradient.addColorStop(0, 'rgba(103,112,128,0.35)');
-      disabledGradient.addColorStop(1, 'rgba(103,112,128,0)');
+      disabledGradient.addColorStop(0, 'rgba(103,112,128,0)');
       var isSingleDay = this.toYmd(new Date(this.lastValidRange[0])) === this.toYmd(new Date(this.lastValidRange[1]));
+      // Labels depend on both the selected resolution and whether only one day is shown
       var labels = this.series.map(function (item) {
         return _this4.buildLabel(item.timestamp, _this4.seriesResolution, isSingleDay);
       });
@@ -3334,6 +3140,8 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
         return x.disabled;
       });
       if (this._chart) this._chart.destroy();
+
+      // Render chart with Chart.js
       this._chart = new (chart_js__WEBPACK_IMPORTED_MODULE_1___default())(ctx, {
         type: 'line',
         data: {
@@ -3427,8 +3235,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! chart.js */ "./node_modules/chart.js/dist/Chart.js");
 /* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(chart_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _utils_timeseries__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../utils/timeseries */ "./utils/timeseries.js");
-/* harmony import */ var _js_utils_timeseriesAggregation__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../js/utils/timeseriesAggregation */ "./resources/js/utils/timeseriesAggregation.js");
+/* harmony import */ var _js_utils_timeseriesDisplay__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../js/utils/timeseriesDisplay */ "./resources/js/utils/timeseriesDisplay.js");
+/* harmony import */ var _js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../js/utils/timeseriesSeries */ "./resources/js/utils/timeseriesSeries.js");
 /* harmony import */ var _js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../js/utils/timeseriesRangeValidation */ "./resources/js/utils/timeseriesRangeValidation.js");
 /* harmony import */ var vue2_datepicker__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vue2-datepicker */ "./node_modules/vue2-datepicker/index.esm.js");
 /* harmony import */ var vue2_datepicker_index_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vue2-datepicker/index.css */ "./node_modules/vue2-datepicker/index.css");
@@ -3457,6 +3265,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
 
 
 
+var SERVICE_LEVEL_SERIES_KEYS = ['periodical_calls', 'local_checks'];
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: 'ServiceLevelChart',
   components: {
@@ -3475,16 +3284,13 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
     end.setHours(23, 0, 0, 0);
     return {
       _chart: null,
-      rawSeries: [],
       series: [],
       seriesResolution: '1h',
       // date range
       dateRange: [start, end],
       dateError: '',
       fetchError: '',
-      lastValidRange: [new Date(start), new Date(end)],
-      // data
-      fullSeries: []
+      lastValidRange: [new Date(start), new Date(end)]
     };
   },
   watch: {
@@ -3523,18 +3329,10 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
     toIso: function toIso(date) {
       return (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.toIso8601Utc)(date);
     },
-    daysInRange: function daysInRange(start, end) {
-      return (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.daysInRangeUtc)(start, end);
-    },
     buildLabel: function buildLabel(ts, resolution, isSingleDay) {
-      if (!ts) return 'Live';
-      var d = new Date(ts);
-      var hh = String(d.getHours()).padStart(2, '0');
-      var dd = String(d.getDate()).padStart(2, '0');
-      var mm = String(d.getMonth() + 1).padStart(2, '0');
-      if (resolution === '1d' || resolution === '1w') return "".concat(dd, ".").concat(mm);
-      if (isSingleDay && (resolution === '1h' || resolution === '6h')) return "".concat(hh, ":00");
-      return "".concat(dd, ".").concat(mm, " ").concat(hh, ":00");
+      return (0,_js_utils_timeseriesDisplay__WEBPACK_IMPORTED_MODULE_2__.formatChartLabel)(ts, resolution, isSingleDay, {
+        displayMode: 'local'
+      });
     },
     // Method: Handle date range changes
     onDateRangeChange: function onDateRangeChange(value) {
@@ -3568,7 +3366,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
     loadData: function loadData() {
       var _this3 = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-        var _ref3, _ref4, startRaw, endRaw, normalized, start, end, _res$data$data, res, sorted, _normalized, _e$response;
+        var _ref3, _ref4, startRaw, endRaw, normalized, start, end, _res$data$meta$resolu, _res$data, _res$data$meta, _res$data2, res, _e$response;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
@@ -3595,82 +3393,52 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
               });
             case 11:
               res = _context3.sent;
-              sorted = ((_res$data$data = res.data.data) !== null && _res$data$data !== void 0 ? _res$data$data : []).slice().sort(function (a, b) {
-                return String(a.ts).localeCompare(String(b.ts));
-              });
-              _normalized = (0,_utils_timeseries__WEBPACK_IMPORTED_MODULE_2__.normalizeHourlyTimeseries)(sorted, {
-                fill: 'null',
-                min: 0,
-                max: 100
-              });
-              _this3.rawSeries = _normalized;
-              _this3.fullSeries = _normalized;
-              _this3.rebuildAggregatedSeries(start, end);
+              _this3.seriesResolution = (_res$data$meta$resolu = res === null || res === void 0 ? void 0 : (_res$data = res.data) === null || _res$data === void 0 ? void 0 : (_res$data$meta = _res$data.meta) === null || _res$data$meta === void 0 ? void 0 : _res$data$meta.resolution) !== null && _res$data$meta$resolu !== void 0 ? _res$data$meta$resolu : '1h';
+              _this3.series = (0,_js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__.normalizeSeriesRows)(res === null || res === void 0 ? void 0 : (_res$data2 = res.data) === null || _res$data2 === void 0 ? void 0 : _res$data2.data, SERVICE_LEVEL_SERIES_KEYS);
               _this3.injectLiveData();
               _this3.renderChart();
-              _context3.next = 30;
+              _context3.next = 25;
               break;
-            case 21:
-              _context3.prev = 21;
+            case 18:
+              _context3.prev = 18;
               _context3.t0 = _context3["catch"](7);
               console.error('Timeseries fetch failed:', _context3.t0);
-              _this3.rawSeries = [];
               _this3.series = [];
-              _this3.fullSeries = [];
               _this3.fetchError = (_context3.t0 === null || _context3.t0 === void 0 ? void 0 : (_e$response = _context3.t0.response) === null || _e$response === void 0 ? void 0 : _e$response.status) === 422 ? 'Invalid date range' : 'Failed to load data';
               _this3.injectLiveData();
               _this3.renderChart();
-            case 30:
+            case 25:
             case "end":
               return _context3.stop();
           }
-        }, _callee3, null, [[7, 21]]);
+        }, _callee3, null, [[7, 18]]);
       }))();
-    },
-    rebuildAggregatedSeries: function rebuildAggregatedSeries(start, end) {
-      var rangeDays = this.daysInRange(start, end);
-      this.seriesResolution = (0,_js_utils_timeseriesAggregation__WEBPACK_IMPORTED_MODULE_3__.pickResolution)(rangeDays);
-      var aggregated = (0,_js_utils_timeseriesAggregation__WEBPACK_IMPORTED_MODULE_3__.aggregateTimeseries)(this.rawSeries, {
-        start: start,
-        end: end
-      }).sort(function (a, b) {
-        return String(a.ts).localeCompare(String(b.ts));
-      });
-      this.series = aggregated.map(function (row) {
-        var periodic = Math.max(0, Math.min(100, Number(row.value) || 0));
-        return {
-          periodic_checks: periodic,
-          local_checks: 100 - periodic,
-          timestamp: row.ts
-        };
-      });
     },
     injectLiveData: function injectLiveData() {
       this.series = this.series.filter(function (x) {
         return x.timestamp !== null;
       });
-      this.series.push({
-        periodic_checks: Math.max(0, Math.min(100, Number(this.livePeriodic) || 0)),
-        local_checks: Math.max(0, Math.min(100, Number(this.liveLocal) || 0)),
-        timestamp: null
-      });
+      this.series.push((0,_js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__.buildLiveSeriesRow)({
+        periodical_calls: this.livePeriodic,
+        local_checks: this.liveLocal
+      }));
     },
     renderChart: function renderChart() {
       var _this4 = this;
       var ctx = this.$refs.chart.getContext('2d');
       var periodicGradient = ctx.createLinearGradient(0, 0, 0, 400);
       periodicGradient.addColorStop(0, 'rgba(214,15,18,0.45)');
-      periodicGradient.addColorStop(1, 'rgba(214,15,18,0)');
+      periodicGradient.addColorStop(0, 'rgba(214,15,18,0)');
       var localGradient = ctx.createLinearGradient(0, 0, 0, 400);
       localGradient.addColorStop(0, 'rgba(193,117,121,0.45)');
-      localGradient.addColorStop(1, 'rgba(193,117,121,0)');
+      localGradient.addColorStop(0, 'rgba(193,117,121,0)');
       var isSingleDay = this.toYmd(new Date(this.lastValidRange[0])) === this.toYmd(new Date(this.lastValidRange[1]));
       var labels = this.series.map(function (item) {
         return _this4.buildLabel(item.timestamp, _this4.seriesResolution, isSingleDay);
       });
       var periodic = this.series.map(function (x) {
-        var _x$periodic_checks;
-        return (_x$periodic_checks = x.periodic_checks) !== null && _x$periodic_checks !== void 0 ? _x$periodic_checks : 0;
+        var _x$periodical_calls;
+        return (_x$periodical_calls = x.periodical_calls) !== null && _x$periodical_calls !== void 0 ? _x$periodical_calls : 0;
       });
       var local = this.series.map(function (x) {
         var _x$local_checks;
@@ -3802,7 +3570,6 @@ var render = function render() {
       "live-gateway-malfunction": _vm.alertsStats.Gateway_malfunction,
       "live-identity-mismatch": _vm.alertsStats.Identity_mismatch,
       "live-line-alarm": _vm.alertsStats.Line_alarm,
-      "live-location-alarm": _vm.alertsStats.Location_alarm,
       "live-object-is-under-maintenance": _vm.alertsStats.Object_is_under_maintenance,
       "live-microphone-malfunction": _vm.alertsStats.Microphone_malfunction,
       "live-network-malfunction": _vm.alertsStats.Network_malfunction,
@@ -3964,7 +3731,7 @@ var render = function render() {
         _vm.showFilters = false;
       }
     }
-  }, [_vm._v("✕")]), _vm._v(" "), _c("div", {
+  }, [_vm._v("x")]), _vm._v(" "), _c("div", {
     staticClass: "filter-grid"
   }, _vm._l(_vm.filterAlerts, function (alert, i) {
     return _c("div", {
@@ -20425,7 +20192,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.chart-container[data-v-01c0ddb2] {\r\n    width: 100%;\r\n    height: 420px;\r\n    position: relative;\r\n    padding: 12px;\r\n    border-radius: 10px;\r\n    box-shadow: 0 10px 30px rgba(11, 18, 51, 0.5);\r\n    overflow: visible;\r\n    animation: chartEnter-01c0ddb2 700ms cubic-bezier(.2, .9, .2, 1) both;\n}\ncanvas[data-v-01c0ddb2] {\r\n    width: 100% !important;\r\n    height: 100% !important;\r\n    display: block;\r\n    background: transparent;\n}\n@keyframes chartEnter-01c0ddb2 {\n0% {\r\n        opacity: 0;\r\n        transform: translateY(8px);\n}\n100% {\r\n        opacity: 1;\r\n        transform: translateY(0);\n}\n}\r\n\r\n\r\n/* Filter Button Styles */\n.filter-btn[data-v-01c0ddb2] {\r\n    position: absolute;\r\n    top: 4px;\r\n    right: 12px;\r\n    z-index: 10;\r\n    background: rgba(24, 44, 81, 0.15);\r\n    border: 1px solid rgba(53, 64, 85, 0.4);\r\n    color: #354055;\r\n    padding: 4px 10px;\r\n    border-radius: 6px;\r\n    font-size: 12px;\r\n    cursor: pointer;\n}\n.filter-btn[data-v-01c0ddb2]:hover {\r\n    background: rgba(24, 44, 81, 0.25);\n}\n.filter-overlay[data-v-01c0ddb2] {\r\n    position: fixed;\r\n    inset: 0;\r\n    background: rgba(0, 0, 0, 0.6);\r\n    z-index: 1000;\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: center;\n}\n.filter-modal[data-v-01c0ddb2] {\r\n    position: relative;\r\n    width: 80%;\r\n    max-width: 1300px;\r\n    height: 95%;\r\n    background: rgba(24, 44, 81, 0.25);\r\n    border-radius: 12px;\r\n    padding-left: 24px;\r\n    padding-right: 24px;\r\n    padding-bottom: 24px;\r\n    padding-top: 12px;\r\n    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);\n}\n.close-btn[data-v-01c0ddb2] {\r\n    position: absolute;\r\n    top: -6px;\r\n    right: 0px;\r\n    background: transparent;\r\n    border: none;\r\n    color: #cbd5e1;\r\n    font-size: 20px;\r\n    cursor: pointer;\n}\n.close-btn[data-v-01c0ddb2]:hover {\r\n    color: #f43f5e;\n}\n.filter-grid[data-v-01c0ddb2] {\r\n    display: grid;\r\n    grid-template-columns: repeat(5, 1fr);\r\n    grid-template-rows: repeat(6, 1fr);\r\n    gap: 12px;\r\n    margin-top: 24px;\r\n    height: calc(100% - 32px);\n}\n.filter-cell[data-v-01c0ddb2] {\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 8px;\r\n    background: rgba(255, 255, 255, 0.05);\r\n    padding: 0px 10px;\r\n    border-radius: 6px;\r\n    color: #e5e7eb;\r\n    font-size: 12px;\n}\n.filter-cell input[type=\"checkbox\"][data-v-01c0ddb2] {\r\n    width: 16px;\r\n    height: 16px;\r\n    color: #354055;\r\n    cursor: pointer;\r\n    border-radius: 4px;\n}\r\n\r\n/* Date Picker Styles */\n.top-controls[data-v-01c0ddb2] {\r\n    position: absolute;\r\n    top: 12px;\r\n    left: 12px;\r\n    z-index: 30;\r\n    display: flex;\r\n    gap: 10px;\r\n    align-items: flex-start;\n}\n.date-picker-wrap[data-v-01c0ddb2] {\r\n    display: flex;\r\n    flex-direction: column;\r\n    align-items: flex-start;\n}\n.resolution-selector[data-v-01c0ddb2] {\r\n    position: relative;\r\n    margin: 0;\r\n    padding: 0;\r\n    z-index: 20;\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.chart-container[data-v-01c0ddb2] {\r\n    width: 100%;\r\n    height: 420px;\r\n    position: relative;\r\n    padding: 12px;\r\n    border-radius: 10px;\r\n    box-shadow: 0 10px 30px rgba(11, 18, 51, 0.5);\r\n    overflow: visible;\r\n    animation: chartEnter-01c0ddb2 700ms cubic-bezier(.2, .9, .2, 1) both;\n}\ncanvas[data-v-01c0ddb2] {\r\n    width: 100% !important;\r\n    height: 100% !important;\r\n    display: block;\r\n    background: transparent;\n}\n@keyframes chartEnter-01c0ddb2 {\n0% {\r\n        opacity: 0;\r\n        transform: translateY(8px);\n}\n100% {\r\n        opacity: 1;\r\n        transform: translateY(0);\n}\n}\n.filter-btn[data-v-01c0ddb2] {\r\n    position: absolute;\r\n    top: 4px;\r\n    right: 12px;\r\n    z-index: 10;\r\n    background: rgba(24, 44, 81, 0.15);\r\n    border: 1px solid rgba(53, 64, 85, 0.4);\r\n    color: #354055;\r\n    padding: 4px 10px;\r\n    border-radius: 6px;\r\n    font-size: 12px;\r\n    cursor: pointer;\n}\n.filter-btn[data-v-01c0ddb2]:hover {\r\n    background: rgba(24, 44, 81, 0.25);\n}\n.filter-overlay[data-v-01c0ddb2] {\r\n    position: fixed;\r\n    inset: 0;\r\n    background: rgba(0, 0, 0, 0.6);\r\n    z-index: 1000;\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: center;\n}\n.filter-modal[data-v-01c0ddb2] {\r\n    position: relative;\r\n    width: 80%;\r\n    max-width: 1300px;\r\n    height: 95%;\r\n    background: rgba(24, 44, 81, 0.25);\r\n    border-radius: 12px;\r\n    padding-left: 24px;\r\n    padding-right: 24px;\r\n    padding-bottom: 24px;\r\n    padding-top: 12px;\r\n    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);\n}\n.close-btn[data-v-01c0ddb2] {\r\n    position: absolute;\r\n    top: -6px;\r\n    right: 0;\r\n    background: transparent;\r\n    border: none;\r\n    color: #cbd5e1;\r\n    font-size: 20px;\r\n    cursor: pointer;\n}\n.close-btn[data-v-01c0ddb2]:hover {\r\n    color: #f43f5e;\n}\n.filter-grid[data-v-01c0ddb2] {\r\n    display: grid;\r\n    grid-template-columns: repeat(5, 1fr);\r\n    grid-template-rows: repeat(6, 1fr);\r\n    gap: 12px;\r\n    margin-top: 24px;\r\n    height: calc(100% - 32px);\n}\n.filter-cell[data-v-01c0ddb2] {\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 8px;\r\n    background: rgba(255, 255, 255, 0.05);\r\n    padding: 0 10px;\r\n    border-radius: 6px;\r\n    color: #e5e7eb;\r\n    font-size: 12px;\n}\n.filter-cell input[type=\"checkbox\"][data-v-01c0ddb2] {\r\n    width: 16px;\r\n    height: 16px;\r\n    color: #354055;\r\n    cursor: pointer;\r\n    border-radius: 4px;\n}\n.top-controls[data-v-01c0ddb2] {\r\n    position: absolute;\r\n    top: 12px;\r\n    left: 12px;\r\n    z-index: 30;\r\n    display: flex;\r\n    gap: 10px;\r\n    align-items: flex-start;\n}\n.date-picker-wrap[data-v-01c0ddb2] {\r\n    display: flex;\r\n    flex-direction: column;\r\n    align-items: flex-start;\n}\n.resolution-selector[data-v-01c0ddb2] {\r\n    position: relative;\r\n    margin: 0;\r\n    padding: 0;\r\n    z-index: 20;\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -20449,7 +20216,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\r\n/* Custom style to show only one calendar panel */\n.single-panel-range .mx-range-wrapper .mx-calendar+.mx-calendar {\r\n    display: none;\n}\r\n\r\n/* Date range button styling */\n.date-range-input {\r\n    color: #000000 !important;\r\n    font-size: 13px !important;\r\n    font-weight: 600 !important;\r\n    height: 30px !important;\r\n    padding: 4px 30px 4px 8px !important;\r\n    border-radius: 8px !important;\n}\n.force-below-popup.mx-datepicker-popup {\r\n    top: calc(100% + 6px) !important;\r\n    bottom: auto !important;\n}\n.date-error {\r\n    margin-top: 4px;\r\n    font-size: 12px;\r\n    color: #b91c1c;\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.single-panel-range .mx-range-wrapper .mx-calendar + .mx-calendar {\r\n    display: none;\n}\n.date-range-input {\r\n    color: #000000 !important;\r\n    font-size: 13px !important;\r\n    font-weight: 600 !important;\r\n    height: 30px !important;\r\n    padding: 4px 30px 4px 8px !important;\r\n    border-radius: 8px !important;\n}\n.force-below-popup.mx-datepicker-popup {\r\n    top: calc(100% + 6px) !important;\r\n    bottom: auto !important;\n}\n.date-error {\r\n    margin-top: 4px;\r\n    font-size: 12px;\r\n    color: #b91c1c;\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -59909,138 +59676,87 @@ _extends(DatePicker, {
 
 /***/ }),
 
-/***/ "./resources/js/utils/timeseriesAggregation.js":
-/*!*****************************************************!*\
-  !*** ./resources/js/utils/timeseriesAggregation.js ***!
-  \*****************************************************/
+/***/ "./resources/js/utils/timeseriesDisplay.js":
+/*!*************************************************!*\
+  !*** ./resources/js/utils/timeseriesDisplay.js ***!
+  \*************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   aggregateTimeseries: () => (/* binding */ aggregateTimeseries),
-/* harmony export */   pickResolution: () => (/* binding */ pickResolution)
+/* harmony export */   formatChartLabel: () => (/* binding */ formatChartLabel),
+/* harmony export */   formatChartTooltip: () => (/* binding */ formatChartTooltip)
 /* harmony export */ });
-function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t["return"] || t["return"](); } finally { if (u) throw o; } } }; }
-function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
-function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
-function toDate(point) {
-  var _point$ts;
-  var raw = (_point$ts = point.ts) !== null && _point$ts !== void 0 ? _point$ts : point.timestamp;
-  return raw ? new Date(raw) : null;
+function formatUtcParts(date) {
+  var dd = String(date.getUTCDate()).padStart(2, '0');
+  var mm = String(date.getUTCMonth() + 1).padStart(2, '0');
+  var yyyy = String(date.getUTCFullYear());
+  var hh = String(date.getUTCHours()).padStart(2, '0');
+  var min = String(date.getUTCMinutes()).padStart(2, '0');
+  return {
+    date: "".concat(dd, ".").concat(mm, ".").concat(yyyy),
+    shortDate: "".concat(dd, ".").concat(mm),
+    time: "".concat(hh, ":").concat(min)
+  };
 }
-function clamp0_100(n) {
-  var x = Number(n);
-  if (!Number.isFinite(x)) return 0;
-  return Math.max(0, Math.min(100, x));
+function buildFormatters() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var locale = options.locale;
+  var timeZone = options.timeZone;
+  return {
+    date: new Intl.DateTimeFormat(locale, {
+      day: '2-digit',
+      month: '2-digit',
+      timeZone: timeZone
+    }),
+    dateWithYear: new Intl.DateTimeFormat(locale, {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      timeZone: timeZone
+    }),
+    time: new Intl.DateTimeFormat(locale, {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+      timeZone: timeZone
+    })
+  };
 }
-function startOfDayUtc(d) {
-  var x = new Date(d);
-  x.setUTCHours(0, 0, 0, 0);
-  return x;
-}
-function startOfHourUtc(d) {
-  var x = new Date(d);
-  x.setUTCMinutes(0, 0, 0);
-  return x;
-}
-function startOf6HourBucketUtc(d) {
-  var x = startOfHourUtc(d);
-  var h = x.getUTCHours();
-  var bucketH = Math.floor(h / 6) * 6;
-  x.setUTCHours(bucketH, 0, 0, 0);
-  return x;
-}
+function formatChartLabel(ts, resolution, isSingleDay) {
+  var _options$displayMode;
+  var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+  if (ts === null) return 'Live';
+  var date = new Date(ts);
+  if (Number.isNaN(date.getTime())) return '';
+  var displayMode = (_options$displayMode = options.displayMode) !== null && _options$displayMode !== void 0 ? _options$displayMode : 'local';
 
-// Monday-based week start (UTC)
-function startOfWeekMondayUtc(d) {
-  var x = startOfDayUtc(d);
-  var day = x.getUTCDay(); // 0=Sun, 1=Mon, ... , 6=Sat
-  var diff = day === 0 ? -6 : 1 - day; // shift back to Monday
-  x.setUTCDate(x.getUTCDate() + diff);
-  return x;
-}
-function isoLikeKeyUtc(d) {
-  // key for map grouping, stable, sortable (UTC)
-  var y = d.getUTCFullYear();
-  var m = String(d.getUTCMonth() + 1).padStart(2, '0');
-  var day = String(d.getUTCDate()).padStart(2, '0');
-  var h = String(d.getUTCHours()).padStart(2, '0');
-  return "".concat(y, "-").concat(m, "-").concat(day, "T").concat(h, ":00");
-}
-
-// Granularity selection based on range (inclusive days)
-function pickResolution(rangeDays) {
-  if (rangeDays <= 2) return '1h';
-  if (rangeDays <= 14) return '6h';
-  if (rangeDays <= 60) return '1d';
-  return '1w'; // up to 365
-}
-function aggregateTimeseries(points) {
-  var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-    start = _ref.start,
-    end = _ref.end;
-  if (!Array.isArray(points) || points.length === 0) return [];
-
-  // IMPORTANT: interpret start/end as UTC day boundaries to avoid timezone drift.
-  // If start/end are 'YYYY-MM-DD', JS parses them as UTC in modern engines.
-  var s = start ? startOfDayUtc(new Date(start)) : null;
-  var e = end ? startOfDayUtc(new Date(end)) : null;
-
-  // inclusive days
-  var rangeDays = 0;
-  if (s && e) {
-    var msPerDay = 24 * 60 * 60 * 1000;
-    rangeDays = Math.floor((e.getTime() - s.getTime()) / msPerDay) + 1;
+  // Note: '1d' and '1w' labels are display-only. The underlying buckets remain UTC-based.
+  if (displayMode === 'utc') {
+    var parts = formatUtcParts(date);
+    if (resolution === '1d' || resolution === '1w') return parts.shortDate;
+    if (isSingleDay && (resolution === '1h' || resolution === '6h')) return parts.time;
+    return "".concat(parts.shortDate, " ").concat(parts.time);
   }
-  var resolution = pickResolution(rangeDays);
-  var bucketStartFn = resolution === '1h' ? startOfHourUtc : resolution === '6h' ? startOf6HourBucketUtc : resolution === '1d' ? startOfDayUtc : startOfWeekMondayUtc;
-  var map = new Map();
-  var _iterator = _createForOfIteratorHelper(points),
-    _step;
-  try {
-    for (_iterator.s(); !(_step = _iterator.n()).done;) {
-      var _p$value;
-      var p = _step.value;
-      var d = toDate(p);
-      if (!d || Number.isNaN(d.getTime())) continue;
-
-      // filter strictly within range (UTC inclusive)
-      if (s && d < s) continue;
-      if (e) {
-        var endInclusive = new Date(e);
-        endInclusive.setUTCHours(23, 59, 59, 999);
-        if (d > endInclusive) continue;
-      }
-      var bucketStart = bucketStartFn(d);
-      var key = isoLikeKeyUtc(bucketStart);
-      var value = clamp0_100((_p$value = p.value) !== null && _p$value !== void 0 ? _p$value : p.enabled);
-      var entry = map.get(key);
-      if (!entry) {
-        map.set(key, {
-          ts: bucketStart.toISOString(),
-          // UTC ISO
-          sum: value,
-          count: 1
-        });
-      } else {
-        entry.sum += value;
-        entry.count += 1;
-      }
-    }
-  } catch (err) {
-    _iterator.e(err);
-  } finally {
-    _iterator.f();
+  var formatters = buildFormatters(options);
+  if (resolution === '1d' || resolution === '1w') return formatters.date.format(date);
+  if (isSingleDay && (resolution === '1h' || resolution === '6h')) return formatters.time.format(date);
+  return "".concat(formatters.date.format(date), " ").concat(formatters.time.format(date));
+}
+function formatChartTooltip(ts) {
+  var _options$displayMode2;
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  if (ts === null) return 'Live';
+  var date = new Date(ts);
+  if (Number.isNaN(date.getTime())) return '';
+  var displayMode = (_options$displayMode2 = options.displayMode) !== null && _options$displayMode2 !== void 0 ? _options$displayMode2 : 'local';
+  if (displayMode === 'utc') {
+    var parts = formatUtcParts(date);
+    return "".concat(parts.date, " ").concat(parts.time, " UTC");
   }
-  return Array.from(map.values()).sort(function (a, b) {
-    return new Date(a.ts).getTime() - new Date(b.ts).getTime();
-  }).map(function (x) {
-    return {
-      ts: x.ts,
-      value: Math.round(x.sum / x.count)
-    };
-  });
+  var formatters = buildFormatters(options);
+  return "".concat(formatters.dateWithYear.format(date), " ").concat(formatters.time.format(date));
 }
 
 /***/ }),
@@ -60146,6 +59862,66 @@ function toIso8601Utc(date) {
 }
 function toYmdUtc(date) {
   return date.toISOString().slice(0, 10);
+}
+
+/***/ }),
+
+/***/ "./resources/js/utils/timeseriesSeries.js":
+/*!************************************************!*\
+  !*** ./resources/js/utils/timeseriesSeries.js ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   buildLiveSeriesRow: () => (/* binding */ buildLiveSeriesRow),
+/* harmony export */   normalizeSeriesRow: () => (/* binding */ normalizeSeriesRow),
+/* harmony export */   normalizeSeriesRows: () => (/* binding */ normalizeSeriesRows)
+/* harmony export */ });
+function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
+function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
+function clamp0To100(value) {
+  var numeric = Number(value);
+  if (!Number.isFinite(numeric)) {
+    return 0;
+  }
+  return Math.max(0, Math.min(100, Math.round(numeric)));
+}
+function normalizeSeriesRow(row, keys) {
+  var _row$ts, _row$series;
+  var base = {
+    timestamp: (_row$ts = row === null || row === void 0 ? void 0 : row.ts) !== null && _row$ts !== void 0 ? _row$ts : null
+  };
+  var rowSeries = (_row$series = row === null || row === void 0 ? void 0 : row.series) !== null && _row$series !== void 0 ? _row$series : {};
+  keys.forEach(function (key) {
+    base[key] = clamp0To100(rowSeries[key]);
+  });
+  return base;
+}
+function normalizeSeriesRows(rows, keys) {
+  return (rows !== null && rows !== void 0 ? rows : []).slice().sort(function (a, b) {
+    var _a$ts, _b$ts;
+    return String((_a$ts = a === null || a === void 0 ? void 0 : a.ts) !== null && _a$ts !== void 0 ? _a$ts : '').localeCompare(String((_b$ts = b === null || b === void 0 ? void 0 : b.ts) !== null && _b$ts !== void 0 ? _b$ts : ''));
+  }).map(function (row) {
+    return normalizeSeriesRow(row, keys);
+  });
+}
+function buildLiveSeriesRow(valuesByKey) {
+  var row = {
+    timestamp: null
+  };
+  Object.entries(valuesByKey).forEach(function (_ref) {
+    var _ref2 = _slicedToArray(_ref, 2),
+      key = _ref2[0],
+      value = _ref2[1];
+    row[key] = clamp0To100(value);
+  });
+  return row;
 }
 
 /***/ }),
@@ -60647,75 +60423,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_ServiceLevelChart_vue_vue_type_template_id_e66d0222_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./ServiceLevelChart.vue?vue&type=template&id=e66d0222&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=template&id=e66d0222&scoped=true");
 
-
-/***/ }),
-
-/***/ "./utils/timeseries.js":
-/*!*****************************!*\
-  !*** ./utils/timeseries.js ***!
-  \*****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   normalizeHourlyTimeseries: () => (/* binding */ normalizeHourlyTimeseries)
-/* harmony export */ });
-function normalizeHourlyTimeseries(input) {
-  var _options$min, _options$max, _options$fill;
-  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  var min = (_options$min = options.min) !== null && _options$min !== void 0 ? _options$min : 0;
-  var max = (_options$max = options.max) !== null && _options$max !== void 0 ? _options$max : 100;
-  var fill = (_options$fill = options.fill) !== null && _options$fill !== void 0 ? _options$fill : "null";
-
-  // If multiple values exist for the same hour, the last one will be used
-  var byHour = {};
-  var rows = Array.isArray(input) ? input : [];
-
-  // Group values by hour, applying min, max and deduplication
-  for (var i = 0; i < rows.length; i++) {
-    var row = rows[i];
-    var d = new Date(row.ts);
-    if (Number.isNaN(d.getTime())) continue;
-    d.setUTCMinutes(0, 0, 0);
-    var hourKey = d.toISOString();
-    var value = Number(row.value);
-    if (Number.isNaN(value)) continue;
-    value = Math.round(value);
-    if (value < min) value = min;
-    if (value > max) value = max;
-    byHour[hourKey] = value;
-  }
-  var keys = Object.keys(byHour).sort();
-  if (keys.length === 0) return [];
-
-  // Fill any missing hours between first and last timestamp.
-  var out = [];
-  var current = new Date(keys[0]);
-  var end = new Date(keys[keys.length - 1]);
-  var lastValue = null;
-  while (current <= end) {
-    var key = current.toISOString();
-    if (Object.prototype.hasOwnProperty.call(byHour, key)) {
-      var _value = byHour[key];
-      out.push({
-        ts: key,
-        value: _value
-      });
-      lastValue = _value;
-    } else {
-      var _value2 = null;
-      if (fill === "zero") _value2 = 0;
-      if (fill === "forward-fill") _value2 = lastValue;
-      out.push({
-        ts: key,
-        value: _value2
-      });
-    }
-    current = new Date(current.getTime() + 60 * 60 * 1000);
-  }
-  return out;
-}
 
 /***/ })
 

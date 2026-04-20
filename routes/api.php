@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BasfController;
+use App\Http\Controllers\DashboardWidgetsController;
 use App\Http\Controllers\TimeSeriesController;
 
 /*
@@ -33,4 +34,8 @@ Route::middleware([
     AddQueuedCookiesToResponse::class,
     StartSession::class,
     SetupAccountDataForSession::class,
-])->get('/timeseries', [TimeSeriesController::class, 'fetch'])->name('api.timeseries');
+])->group(function (): void {
+    Route::get('/timeseries', [TimeSeriesController::class, 'fetch'])->name('api.timeseries');
+    Route::get('/dashboard/widgets/summary', [DashboardWidgetsController::class, 'summary'])->name('api.dashboard.widgets.summary');
+    Route::get('/dashboard/widgets/series', [DashboardWidgetsController::class, 'series'])->name('api.dashboard.widgets.series');
+});

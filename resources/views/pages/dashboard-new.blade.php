@@ -3,7 +3,8 @@
 @section ('content')
 
     <div class="mx-auto w-full px-5 justify-start items-start">
-        <livewire:dashboard.stats></livewire:dashboard.stats>
+        <div id="vue-dashboard-widgets"></div>
+        <script src="{{ mix('/vue/vue-dashboard-widgets.js') }}"></script>
 {{--        <livewire:filters.dashboard-filters></livewire:filters.dashboard-filters>--}}
 
         <div id="vue-dashboard-filters">
