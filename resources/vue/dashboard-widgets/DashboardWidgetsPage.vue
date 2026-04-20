@@ -66,18 +66,13 @@ export default {
     ServiceLevelWidget,
   },
   data() {
-    const equipmentRange = loadWidgetSettings('equipmentRange', {
-      start: daysAgoYmd(120),
+    const defaultRange = {
+      start: daysAgoYmd(90),
       end: todayYmd(),
-    })
-    const overduesRange = loadWidgetSettings('overduesRange', {
-      start: daysAgoYmd(60),
-      end: todayYmd(),
-    })
-    const alertsRange = loadWidgetSettings('alertsRange', {
-      start: daysAgoYmd(120),
-      end: todayYmd(),
-    })
+    }
+    const equipmentRange = loadWidgetSettings('equipmentRange', defaultRange)
+    const overduesRange = loadWidgetSettings('overduesRange', defaultRange)
+    const alertsRange = loadWidgetSettings('alertsRange', defaultRange)
 
     return {
       summary: { ...DEFAULT_SUMMARY },

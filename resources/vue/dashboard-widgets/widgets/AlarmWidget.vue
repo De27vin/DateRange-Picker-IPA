@@ -38,16 +38,53 @@ export default {
     },
   },
   computed: {
+    inbound() {
+      return Math.max(0, Number(this.summary.inbound_calls || 0))
+    },
+    active() {
+      return Math.max(0, Number(this.summary.active_alarms || 0))
+    },
+    snippetPercent() {
+      return 4
+    },
+    sectionPercentages() {
+      const total = this.inbound + this.active
+
+      if (total <= 0) {
+        return {
+          inbound: 50,
+          active: 50,
+        }
+      }
+
+      if (this.inbound <= 0) {
+        return {
+          inbound: this.snippetPercent,
+          active: 100 - this.snippetPercent,
+        }
+      }
+
+      if (this.active <= 0) {
+        return {
+          inbound: 100 - this.snippetPercent,
+          active: this.snippetPercent,
+        }
+      }
+
+      return {
+        inbound: (this.inbound / total) * 100,
+        active: (this.active / total) * 100,
+      }
+    },
     maxGaugeValue() {
-      return Math.max(1, this.summary.inbound_calls + this.summary.active_alarms)
+      return 100
     },
     sections() {
-      const inbound = Number(this.summary.inbound_calls || 0)
-      const active = Number(this.summary.active_alarms || 0)
+      const inboundPercent = this.sectionPercentages.inbound
 
       return [
-        { from: 0, to: inbound, color: '#4b78a8' },
-        { from: inbound, to: inbound + active, color: '#b42318' },
+        { from: 0, to: inboundPercent, color: '#4b78a8' },
+        { from: inboundPercent, to: 100, color: '#b42318' },
       ]
     },
   },

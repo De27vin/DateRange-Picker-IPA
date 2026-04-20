@@ -2140,18 +2140,13 @@ var DEFAULT_SUMMARY = {
     ServiceLevelWidget: _widgets_ServiceLevelWidget_vue__WEBPACK_IMPORTED_MODULE_5__["default"]
   },
   data: function data() {
-    var equipmentRange = (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.loadWidgetSettings)('equipmentRange', {
-      start: (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.daysAgoYmd)(120),
+    var defaultRange = {
+      start: (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.daysAgoYmd)(90),
       end: (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.todayYmd)()
-    });
-    var overduesRange = (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.loadWidgetSettings)('overduesRange', {
-      start: (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.daysAgoYmd)(60),
-      end: (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.todayYmd)()
-    });
-    var alertsRange = (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.loadWidgetSettings)('alertsRange', {
-      start: (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.daysAgoYmd)(120),
-      end: (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.todayYmd)()
-    });
+    };
+    var equipmentRange = (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.loadWidgetSettings)('equipmentRange', defaultRange);
+    var overduesRange = (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.loadWidgetSettings)('overduesRange', defaultRange);
+    var alertsRange = (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.loadWidgetSettings)('alertsRange', defaultRange);
     return {
       summary: _objectSpread({}, DEFAULT_SUMMARY),
       series: {
@@ -2358,8 +2353,13 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       };
     },
     describeArc: function describeArc(fromValue, toValue) {
-      var startAngle = Math.PI - Math.max(0, fromValue) / this.max * Math.PI;
-      var endAngle = Math.PI - Math.min(this.max, toValue) / this.max * Math.PI;
+      var safeFrom = Math.max(0, Math.min(this.max, Number(fromValue) || 0));
+      var safeTo = Math.max(0, Math.min(this.max, Number(toValue) || 0));
+      if (safeTo <= safeFrom) {
+        safeTo = Math.min(this.max, safeFrom + Math.max(this.max * 0.01, 0.5));
+      }
+      var startAngle = Math.PI - safeFrom / this.max * Math.PI;
+      var endAngle = Math.PI - safeTo / this.max * Math.PI;
       var start = this.polarToCartesian(startAngle);
       var end = this.polarToCartesian(endAngle);
       return "M ".concat(start.x, " ").concat(start.y, " A 76 76 0 0 1 ").concat(end.x, " ").concat(end.y);
@@ -2475,19 +2475,52 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   computed: {
+    inbound: function inbound() {
+      return Math.max(0, Number(this.summary.inbound_calls || 0));
+    },
+    active: function active() {
+      return Math.max(0, Number(this.summary.active_alarms || 0));
+    },
+    snippetPercent: function snippetPercent() {
+      return 4;
+    },
+    sectionPercentages: function sectionPercentages() {
+      var total = this.inbound + this.active;
+      if (total <= 0) {
+        return {
+          inbound: 50,
+          active: 50
+        };
+      }
+      if (this.inbound <= 0) {
+        return {
+          inbound: this.snippetPercent,
+          active: 100 - this.snippetPercent
+        };
+      }
+      if (this.active <= 0) {
+        return {
+          inbound: 100 - this.snippetPercent,
+          active: this.snippetPercent
+        };
+      }
+      return {
+        inbound: this.inbound / total * 100,
+        active: this.active / total * 100
+      };
+    },
     maxGaugeValue: function maxGaugeValue() {
-      return Math.max(1, this.summary.inbound_calls + this.summary.active_alarms);
+      return 100;
     },
     sections: function sections() {
-      var inbound = Number(this.summary.inbound_calls || 0);
-      var active = Number(this.summary.active_alarms || 0);
+      var inboundPercent = this.sectionPercentages.inbound;
       return [{
         from: 0,
-        to: inbound,
+        to: inboundPercent,
         color: '#4b78a8'
       }, {
-        from: inbound,
-        to: inbound + active,
+        from: inboundPercent,
+        to: 100,
         color: '#b42318'
       }];
     }
@@ -2545,8 +2578,8 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
   computed: {
     normalizedSeries: function normalizedSeries() {
       var _this = this;
-      var chartLeft = 14;
-      var chartWidth = 152;
+      var chartLeft = 30;
+      var chartWidth = 136;
       var bucketCount = Math.max(this.series.length, 1);
       var slotWidth = chartWidth / bucketCount;
       var maxValue = Math.max.apply(Math, [1].concat(_toConsumableArray(this.series.map(function (point) {
@@ -2581,6 +2614,17 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
         };
       });
     },
+    yAxis: function yAxis() {
+      var totals = this.series.map(function (point) {
+        var _point$series5, _point$series6;
+        return Number((point === null || point === void 0 ? void 0 : (_point$series5 = point.series) === null || _point$series5 === void 0 ? void 0 : _point$series5.critical) || 0) + Number((point === null || point === void 0 ? void 0 : (_point$series6 = point.series) === null || _point$series6 === void 0 ? void 0 : _point$series6.non_critical) || 0);
+      });
+      var max = Math.max.apply(Math, [1].concat(_toConsumableArray(totals)));
+      return {
+        max: max,
+        mid: Math.round(max / 2)
+      };
+    },
     labelGridStyle: function labelGridStyle() {
       return {
         gridTemplateColumns: "repeat(".concat(Math.max(this.normalizedSeries.length, 1), ", minmax(0, 1fr))")
@@ -2594,14 +2638,9 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     },
     formatLabel: function formatLabel(ts) {
       var date = new Date(ts);
-      var options = this.series.length <= 3 ? {
-        month: 'short',
-        year: '2-digit'
-      } : {
-        day: '2-digit',
-        month: 'short'
-      };
-      return new Intl.DateTimeFormat(undefined, options).format(date);
+      var day = String(date.getUTCDate()).padStart(2, '0');
+      var month = String(date.getUTCMonth() + 1).padStart(2, '0');
+      return "".concat(day, ".").concat(month);
     }
   }
 });
@@ -2657,8 +2696,8 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
   computed: {
     normalizedSeries: function normalizedSeries() {
       var _this = this;
-      var chartLeft = 14;
-      var chartWidth = 152;
+      var chartLeft = 30;
+      var chartWidth = 136;
       var bucketCount = Math.max(this.series.length, 1);
       var slotWidth = chartWidth / bucketCount;
       var maxValue = Math.max.apply(Math, [1].concat(_toConsumableArray(this.series.reduce(function (values, point) {
@@ -2694,6 +2733,19 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
         };
       });
     },
+    yAxis: function yAxis() {
+      var values = this.series.reduce(function (out, point) {
+        var _point$series5, _point$series6;
+        out.push(Number((point === null || point === void 0 ? void 0 : (_point$series5 = point.series) === null || _point$series5 === void 0 ? void 0 : _point$series5.enabled) || 0));
+        out.push(Number((point === null || point === void 0 ? void 0 : (_point$series6 = point.series) === null || _point$series6 === void 0 ? void 0 : _point$series6.disabled) || 0));
+        return out;
+      }, []);
+      var max = Math.max.apply(Math, [1].concat(_toConsumableArray(values)));
+      return {
+        max: max,
+        mid: Math.round(max / 2)
+      };
+    },
     labelGridStyle: function labelGridStyle() {
       return {
         gridTemplateColumns: "repeat(".concat(Math.max(this.normalizedSeries.length, 1), ", minmax(0, 1fr))")
@@ -2707,14 +2759,9 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     },
     formatLabel: function formatLabel(ts) {
       var date = new Date(ts);
-      var options = this.series.length <= 3 ? {
-        month: 'short',
-        year: '2-digit'
-      } : {
-        day: '2-digit',
-        month: 'short'
-      };
-      return new Intl.DateTimeFormat(undefined, options).format(date);
+      var day = String(date.getUTCDate()).padStart(2, '0');
+      var month = String(date.getUTCMonth() + 1).padStart(2, '0');
+      return "".concat(day, ".").concat(month);
     }
   }
 });
@@ -2787,10 +2834,10 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
         return Number((point === null || point === void 0 ? void 0 : (_point$series = point.series) === null || _point$series === void 0 ? void 0 : _point$series[key]) || 0);
       });
       var maxValue = Math.max.apply(Math, [1].concat(_toConsumableArray(values)));
-      var left = 8;
+      var left = 24;
       var right = 172;
-      var baseY = 32;
-      var height = 20;
+      var baseY = 36;
+      var height = 24;
       var step = this.series.length > 1 ? (right - left) / Math.max(this.series.length - 1, 1) : right - left;
       var points = values.map(function (value, index) {
         var x = left + step * index;
@@ -2816,16 +2863,18 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
         }).join(' '),
         projection: "".concat(last.x, ",").concat(last.y, " ").concat(projectedX, ",").concat(projectedY),
         currentPoint: last,
+        max: maxValue,
+        mid: Math.round(maxValue / 2),
         labels: this.series.map(function (point) {
           return _this.formatLabel((point === null || point === void 0 ? void 0 : point.label_ts) || (point === null || point === void 0 ? void 0 : point.bucket_end));
         })
       };
     },
     formatLabel: function formatLabel(ts) {
-      return new Intl.DateTimeFormat(undefined, {
-        day: '2-digit',
-        month: 'short'
-      }).format(new Date(ts));
+      var date = new Date(ts);
+      var day = String(date.getUTCDate()).padStart(2, '0');
+      var month = String(date.getUTCMonth() + 1).padStart(2, '0');
+      return "".concat(day, ".").concat(month);
     },
     labelGridStyle: function labelGridStyle(labels) {
       return {
@@ -3302,12 +3351,38 @@ var render = function render() {
   }, [_c("line", {
     staticClass: "bar-chart__axis",
     attrs: {
-      x1: "10",
+      x1: "24",
       y1: "72",
       x2: "170",
       y2: "72"
     }
-  }), _vm._v(" "), _vm._l(_vm.normalizedSeries, function (point, index) {
+  }), _vm._v(" "), _c("line", {
+    staticClass: "bar-chart__axis",
+    attrs: {
+      x1: "24",
+      y1: "10",
+      x2: "24",
+      y2: "72"
+    }
+  }), _vm._v(" "), _c("text", {
+    staticClass: "bar-chart__y-label",
+    attrs: {
+      x: "2",
+      y: "14"
+    }
+  }, [_vm._v(_vm._s(_vm.yAxis.max))]), _vm._v(" "), _c("text", {
+    staticClass: "bar-chart__y-label",
+    attrs: {
+      x: "2",
+      y: "44"
+    }
+  }, [_vm._v(_vm._s(_vm.yAxis.mid))]), _vm._v(" "), _c("text", {
+    staticClass: "bar-chart__y-label",
+    attrs: {
+      x: "8",
+      y: "74"
+    }
+  }, [_vm._v("0")]), _vm._v(" "), _vm._l(_vm.normalizedSeries, function (point, index) {
     return _c("g", {
       key: index
     }, [_c("rect", {
@@ -3407,12 +3482,38 @@ var render = function render() {
   }, [_c("line", {
     staticClass: "bar-chart__axis",
     attrs: {
-      x1: "10",
+      x1: "24",
       y1: "72",
       x2: "170",
       y2: "72"
     }
-  }), _vm._v(" "), _vm._l(_vm.normalizedSeries, function (point, index) {
+  }), _vm._v(" "), _c("line", {
+    staticClass: "bar-chart__axis",
+    attrs: {
+      x1: "24",
+      y1: "10",
+      x2: "24",
+      y2: "72"
+    }
+  }), _vm._v(" "), _c("text", {
+    staticClass: "bar-chart__y-label",
+    attrs: {
+      x: "2",
+      y: "14"
+    }
+  }, [_vm._v(_vm._s(_vm.yAxis.max))]), _vm._v(" "), _c("text", {
+    staticClass: "bar-chart__y-label",
+    attrs: {
+      x: "2",
+      y: "44"
+    }
+  }, [_vm._v(_vm._s(_vm.yAxis.mid))]), _vm._v(" "), _c("text", {
+    staticClass: "bar-chart__y-label",
+    attrs: {
+      x: "8",
+      y: "74"
+    }
+  }, [_vm._v("0")]), _vm._v(" "), _vm._l(_vm.normalizedSeries, function (point, index) {
     return _c("g", {
       key: index
     }, [_c("rect", {
@@ -3509,17 +3610,43 @@ var render = function render() {
   }, [_c("svg", {
     staticClass: "trend-chart",
     attrs: {
-      viewBox: "0 0 180 44"
+      viewBox: "0 0 180 50"
     }
   }, [_c("line", {
     staticClass: "trend-chart__axis",
     attrs: {
-      x1: "8",
-      y1: "32",
+      x1: "24",
+      y1: "36",
       x2: "172",
-      y2: "32"
+      y2: "36"
     }
-  }), _vm._v(" "), _c("polyline", {
+  }), _vm._v(" "), _c("line", {
+    staticClass: "trend-chart__axis",
+    attrs: {
+      x1: "24",
+      y1: "8",
+      x2: "24",
+      y2: "36"
+    }
+  }), _vm._v(" "), _c("text", {
+    staticClass: "trend-chart__y-label",
+    attrs: {
+      x: "2",
+      y: "10"
+    }
+  }, [_vm._v(_vm._s(_vm.periodic.max))]), _vm._v(" "), _c("text", {
+    staticClass: "trend-chart__y-label",
+    attrs: {
+      x: "2",
+      y: "23"
+    }
+  }, [_vm._v(_vm._s(_vm.periodic.mid))]), _vm._v(" "), _c("text", {
+    staticClass: "trend-chart__y-label",
+    attrs: {
+      x: "8",
+      y: "38"
+    }
+  }, [_vm._v("0")]), _vm._v(" "), _c("polyline", {
     attrs: {
       points: _vm.periodic.points,
       fill: "none",
@@ -3549,17 +3676,43 @@ var render = function render() {
   }, [_c("svg", {
     staticClass: "trend-chart",
     attrs: {
-      viewBox: "0 0 180 44"
+      viewBox: "0 0 180 50"
     }
   }, [_c("line", {
     staticClass: "trend-chart__axis",
     attrs: {
-      x1: "8",
-      y1: "32",
+      x1: "24",
+      y1: "36",
       x2: "172",
-      y2: "32"
+      y2: "36"
     }
-  }), _vm._v(" "), _c("polyline", {
+  }), _vm._v(" "), _c("line", {
+    staticClass: "trend-chart__axis",
+    attrs: {
+      x1: "24",
+      y1: "8",
+      x2: "24",
+      y2: "36"
+    }
+  }), _vm._v(" "), _c("text", {
+    staticClass: "trend-chart__y-label",
+    attrs: {
+      x: "2",
+      y: "10"
+    }
+  }, [_vm._v(_vm._s(_vm.local.max))]), _vm._v(" "), _c("text", {
+    staticClass: "trend-chart__y-label",
+    attrs: {
+      x: "2",
+      y: "23"
+    }
+  }, [_vm._v(_vm._s(_vm.local.mid))]), _vm._v(" "), _c("text", {
+    staticClass: "trend-chart__y-label",
+    attrs: {
+      x: "8",
+      y: "38"
+    }
+  }, [_vm._v("0")]), _vm._v(" "), _c("polyline", {
     attrs: {
       points: _vm.local.points,
       fill: "none",
@@ -3741,12 +3894,6 @@ var render = function render() {
       "show-needle": true
     }
   })], 1)])]), _vm._v(" "), _c("div", {
-    staticClass: "compact-metrics"
-  }, [_c("div", {
-    staticClass: "compact-metrics__labels"
-  }, [_c("div", [_vm._v("Automated checks")]), _vm._v(" "), _c("div", [_vm._v("Physical checks")])]), _vm._v(" "), _c("div", {
-    staticClass: "compact-metrics__values"
-  }, [_c("div", [_vm._v(_vm._s(_vm.summary.automated_checks) + "%")]), _vm._v(" "), _c("div", [_vm._v(_vm._s(_vm.summary.physical_checks) + "%")])])]), _vm._v(" "), _c("div", {
     staticClass: "threshold-legend"
   }, [_c("span", [_c("i", {
     staticClass: "legend-dot",
@@ -3763,7 +3910,13 @@ var render = function render() {
     staticStyle: {
       background: "#16a34a"
     }
-  }), _vm._v(" " + _vm._s(_vm.safeThresholds.orangeMax) + "-100%")])])])]);
+  }), _vm._v(" " + _vm._s(_vm.safeThresholds.orangeMax) + "-100%")])]), _vm._v(" "), _c("div", {
+    staticClass: "compact-metrics"
+  }, [_c("div", {
+    staticClass: "compact-metrics__labels"
+  }, [_c("div", [_vm._v("Automated checks")]), _vm._v(" "), _c("div", [_vm._v("Physical checks")])]), _vm._v(" "), _c("div", {
+    staticClass: "compact-metrics__values"
+  }, [_c("div", [_vm._v(_vm._s(_vm.summary.automated_checks) + "%")]), _vm._v(" "), _c("div", [_vm._v(_vm._s(_vm.summary.physical_checks) + "%")])])])])]);
 };
 var staticRenderFns = [];
 render._withStripped = true;
@@ -3908,7 +4061,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.widget-layout[data-v-7069e315] {\r\n  display: flex;\r\n  flex-direction: column;\r\n  gap: 0.8rem;\r\n  height: 100%;\n}\n.compact-widget__top[data-v-7069e315] {\r\n  display: flex;\r\n  justify-content: flex-end;\n}\n.compact-widget__preview[data-v-7069e315] {\r\n  width: 11rem;\n}\n.bar-chart[data-v-7069e315] {\r\n  width: 100%;\r\n  height: 4.9rem;\n}\n.bar-chart__axis[data-v-7069e315] {\r\n  stroke: rgba(148, 163, 184, 0.45);\r\n  stroke-width: 1.5;\n}\n.mini-labels[data-v-7069e315] {\r\n  display: grid;\r\n  gap: 0.2rem;\r\n  margin-top: 0.1rem;\r\n  color: #64748b;\r\n  font-size: 0.63rem;\r\n  text-align: center;\r\n  font-weight: 600;\n}\n.compact-metrics[data-v-7069e315] {\r\n  display: grid;\r\n  grid-template-columns: minmax(0, 1fr) auto;\r\n  gap: 0.8rem;\r\n  margin-top: auto;\n}\n.compact-metrics__labels[data-v-7069e315],\r\n.compact-metrics__values[data-v-7069e315] {\r\n  display: grid;\r\n  gap: 0.35rem;\r\n  font-size: 0.9rem;\n}\n.compact-metrics__labels[data-v-7069e315] {\r\n  color: #5f7084;\n}\n.compact-metrics__values[data-v-7069e315] {\r\n  text-align: right;\r\n  color: #12243d;\r\n  font-weight: 800;\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.widget-layout[data-v-7069e315] {\r\n  display: flex;\r\n  flex-direction: column;\r\n  gap: 0.8rem;\r\n  height: 100%;\n}\n.compact-widget__top[data-v-7069e315] {\r\n  display: flex;\r\n  justify-content: flex-end;\n}\n.compact-widget__preview[data-v-7069e315] {\r\n  width: 11rem;\n}\n.bar-chart[data-v-7069e315] {\r\n  width: 100%;\r\n  height: 4.9rem;\n}\n.bar-chart__axis[data-v-7069e315] {\r\n  stroke: rgba(148, 163, 184, 0.45);\r\n  stroke-width: 1.5;\n}\n.bar-chart__y-label[data-v-7069e315] {\r\n  fill: #7b8ca1;\r\n  font-size: 13px;\r\n  font-weight: 700;\n}\n.mini-labels[data-v-7069e315] {\r\n  display: grid;\r\n  gap: 0.2rem;\r\n  margin-top: 0.1rem;\r\n  color: #64748b;\r\n  font-size: 0.63rem;\r\n  text-align: center;\r\n  font-weight: 600;\n}\n.compact-metrics[data-v-7069e315] {\r\n  display: grid;\r\n  grid-template-columns: minmax(0, 1fr) auto;\r\n  gap: 0.8rem;\r\n  margin-top: auto;\n}\n.compact-metrics__labels[data-v-7069e315],\r\n.compact-metrics__values[data-v-7069e315] {\r\n  display: grid;\r\n  gap: 0.35rem;\r\n  font-size: 0.9rem;\n}\n.compact-metrics__labels[data-v-7069e315] {\r\n  color: #5f7084;\n}\n.compact-metrics__values[data-v-7069e315] {\r\n  text-align: right;\r\n  color: #12243d;\r\n  font-weight: 800;\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -3932,7 +4085,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.widget-layout[data-v-3bfcecf0] {\r\n  display: flex;\r\n  flex-direction: column;\r\n  gap: 0.8rem;\r\n  height: 100%;\n}\n.compact-widget__top[data-v-3bfcecf0] {\r\n  display: flex;\r\n  justify-content: flex-end;\n}\n.compact-widget__preview[data-v-3bfcecf0] {\r\n  width: 11rem;\n}\n.bar-chart[data-v-3bfcecf0] {\r\n  width: 100%;\r\n  height: 4.9rem;\n}\n.bar-chart__axis[data-v-3bfcecf0] {\r\n  stroke: rgba(148, 163, 184, 0.45);\r\n  stroke-width: 1.5;\n}\n.mini-labels[data-v-3bfcecf0] {\r\n  display: grid;\r\n  gap: 0.2rem;\r\n  margin-top: 0.1rem;\r\n  color: #64748b;\r\n  font-size: 0.63rem;\r\n  text-align: center;\r\n  font-weight: 600;\n}\n.compact-metrics[data-v-3bfcecf0] {\r\n  display: grid;\r\n  grid-template-columns: minmax(0, 1fr) auto;\r\n  gap: 0.8rem;\r\n  margin-top: auto;\n}\n.compact-metrics__labels[data-v-3bfcecf0],\r\n.compact-metrics__values[data-v-3bfcecf0] {\r\n  display: grid;\r\n  gap: 0.35rem;\r\n  font-size: 0.9rem;\n}\n.compact-metrics__labels[data-v-3bfcecf0] {\r\n  color: #5f7084;\n}\n.compact-metrics__values[data-v-3bfcecf0] {\r\n  text-align: right;\r\n  color: #12243d;\r\n  font-weight: 800;\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.widget-layout[data-v-3bfcecf0] {\r\n  display: flex;\r\n  flex-direction: column;\r\n  gap: 0.8rem;\r\n  height: 100%;\n}\n.compact-widget__top[data-v-3bfcecf0] {\r\n  display: flex;\r\n  justify-content: flex-end;\n}\n.compact-widget__preview[data-v-3bfcecf0] {\r\n  width: 11rem;\n}\n.bar-chart[data-v-3bfcecf0] {\r\n  width: 100%;\r\n  height: 4.9rem;\n}\n.bar-chart__axis[data-v-3bfcecf0] {\r\n  stroke: rgba(148, 163, 184, 0.45);\r\n  stroke-width: 1.5;\n}\n.bar-chart__y-label[data-v-3bfcecf0] {\r\n  fill: #7b8ca1;\r\n  font-size: 13px;\r\n  font-weight: 700;\n}\n.mini-labels[data-v-3bfcecf0] {\r\n  display: grid;\r\n  gap: 0.2rem;\r\n  margin-top: 0.1rem;\r\n  color: #64748b;\r\n  font-size: 0.63rem;\r\n  text-align: center;\r\n  font-weight: 600;\n}\n.compact-metrics[data-v-3bfcecf0] {\r\n  display: grid;\r\n  grid-template-columns: minmax(0, 1fr) auto;\r\n  gap: 0.8rem;\r\n  margin-top: auto;\n}\n.compact-metrics__labels[data-v-3bfcecf0],\r\n.compact-metrics__values[data-v-3bfcecf0] {\r\n  display: grid;\r\n  gap: 0.35rem;\r\n  font-size: 0.9rem;\n}\n.compact-metrics__labels[data-v-3bfcecf0] {\r\n  color: #5f7084;\n}\n.compact-metrics__values[data-v-3bfcecf0] {\r\n  text-align: right;\r\n  color: #12243d;\r\n  font-weight: 800;\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -3956,7 +4109,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.widget-layout[data-v-32776e5e] {\r\n  display: flex;\r\n  flex-direction: column;\r\n  gap: 0.8rem;\r\n  height: 100%;\n}\n.compact-widget__top[data-v-32776e5e] {\r\n  display: flex;\r\n  justify-content: flex-end;\n}\n.trend-preview[data-v-32776e5e] {\r\n  width: 11rem;\n}\n.trend-preview__row + .trend-preview__row[data-v-32776e5e] {\r\n  margin-top: 0.2rem;\n}\n.trend-chart[data-v-32776e5e] {\r\n  width: 100%;\r\n  height: 2.35rem;\n}\n.trend-chart__axis[data-v-32776e5e] {\r\n  stroke: rgba(148, 163, 184, 0.34);\r\n  stroke-width: 1.4;\n}\n.mini-labels[data-v-32776e5e] {\r\n  display: grid;\r\n  gap: 0.2rem;\r\n  margin-top: 0.18rem;\r\n  color: #64748b;\r\n  font-size: 0.63rem;\r\n  text-align: center;\r\n  font-weight: 600;\n}\n.compact-metrics[data-v-32776e5e] {\r\n  display: grid;\r\n  grid-template-columns: minmax(0, 1fr) auto;\r\n  gap: 0.8rem;\r\n  margin-top: auto;\n}\n.compact-metrics__labels[data-v-32776e5e],\r\n.compact-metrics__values[data-v-32776e5e] {\r\n  display: grid;\r\n  gap: 0.35rem;\r\n  font-size: 0.9rem;\n}\n.compact-metrics__labels[data-v-32776e5e] {\r\n  color: #5f7084;\n}\n.compact-metrics__values[data-v-32776e5e] {\r\n  text-align: right;\r\n  color: #12243d;\r\n  font-weight: 800;\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.widget-layout[data-v-32776e5e] {\r\n  display: flex;\r\n  flex-direction: column;\r\n  gap: 0.8rem;\r\n  height: 100%;\n}\n.compact-widget__top[data-v-32776e5e] {\r\n  display: flex;\r\n  justify-content: flex-end;\n}\n.trend-preview[data-v-32776e5e] {\r\n  width: 11rem;\n}\n.trend-preview__row + .trend-preview__row[data-v-32776e5e] {\r\n  margin-top: 0.2rem;\n}\n.trend-chart[data-v-32776e5e] {\r\n  width: 100%;\r\n  height: 2.35rem;\n}\n.trend-chart__axis[data-v-32776e5e] {\r\n  stroke: rgba(148, 163, 184, 0.34);\r\n  stroke-width: 1.4;\n}\n.trend-chart__y-label[data-v-32776e5e] {\r\n  fill: #7b8ca1;\r\n  font-size: 13px;\r\n  font-weight: 700;\n}\n.mini-labels[data-v-32776e5e] {\r\n  display: grid;\r\n  gap: 0.2rem;\r\n  margin-top: 0.18rem;\r\n  color: #64748b;\r\n  font-size: 0.63rem;\r\n  text-align: center;\r\n  font-weight: 600;\n}\n.compact-metrics[data-v-32776e5e] {\r\n  display: grid;\r\n  grid-template-columns: minmax(0, 1fr) auto;\r\n  gap: 0.8rem;\r\n  margin-top: auto;\n}\n.compact-metrics__labels[data-v-32776e5e],\r\n.compact-metrics__values[data-v-32776e5e] {\r\n  display: grid;\r\n  gap: 0.35rem;\r\n  font-size: 0.9rem;\n}\n.compact-metrics__labels[data-v-32776e5e] {\r\n  color: #5f7084;\n}\n.compact-metrics__values[data-v-32776e5e] {\r\n  text-align: right;\r\n  color: #12243d;\r\n  font-weight: 800;\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -3980,7 +4133,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.settings-panel[data-v-00c72ecd] {\r\n  padding: 0.9rem;\r\n  border-radius: 1rem;\r\n  background: #f8fbff;\r\n  border: 1px solid rgba(148, 163, 184, 0.2);\n}\n.settings-panel__grid[data-v-00c72ecd] {\r\n  display: grid;\r\n  grid-template-columns: repeat(2, minmax(0, 1fr));\r\n  gap: 0.75rem;\n}\n.settings-field[data-v-00c72ecd] {\r\n  display: flex;\r\n  flex-direction: column;\r\n  gap: 0.4rem;\r\n  color: #516273;\r\n  font-size: 0.8rem;\r\n  font-weight: 600;\n}\n.settings-field input[data-v-00c72ecd] {\r\n  min-height: 2.35rem;\r\n  padding: 0.45rem 0.65rem;\r\n  border-radius: 0.75rem;\r\n  border: 1px solid rgba(148, 163, 184, 0.32);\r\n  background: #ffffff;\r\n  color: #12243d;\n}\n.settings-panel__actions[data-v-00c72ecd] {\r\n  display: flex;\r\n  justify-content: flex-end;\r\n  gap: 0.6rem;\r\n  margin-top: 0.8rem;\n}\n.settings-button[data-v-00c72ecd] {\r\n  min-width: 5.5rem;\r\n  min-height: 2.25rem;\r\n  padding: 0 0.85rem;\r\n  border-radius: 999px;\r\n  font-size: 0.8rem;\r\n  font-weight: 700;\n}\n.settings-button--ghost[data-v-00c72ecd] {\r\n  border: 1px solid rgba(148, 163, 184, 0.34);\r\n  color: #516273;\r\n  background: #ffffff;\n}\n.settings-button--primary[data-v-00c72ecd] {\r\n  border: 0;\r\n  color: #ffffff;\r\n  background: linear-gradient(135deg, #355c8c, #4b78a8);\n}\n.widget-layout[data-v-00c72ecd] {\r\n  display: flex;\r\n  flex-direction: column;\r\n  gap: 0.8rem;\r\n  height: 100%;\n}\n.compact-widget__top[data-v-00c72ecd] {\r\n  display: flex;\r\n  justify-content: flex-end;\n}\n.gauge-preview[data-v-00c72ecd] {\r\n  width: 11rem;\r\n  display: grid;\r\n  grid-template-columns: repeat(2, minmax(0, 1fr));\r\n  gap: 0.35rem;\r\n  align-items: end;\n}\n.gauge-preview__item[data-v-00c72ecd] {\r\n  display: flex;\r\n  align-items: center;\n}\n.compact-metrics[data-v-00c72ecd] {\r\n  display: grid;\r\n  grid-template-columns: minmax(0, 1fr) auto;\r\n  gap: 0.8rem;\r\n  margin-top: auto;\n}\n.compact-metrics__labels[data-v-00c72ecd],\r\n.compact-metrics__values[data-v-00c72ecd] {\r\n  display: grid;\r\n  gap: 0.35rem;\r\n  font-size: 0.9rem;\n}\n.compact-metrics__labels[data-v-00c72ecd] {\r\n  color: #5f7084;\n}\n.compact-metrics__values[data-v-00c72ecd] {\r\n  text-align: right;\r\n  color: #12243d;\r\n  font-weight: 800;\n}\n.threshold-legend[data-v-00c72ecd] {\r\n  display: flex;\r\n  justify-content: flex-end;\r\n  gap: 0.7rem;\r\n  flex-wrap: wrap;\r\n  margin-top: 0.2rem;\r\n  color: #64748b;\r\n  font-size: 0.68rem;\r\n  font-weight: 600;\n}\n.threshold-legend span[data-v-00c72ecd] {\r\n  display: inline-flex;\r\n  align-items: center;\r\n  gap: 0.4rem;\n}\n.legend-dot[data-v-00c72ecd] {\r\n  width: 0.58rem;\r\n  height: 0.58rem;\r\n  border-radius: 999px;\r\n  display: inline-block;\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.settings-panel[data-v-00c72ecd] {\r\n  padding: 0.9rem;\r\n  border-radius: 1rem;\r\n  background: #f8fbff;\r\n  border: 1px solid rgba(148, 163, 184, 0.2);\n}\n.settings-panel__grid[data-v-00c72ecd] {\r\n  display: grid;\r\n  grid-template-columns: repeat(2, minmax(0, 1fr));\r\n  gap: 0.75rem;\n}\n.settings-field[data-v-00c72ecd] {\r\n  display: flex;\r\n  flex-direction: column;\r\n  gap: 0.4rem;\r\n  color: #516273;\r\n  font-size: 0.8rem;\r\n  font-weight: 600;\n}\n.settings-field input[data-v-00c72ecd] {\r\n  min-height: 2.35rem;\r\n  padding: 0.45rem 0.65rem;\r\n  border-radius: 0.75rem;\r\n  border: 1px solid rgba(148, 163, 184, 0.32);\r\n  background: #ffffff;\r\n  color: #12243d;\n}\n.settings-panel__actions[data-v-00c72ecd] {\r\n  display: flex;\r\n  justify-content: flex-end;\r\n  gap: 0.6rem;\r\n  margin-top: 0.8rem;\n}\n.settings-button[data-v-00c72ecd] {\r\n  min-width: 5.5rem;\r\n  min-height: 2.25rem;\r\n  padding: 0 0.85rem;\r\n  border-radius: 999px;\r\n  font-size: 0.8rem;\r\n  font-weight: 700;\n}\n.settings-button--ghost[data-v-00c72ecd] {\r\n  border: 1px solid rgba(148, 163, 184, 0.34);\r\n  color: #516273;\r\n  background: #ffffff;\n}\n.settings-button--primary[data-v-00c72ecd] {\r\n  border: 0;\r\n  color: #ffffff;\r\n  background: linear-gradient(135deg, #355c8c, #4b78a8);\n}\n.widget-layout[data-v-00c72ecd] {\r\n  display: flex;\r\n  flex-direction: column;\r\n  gap: 0.8rem;\r\n  height: 100%;\n}\n.compact-widget__top[data-v-00c72ecd] {\r\n  display: flex;\r\n  align-items: flex-start;\r\n  justify-content: flex-end;\r\n  gap: 0.35rem;\n}\n.gauge-preview[data-v-00c72ecd] {\r\n  width: 11rem;\r\n  display: grid;\r\n  grid-template-columns: repeat(2, minmax(0, 1fr));\r\n  gap: 0.35rem;\r\n  align-items: end;\n}\n.gauge-preview__item[data-v-00c72ecd] {\r\n  display: flex;\r\n  align-items: center;\n}\n.compact-metrics[data-v-00c72ecd] {\r\n  display: grid;\r\n  grid-template-columns: minmax(0, 1fr) auto;\r\n  gap: 0.8rem;\r\n  margin-top: auto;\n}\n.compact-metrics__labels[data-v-00c72ecd],\r\n.compact-metrics__values[data-v-00c72ecd] {\r\n  display: grid;\r\n  gap: 0.35rem;\r\n  font-size: 0.9rem;\n}\n.compact-metrics__labels[data-v-00c72ecd] {\r\n  color: #5f7084;\n}\n.compact-metrics__values[data-v-00c72ecd] {\r\n  text-align: right;\r\n  color: #12243d;\r\n  font-weight: 800;\n}\n.threshold-legend[data-v-00c72ecd] {\r\n  display: flex;\r\n  justify-content: end;\r\n  gap: 0.7rem;\r\n  flex-wrap: wrap;\r\n  margin-top: 0.05rem;\r\n  color: #64748b;\r\n  font-size: 0.68rem;\r\n  font-weight: 600;\n}\n.threshold-legend span[data-v-00c72ecd] {\r\n  display: inline-flex;\r\n  align-items: center;\r\n  gap: 0.4rem;\n}\n.legend-dot[data-v-00c72ecd] {\r\n  width: 0.58rem;\r\n  height: 0.58rem;\r\n  border-radius: 999px;\r\n  display: inline-block;\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -16913,7 +17066,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
-var STORAGE_PREFIX = 'dashboard_widget_settings_v1:';
+var STORAGE_PREFIX = 'dashboard_widget_settings_v2:';
 function loadWidgetSettings(key, fallback) {
   if (typeof window === 'undefined' || !window.localStorage) {
     return fallback;

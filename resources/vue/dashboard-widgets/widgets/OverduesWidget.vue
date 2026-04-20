@@ -8,16 +8,24 @@
       <div class="compact-widget__top">
         <div class="trend-preview">
           <div class="trend-preview__row">
-            <svg viewBox="0 0 180 44" class="trend-chart">
-              <line x1="8" y1="32" x2="172" y2="32" class="trend-chart__axis" />
+            <svg viewBox="0 0 180 50" class="trend-chart">
+              <line x1="24" y1="36" x2="172" y2="36" class="trend-chart__axis" />
+              <line x1="24" y1="8" x2="24" y2="36" class="trend-chart__axis" />
+              <text x="2" y="10" class="trend-chart__y-label">{{ periodic.max }}</text>
+              <text x="2" y="23" class="trend-chart__y-label">{{ periodic.mid }}</text>
+              <text x="8" y="38" class="trend-chart__y-label">0</text>
               <polyline :points="periodic.points" fill="none" stroke="#355c8c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
               <polyline :points="periodic.projection" fill="none" stroke="#355c8c" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 4" />
               <circle :cx="periodic.currentPoint.x" :cy="periodic.currentPoint.y" r="2.8" fill="#355c8c" />
             </svg>
           </div>
           <div class="trend-preview__row">
-            <svg viewBox="0 0 180 44" class="trend-chart">
-              <line x1="8" y1="32" x2="172" y2="32" class="trend-chart__axis" />
+            <svg viewBox="0 0 180 50" class="trend-chart">
+              <line x1="24" y1="36" x2="172" y2="36" class="trend-chart__axis" />
+              <line x1="24" y1="8" x2="24" y2="36" class="trend-chart__axis" />
+              <text x="2" y="10" class="trend-chart__y-label">{{ local.max }}</text>
+              <text x="2" y="23" class="trend-chart__y-label">{{ local.mid }}</text>
+              <text x="8" y="38" class="trend-chart__y-label">0</text>
               <polyline :points="local.points" fill="none" stroke="#4b78a8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
               <polyline :points="local.projection" fill="none" stroke="#4b78a8" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 4" />
               <circle :cx="local.currentPoint.x" :cy="local.currentPoint.y" r="2.8" fill="#4b78a8" />
@@ -88,10 +96,10 @@ export default {
     buildTrend(key) {
       const values = this.series.map((point) => Number(point?.series?.[key] || 0))
       const maxValue = Math.max(1, ...values)
-      const left = 8
+      const left = 24
       const right = 172
-      const baseY = 32
-      const height = 20
+      const baseY = 36
+      const height = 24
       const step = this.series.length > 1 ? ((right - left) / Math.max(this.series.length - 1, 1)) : (right - left)
       const points = values.map((value, index) => {
         const x = left + (step * index)
@@ -109,11 +117,16 @@ export default {
         points: points.map((point) => `${point.x},${point.y}`).join(' '),
         projection: `${last.x},${last.y} ${projectedX},${projectedY}`,
         currentPoint: last,
+        max: maxValue,
+        mid: Math.round(maxValue / 2),
         labels: this.series.map((point) => this.formatLabel(point?.label_ts || point?.bucket_end)),
       }
     },
     formatLabel(ts) {
-      return new Intl.DateTimeFormat(undefined, { day: '2-digit', month: 'short' }).format(new Date(ts))
+      const date = new Date(ts)
+      const day = String(date.getUTCDate()).padStart(2, '0')
+      const month = String(date.getUTCMonth() + 1).padStart(2, '0')
+      return `${day}.${month}`
     },
     labelGridStyle(labels) {
       return {
@@ -153,6 +166,12 @@ export default {
 .trend-chart__axis {
   stroke: rgba(148, 163, 184, 0.34);
   stroke-width: 1.4;
+}
+
+.trend-chart__y-label {
+  fill: #7b8ca1;
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .mini-labels {

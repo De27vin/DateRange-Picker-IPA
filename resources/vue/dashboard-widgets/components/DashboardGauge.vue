@@ -79,8 +79,15 @@ export default {
       }
     },
     describeArc(fromValue, toValue) {
-      const startAngle = Math.PI - ((Math.max(0, fromValue) / this.max) * Math.PI)
-      const endAngle = Math.PI - ((Math.min(this.max, toValue) / this.max) * Math.PI)
+      const safeFrom = Math.max(0, Math.min(this.max, Number(fromValue) || 0))
+      let safeTo = Math.max(0, Math.min(this.max, Number(toValue) || 0))
+
+      if (safeTo <= safeFrom) {
+        safeTo = Math.min(this.max, safeFrom + Math.max(this.max * 0.01, 0.5))
+      }
+
+      const startAngle = Math.PI - ((safeFrom / this.max) * Math.PI)
+      const endAngle = Math.PI - ((safeTo / this.max) * Math.PI)
       const start = this.polarToCartesian(startAngle)
       const end = this.polarToCartesian(endAngle)
 

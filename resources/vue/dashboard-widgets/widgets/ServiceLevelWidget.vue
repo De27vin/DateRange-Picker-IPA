@@ -31,6 +31,12 @@
         </div>
       </div>
 
+      <div class="threshold-legend">
+        <span><i class="legend-dot" style="background:#dc2626"></i> 0-{{ safeThresholds.redMax }}%</span>
+        <span><i class="legend-dot" style="background:#f59e0b"></i> {{ safeThresholds.redMax }}-{{ safeThresholds.orangeMax }}%</span>
+        <span><i class="legend-dot" style="background:#16a34a"></i> {{ safeThresholds.orangeMax }}-100%</span>
+      </div>
+
       <div class="compact-metrics">
         <div class="compact-metrics__labels">
           <div>Automated checks</div>
@@ -40,12 +46,6 @@
           <div>{{ summary.automated_checks }}%</div>
           <div>{{ summary.physical_checks }}%</div>
         </div>
-      </div>
-
-      <div class="threshold-legend">
-        <span><i class="legend-dot" style="background:#dc2626"></i> 0-{{ safeThresholds.redMax }}%</span>
-        <span><i class="legend-dot" style="background:#f59e0b"></i> {{ safeThresholds.redMax }}-{{ safeThresholds.orangeMax }}%</span>
-        <span><i class="legend-dot" style="background:#16a34a"></i> {{ safeThresholds.orangeMax }}-100%</span>
       </div>
     </div>
   </WidgetCard>
@@ -182,7 +182,9 @@ export default {
 
 .compact-widget__top {
   display: flex;
+  align-items: flex-start;
   justify-content: flex-end;
+  gap: 0.35rem;
 }
 
 .gauge-preview {
@@ -224,10 +226,10 @@ export default {
 
 .threshold-legend {
   display: flex;
-  justify-content: flex-end;
+  justify-content: end;
   gap: 0.7rem;
   flex-wrap: wrap;
-  margin-top: 0.2rem;
+  margin-top: 0.05rem;
   color: #64748b;
   font-size: 0.68rem;
   font-weight: 600;

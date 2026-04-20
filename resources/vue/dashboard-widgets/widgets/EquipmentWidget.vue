@@ -8,7 +8,12 @@
       <div class="compact-widget__top">
         <div class="chart-wrap compact-widget__preview">
           <svg viewBox="0 0 180 94" class="bar-chart">
-            <line x1="10" y1="72" x2="170" y2="72" class="bar-chart__axis" />
+            <line x1="24" y1="72" x2="170" y2="72" class="bar-chart__axis" />
+            <line x1="24" y1="10" x2="24" y2="72" class="bar-chart__axis" />
+
+            <text x="2" y="14" class="bar-chart__y-label">{{ yAxis.max }}</text>
+            <text x="2" y="44" class="bar-chart__y-label">{{ yAxis.mid }}</text>
+            <text x="8" y="74" class="bar-chart__y-label">0</text>
 
             <g v-for="(point, index) in normalizedSeries" :key="index">
               <rect
@@ -80,8 +85,8 @@ export default {
   },
   computed: {
     normalizedSeries() {
-      const chartLeft = 14
-      const chartWidth = 152
+      const chartLeft = 30
+      const chartWidth = 136
       const bucketCount = Math.max(this.series.length, 1)
       const slotWidth = chartWidth / bucketCount
       const maxValue = Math.max(1, ...this.series.reduce((values, point) => {
@@ -117,6 +122,19 @@ export default {
         }
       })
     },
+    yAxis() {
+      const values = this.series.reduce((out, point) => {
+        out.push(Number(point?.series?.enabled || 0))
+        out.push(Number(point?.series?.disabled || 0))
+        return out
+      }, [])
+      const max = Math.max(1, ...values)
+
+      return {
+        max,
+        mid: Math.round(max / 2),
+      }
+    },
     labelGridStyle() {
       return {
         gridTemplateColumns: `repeat(${Math.max(this.normalizedSeries.length, 1)}, minmax(0, 1fr))`,
@@ -130,11 +148,9 @@ export default {
     },
     formatLabel(ts) {
       const date = new Date(ts)
-      const options = this.series.length <= 3
-        ? { month: 'short', year: '2-digit' }
-        : { day: '2-digit', month: 'short' }
-
-      return new Intl.DateTimeFormat(undefined, options).format(date)
+      const day = String(date.getUTCDate()).padStart(2, '0')
+      const month = String(date.getUTCMonth() + 1).padStart(2, '0')
+      return `${day}.${month}`
     },
   },
 }
@@ -165,6 +181,12 @@ export default {
 .bar-chart__axis {
   stroke: rgba(148, 163, 184, 0.45);
   stroke-width: 1.5;
+}
+
+.bar-chart__y-label {
+  fill: #7b8ca1;
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .mini-labels {

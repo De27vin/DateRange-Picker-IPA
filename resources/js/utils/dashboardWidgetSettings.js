@@ -1,4 +1,4 @@
-const STORAGE_PREFIX = 'dashboard_widget_settings_v1:'
+const STORAGE_PREFIX = 'dashboard_widget_settings_v2:'
 
 export function loadWidgetSettings(key, fallback) {
   if (typeof window === 'undefined' || !window.localStorage) {
