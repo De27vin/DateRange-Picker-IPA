@@ -11,15 +11,12 @@ trait SeedsTimeseriesPoints
 {
     protected function resetTimeseriesPointsTable(): void
     {
-        Schema::dropIfExists('timeseries_snapshots');
-        Schema::create('timeseries_snapshots', function (Blueprint $table): void {
-            $table->id();
-            $table->unsignedBigInteger('account_id');
-            $table->timestamp('ts_utc');
-            $table->json('data');
-            $table->timestamps();
-            $table->unique(['account_id', 'ts_utc']);
-            $table->index(['account_id', 'ts_utc']);
+        Schema::dropIfExists('timeseries');
+        Schema::create('timeseries', function (Blueprint $table): void {
+            $table->unsignedInteger('ts_account_id');
+            $table->timestamp('ts_timestamp');
+            $table->json('ts_data');
+            $table->primary(['ts_account_id', 'ts_timestamp']);
         });
     }
 
@@ -44,13 +41,11 @@ trait SeedsTimeseriesPoints
 
             TimeseriesSnapshot::query()->updateOrCreate(
                 [
-                    'account_id' => 1,
-                    'ts_utc' => $ts->toDateTimeString(),
+                    'ts_account_id' => 1,
+                    'ts_timestamp' => $ts->toDateTimeString(),
                 ],
                 [
-                    'data' => $snapshot,
-                    'created_at' => $ts->toDateTimeString(),
-                    'updated_at' => $ts->toDateTimeString(),
+                    'ts_data' => $snapshot,
                 ]
             );
         }

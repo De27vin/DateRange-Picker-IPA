@@ -16,7 +16,7 @@ class RealisticTimeseriesGenerator
     }
 
     /**
-     * @return array<int, array{account_id: int, ts_utc: string, data: string, created_at: string, updated_at: string}>
+     * @return array<int, array{ts_account_id: int, ts_timestamp: string, ts_data: string}>
      */
     public function generateForAccount(int $accountId, CarbonImmutable $startUtc, CarbonImmutable $endUtc): array
     {
@@ -54,11 +54,9 @@ class RealisticTimeseriesGenerator
             ];
 
             $rows[] = [
-                'account_id' => $accountId,
-                'ts_utc' => $ts->toDateTimeString(),
-                'data' => json_encode($snapshot, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-                'created_at' => $ts->toDateTimeString(),
-                'updated_at' => $ts->toDateTimeString(),
+                'ts_account_id' => $accountId,
+                'ts_timestamp' => $ts->toDateTimeString(),
+                'ts_data' => json_encode($snapshot, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
             ];
         }
 

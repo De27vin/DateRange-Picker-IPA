@@ -28,9 +28,9 @@ class CollectTimeseriesSnapshotTest extends TestCase
 
         $this->assertSame(1, $written);
 
-        $snapshot = TimeseriesSnapshot::query()->where('account_id', 1)->firstOrFail();
+        $snapshot = TimeseriesSnapshot::query()->where('ts_account_id', 1)->firstOrFail();
 
-        $this->assertSame('2026-04-07 10:00:00', $snapshot->ts_utc->utc()->toDateTimeString());
+        $this->assertSame('2026-04-07 10:00:00', $snapshot->ts_timestamp->utc()->toDateTimeString());
         $this->assertSame([
             'devices' => [
                 'enabled' => 3,
@@ -52,7 +52,7 @@ class CollectTimeseriesSnapshotTest extends TestCase
                 'periodical_calls' => 0,
                 'local_checks' => 2,
             ],
-        ], $snapshot->data);
+        ], $snapshot->ts_data);
     }
 
     public function test_it_upserts_the_same_hour_instead_of_creating_duplicates(): void
@@ -117,14 +117,25 @@ class CollectTimeseriesSnapshotTest extends TestCase
             $table->timestamp('da_timestamp')->nullable();
         });
 
-        Schema::create('timeseries_snapshots', function (Blueprint $table): void {
-            $table->id();
-            $table->unsignedBigInteger('account_id');
-            $table->timestamp('ts_utc');
-            $table->json('data');
-            $table->timestamps();
+        Schema::create('session_types', function (Blueprint $table): void {
+            $table->unsignedBigInteger('st_id')->primary();
+            $table->string('st_type');
+        });
 
-            $table->unique(['account_id', 'ts_utc']);
+        Schema::create('sessions', function (Blueprint $table): void {
+            $table->unsignedBigInteger('session_id')->primary();
+            $table->unsignedBigInteger('session_st_id');
+            $table->unsignedBigInteger('session_account_id')->nullable();
+            $table->unsignedBigInteger('session_device_id')->nullable();
+            $table->unsignedBigInteger('session_ref_id')->nullable();
+            $table->timestamp('session_end')->nullable();
+        });
+
+        Schema::create('timeseries', function (Blueprint $table): void {
+            $table->unsignedInteger('ts_account_id');
+            $table->timestamp('ts_timestamp');
+            $table->json('ts_data');
+            $table->primary(['ts_account_id', 'ts_timestamp']);
         });
     }
 
@@ -184,6 +195,15 @@ class CollectTimeseriesSnapshotTest extends TestCase
             ['at_id' => 2, 'at_type' => 'VOICE'],
             ['at_id' => 3, 'at_type' => 'BATDEF'],
             ['at_id' => 4, 'at_type' => 'TECH'],
+        ]);
+
+        \DB::table('session_types')->insert([
+            ['st_id' => 1, 'st_type' => 'ALARM'],
+            ['st_id' => 2, 'st_type' => 'AGENT'],
+        ]);
+
+        \DB::table('sessions')->insert([
+            ['session_id' => 1, 'session_st_id' => 1, 'session_account_id' => 1, 'session_device_id' => 1001, 'session_end' => null],
         ]);
 
         \DB::table('device_alerts')->insert([

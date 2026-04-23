@@ -46,7 +46,7 @@ class GenerateTimeseriesData extends Command
 
         foreach ($accountIds as $accountId) {
             foreach (array_chunk($this->generator->generateForAccount($accountId, $startUtc, $endUtc), 500) as $chunk) {
-                TimeseriesSnapshot::query()->upsert($chunk, ['account_id', 'ts_utc'], ['data', 'updated_at']);
+                TimeseriesSnapshot::query()->upsert($chunk, ['ts_account_id', 'ts_timestamp'], ['ts_data']);
             }
 
             $this->line(sprintf(

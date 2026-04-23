@@ -10,6 +10,7 @@ use App\Traits\TranslationsTrait;
 use App\Traits\AccountsTrait;
 use App\Traits\DevicesTrait;
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class Stats extends Component
@@ -133,7 +134,7 @@ class Stats extends Component
             ],
             [
                 'values' => $this->formatValues([
-                    __('inbound calls') => $this->alertsCountGrouped['all']['VOICE'] ?? 0,
+                    __('inbound calls') => $this->activeAlarmSessionCount((int) session('account.id')),
                     __('active alarms') => array_sum($this->alertsCountGrouped['alarming']) ?? 0,
                 ]),
                 'label' => __('Alarms'),
@@ -401,6 +402,26 @@ class Stats extends Component
         }
 
         return $formatted;
+    }
+
+    private function activeAlarmSessionCount(int $accountId): int
+    {
+        return (int) DB::table('sessions as s')
+            ->join('session_types as st', 's.session_st_id', '=', 'st.st_id')
+            ->where('s.session_account_id', $accountId)
+            ->where('st.st_type', 'ALARM')
+            ->whereNull('s.session_end')
+            ->where(function ($query): void {
+                $query->whereNotNull('s.session_device_id')
+                    ->orWhereExists(function ($sub): void {
+                        $sub->from('sessions as child')
+                            ->join('session_types as child_st', 'child.session_st_id', '=', 'child_st.st_id')
+                            ->whereColumn('child.session_ref_id', 's.session_id')
+                            ->where('child_st.st_type', 'AGENT')
+                            ->whereNotNull('child.session_device_id');
+                    });
+            })
+            ->count();
     }
 
 //    private function countServiceLevel(int $enabledCount)

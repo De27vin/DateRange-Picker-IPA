@@ -2123,7 +2123,6 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
         Gateway_malfunction: 0,
         Identity_mismatch: 0,
         Line_alarm: 0,
-        Location_alarm: 0,
         Object_is_under_maintenance: 0,
         Microphone_malfunction: 0,
         Network_malfunction: 0,

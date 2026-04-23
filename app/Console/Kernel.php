@@ -17,7 +17,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('errors:send-digest')->daily();
         $schedule->command('cache:clear')->everyFourHours();
-        $schedule->command('timeseries:collect-snapshots')->hourly()->withoutOverlapping();
+        $schedule->command('timeseries:collect')->hourly()->withoutOverlapping();
     }
 
     /**

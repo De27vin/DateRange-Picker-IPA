@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 
 class CollectTimeseriesSnapshots extends Command
 {
-    protected $signature = 'timeseries:collect-snapshots {--ts= : UTC timestamp to collect for, rounded down to the hour}';
+    protected $signature = 'timeseries:collect {--ts= : UTC timestamp to collect for, rounded down to the hour}';
     protected $description = 'Collect one hourly timeseries snapshot per account from live database data';
 
     public function __construct(
@@ -36,7 +36,12 @@ class CollectTimeseriesSnapshots extends Command
         $ts = $this->option('ts');
 
         if (is_string($ts) && $ts !== '') {
-            return CarbonImmutable::parse($ts, 'UTC')->utc()->startOfHour();
+            try {
+                return CarbonImmutable::parse($ts, 'UTC')->utc()->startOfHour();
+            } catch (\Exception) {
+                $this->error("Invalid timestamp: {$ts}");
+                exit(self::FAILURE);
+            }
         }
 
         return CarbonImmutable::now('UTC')->startOfHour();

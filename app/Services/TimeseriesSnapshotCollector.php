@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Account;
-use App\Models\TimeseriesSnapshot;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -32,29 +31,28 @@ class TimeseriesSnapshotCollector
             return 0;
         }
 
-        TimeseriesSnapshot::query()->upsert(
+        DB::table('timeseries')->upsert(
             $rows,
-            ['account_id', 'ts_utc'],
-            ['data', 'updated_at']
+            ['ts_account_id', 'ts_timestamp'],
+            ['ts_data']
         );
 
         return count($rows);
     }
 
     /**
-     * @return array{account_id:int, ts_utc:string, data:string, created_at:string, updated_at:string}
+     * @return array{ts_account_id:int, ts_timestamp:string, ts_data:string}
      */
     public function buildSnapshotRow(Account $account, CarbonImmutable $tsUtc): array
     {
         $snapshotTs = $tsUtc->utc()->startOfHour();
-        $now = CarbonImmutable::now('UTC')->toDateTimeString();
         $alertCounts = $this->currentAlertCountsForAccount((int) $account->account_id);
         $profile = is_array($account->account_translation) ? $account->account_translation : [];
 
         $snapshot = [
             'devices' => $this->deviceCounts((int) $account->account_id),
             'alarms' => [
-                'inbound_calls' => (int) ($alertCounts['VOICE'] ?? 0),
+                'inbound_calls' => $this->activeAlarmSessionCount((int) $account->account_id),
                 'active_alarms' => $this->sumAlertCounts(
                     $alertCounts,
                     array_keys(array_filter($profile['config']['alert']['alarm'] ?? [])),
@@ -71,11 +69,9 @@ class TimeseriesSnapshotCollector
         ];
 
         return [
-            'account_id' => (int) $account->account_id,
-            'ts_utc' => $snapshotTs->toDateTimeString(),
-            'data' => json_encode($snapshot, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-            'created_at' => $now,
-            'updated_at' => $now,
+            'ts_account_id' => (int) $account->account_id,
+            'ts_timestamp' => $snapshotTs->toDateTimeString(),
+            'ts_data' => json_encode($snapshot, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
         ];
     }
 
@@ -182,6 +178,26 @@ class TimeseriesSnapshotCollector
                 ->map(static fn (mixed $deviceId): int => (int) $deviceId)
                 ->all())
             ->all();
+    }
+
+    private function activeAlarmSessionCount(int $accountId): int
+    {
+        return (int) DB::table('sessions as s')
+            ->join('session_types as st', 's.session_st_id', '=', 'st.st_id')
+            ->where('s.session_account_id', $accountId)
+            ->where('st.st_type', 'ALARM')
+            ->whereNull('s.session_end')
+            ->where(function ($query): void {
+                $query->whereNotNull('s.session_device_id')
+                    ->orWhereExists(function ($sub): void {
+                        $sub->from('sessions as child')
+                            ->join('session_types as child_st', 'child.session_st_id', '=', 'child_st.st_id')
+                            ->whereColumn('child.session_ref_id', 's.session_id')
+                            ->where('child_st.st_type', 'AGENT')
+                            ->whereNotNull('child.session_device_id');
+                    });
+            })
+            ->count();
     }
 
     /**

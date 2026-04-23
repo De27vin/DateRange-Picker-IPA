@@ -192,7 +192,7 @@ export default {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.35rem;
-  align-items: end;
+  align-items: flex-end;
 }
 
 .gauge-preview__item {
@@ -226,7 +226,7 @@ export default {
 
 .threshold-legend {
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
   gap: 0.7rem;
   flex-wrap: wrap;
   margin-top: 0.05rem;

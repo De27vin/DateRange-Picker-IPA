@@ -6,17 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class TimeseriesSnapshot extends Model
 {
-    protected $table = 'timeseries_snapshots';
+    protected $table = 'timeseries';
+    protected $primaryKey = 'ts_timestamp';
+    public $incrementing = false;
+    public $timestamps = false;
 
     protected $fillable = [
-        'account_id',
-        'ts_utc',
-        'data',
+        'ts_account_id',
+        'ts_timestamp',
+        'ts_data',
     ];
 
     protected $casts = [
-        'account_id' => 'integer',
-        'ts_utc' => 'immutable_datetime',
-        'data' => 'array',
+        'ts_account_id' => 'integer',
+        'ts_timestamp' => 'immutable_datetime',
+        'ts_data' => 'array',
     ];
 }

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Device;
+use Illuminate\Support\Facades\DB;
 
 class DashboardCurrentStatsService
 {
@@ -36,7 +37,7 @@ class DashboardCurrentStatsService
                 'inactive' => $disabled,
             ],
             'alarms' => [
-                'inbound_calls' => (int) ($grouped['all']['VOICE'] ?? 0),
+                'inbound_calls' => $this->activeAlarmSessionCount($accountId),
                 'active_alarms' => (int) array_sum($grouped['alarming'] ?? []),
             ],
             'overdues' => [
@@ -52,5 +53,25 @@ class DashboardCurrentStatsService
                 'physical_checks' => $physicalChecks,
             ],
         ];
+    }
+
+    private function activeAlarmSessionCount(int $accountId): int
+    {
+        return (int) DB::table('sessions as s')
+            ->join('session_types as st', 's.session_st_id', '=', 'st.st_id')
+            ->where('s.session_account_id', $accountId)
+            ->where('st.st_type', 'ALARM')
+            ->whereNull('s.session_end')
+            ->where(function ($query): void {
+                $query->whereNotNull('s.session_device_id')
+                    ->orWhereExists(function ($sub): void {
+                        $sub->from('sessions as child')
+                            ->join('session_types as child_st', 'child.session_st_id', '=', 'child_st.st_id')
+                            ->whereColumn('child.session_ref_id', 's.session_id')
+                            ->where('child_st.st_type', 'AGENT')
+                            ->whereNotNull('child.session_device_id');
+                    });
+            })
+            ->count();
     }
 }

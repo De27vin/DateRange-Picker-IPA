@@ -7,11 +7,26 @@
     $enabled = \App\Models\Device::enabled()->get()?->count() ?? 0;
     $disabled = \App\Models\Device::disabled()->get()?->count() ?? 0;
 
-    // provide alarm counts (use DeviceAlertsService to mirror Stats.php logic)
+    // provide alarm counts; inbound calls now come from active ALARM sessions
     try {
       $alertsService = new \App\Services\DeviceAlertsService();
       $grouped = $alertsService->getGroupedAlertsCounts(session('account.id')) ?? [];
-      $inbound = $grouped['all']['VOICE'] ?? 0;
+      $inbound = (int) \Illuminate\Support\Facades\DB::table('sessions as s')
+        ->join('session_types as st', 's.session_st_id', '=', 'st.st_id')
+        ->where('s.session_account_id', session('account.id'))
+        ->where('st.st_type', 'ALARM')
+        ->whereNull('s.session_end')
+        ->where(function ($query): void {
+          $query->whereNotNull('s.session_device_id')
+            ->orWhereExists(function ($sub): void {
+              $sub->from('sessions as child')
+                ->join('session_types as child_st', 'child.session_st_id', '=', 'child_st.st_id')
+                ->whereColumn('child.session_ref_id', 's.session_id')
+                ->where('child_st.st_type', 'AGENT')
+                ->whereNotNull('child.session_device_id');
+            });
+        })
+        ->count();
       $activeAlarms = isset($grouped['alarming']) ? array_sum($grouped['alarming']) : 0;
     } catch (\Throwable $ex) {
       $inbound = 0;
@@ -28,22 +43,27 @@
       $Battery_low = $alertCounts['BATLOW'] ?? 0;
       $Button_malfunction = $alertCounts['BUTTON'] ?? 0;
       $Charge_malfunction   = $alertCounts['CHARGE'] ?? 0;
-      $Db_malfunction       = $alertCounts['DB'] ?? 0;
+      $Database_malfunction = $alertCounts['DB'] ?? 0;
       $Disk_low             = $alertCounts['DISK'] ?? 0;
+      $Object_door_failure  = $alertCounts['LOCATION'] ?? 0;
+      $Elevator_failure     = $alertCounts['ELEVATOR'] ?? 0;
       $Gateway_malfunction  = $alertCounts['GATEWAY'] ?? 0;
-      $Identity_issue       = $alertCounts['IDENTITY'] ?? 0;
-      $Line_malfunction     = $alertCounts['LINE'] ?? 0;
-      $Location_issue       = $alertCounts['LOCATION'] ?? 0;
-      $Mic_malfunction      = $alertCounts['MIC'] ?? 0;
+      $Identity_mismatch    = $alertCounts['IDENTITY'] ?? 0;
+      $Line_alarm           = $alertCounts['LINE'] ?? 0;
+      $Object_is_under_maintenance = $alertCounts['MAINTENANCE'] ?? 0;
+      $Microphone_malfunction = $alertCounts['MIC'] ?? 0;
       $Network_malfunction  = $alertCounts['NETWORK'] ?? 0;
-      $Pin_issue            = $alertCounts['PIN'] ?? 0;
+      $Periodical_call_overdue = $alertCounts['PERIODICAL'] ?? 0;
+      $Pin_mismatch         = $alertCounts['PIN'] ?? 0;
       $Power_malfunction    = $alertCounts['POWER'] ?? 0;
-      $Ram_malfunction      = $alertCounts['RAM'] ?? 0;
-      $Reserve_issue        = $alertCounts['RESERVE'] ?? 0;
-      $Serial_issue         = $alertCounts['SERIAL'] ?? 0;
-      $Signal_issue         = $alertCounts['SIGNAL'] ?? 0;
-      $Sip_malfunction      = $alertCounts['SIP'] ?? 0;
+      $Ram_low              = $alertCounts['RAM'] ?? 0;
+      $Reserved_device      = $alertCounts['RESERVE'] ?? 0;
+      $Serial_port_malfunction = $alertCounts['SERIAL'] ?? 0;
+      $Shaft_failure        = $alertCounts['SHAFT'] ?? 0;
+      $Low_signal           = $alertCounts['SIGNAL'] ?? 0;
+      $Sip_registration_failure = $alertCounts['SIP'] ?? 0;
       $Speaker_malfunction  = $alertCounts['SPEAKER'] ?? 0;
+      $Technician_check_overdue = $alertCounts['TECH'] ?? 0;
       $Voice_alarm          = $alertCounts['VOICE'] ?? 0;
       
     } catch (\Throwable $ex) {
@@ -52,22 +72,27 @@
       $Battery_low = 0;
       $Button_malfunction = 0;
       $Charge_malfunction = 0;
-      $Db_malfunction = 0;
+      $Database_malfunction = 0;
       $Disk_low = 0;
+      $Object_door_failure = 0;
+      $Elevator_failure = 0;
       $Gateway_malfunction = 0;
-      $Identity_issue = 0;
-      $Line_malfunction = 0;
-      $Location_issue = 0;
-      $Mic_malfunction = 0;
+      $Identity_mismatch = 0;
+      $Line_alarm = 0;
+      $Object_is_under_maintenance = 0;
+      $Microphone_malfunction = 0;
       $Network_malfunction = 0;
-      $Pin_issue = 0;
+      $Periodical_call_overdue = 0;
+      $Pin_mismatch = 0;
       $Power_malfunction = 0;
-      $Ram_malfunction = 0;
-      $Reserve_issue = 0;
-      $Serial_issue = 0;
-      $Signal_issue = 0;
-      $Sip_malfunction = 0;
+      $Ram_low = 0;
+      $Reserved_device = 0;
+      $Serial_port_malfunction = 0;
+      $Shaft_failure = 0;
+      $Low_signal = 0;
+      $Sip_registration_failure = 0;
       $Speaker_malfunction = 0;
+      $Technician_check_overdue = 0;
       $Voice_alarm = 0;
     }
     
@@ -109,22 +134,27 @@
     'Battery_low' => $Battery_low,
     'Button_malfunction' => $Button_malfunction,
     'Charge_malfunction' => $Charge_malfunction,
-    'Db_malfunction' => $Db_malfunction,
+    'Database_malfunction' => $Database_malfunction,
     'Disk_low' => $Disk_low,
+    'Object_door_failure' => $Object_door_failure,
+    'Elevator_failure' => $Elevator_failure,
     'Gateway_malfunction' => $Gateway_malfunction,
-    'Identity_issue' => $Identity_issue,
-    'Line_malfunction' => $Line_malfunction,
-    'Location_issue' => $Location_issue,
-    'Mic_malfunction' => $Mic_malfunction,
+    'Identity_mismatch' => $Identity_mismatch,
+    'Line_alarm' => $Line_alarm,
+    'Object_is_under_maintenance' => $Object_is_under_maintenance,
+    'Microphone_malfunction' => $Microphone_malfunction,
     'Network_malfunction' => $Network_malfunction,
-    'Pin_issue' => $Pin_issue,
+    'Periodical_call_overdue' => $Periodical_call_overdue,
+    'Pin_mismatch' => $Pin_mismatch,
     'Power_malfunction' => $Power_malfunction,
-    'Ram_malfunction' => $Ram_malfunction,
-    'Reserve_issue' => $Reserve_issue,
-    'Serial_issue' => $Serial_issue,
-    'Signal_issue' => $Signal_issue,
-    'Sip_malfunction' => $Sip_malfunction,
+    'Ram_low' => $Ram_low,
+    'Reserved_device' => $Reserved_device,
+    'Serial_port_malfunction' => $Serial_port_malfunction,
+    'Shaft_failure' => $Shaft_failure,
+    'Low_signal' => $Low_signal,
+    'Sip_registration_failure' => $Sip_registration_failure,
     'Speaker_malfunction' => $Speaker_malfunction,
+    'Technician_check_overdue' => $Technician_check_overdue,
     'Voice_alarm' => $Voice_alarm,
   ]) !!};
   // SERVICE_STATS contains service-level percentages and raw check counts

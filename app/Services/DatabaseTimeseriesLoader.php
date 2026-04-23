@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\TimeseriesSnapshot;
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseTimeseriesLoader
 {
@@ -21,18 +21,24 @@ class DatabaseTimeseriesLoader
     {
         $accountId = (int) session('account.id');
 
-        return TimeseriesSnapshot::query()
-            ->where('account_id', $accountId)
-            ->whereBetween('ts_utc', [
+        return DB::table('timeseries')
+            ->where('ts_account_id', $accountId)
+            ->whereBetween('ts_timestamp', [
                 $startUtc->toDateTimeString(),
                 $endUtc->toDateTimeString(),
             ])
-            ->orderBy('ts_utc')
-            ->get(['ts_utc', 'data'])
-            ->map(function (TimeseriesSnapshot $snapshot) use ($chart): array {
+            ->orderBy('ts_timestamp')
+            ->get(['ts_timestamp', 'ts_data'])
+            ->map(function (object $snapshot) use ($chart): array {
+                $data = $snapshot->ts_data;
+                if (is_string($data)) {
+                    $decoded = json_decode($data, true);
+                    $data = is_array($decoded) ? $decoded : [];
+                }
+
                 return [
-                    'ts' => $snapshot->ts_utc->utc()->toIso8601String(),
-                    'series' => $this->chartMapper->extractSeries($chart, $snapshot->data ?? []),
+                    'ts' => CarbonImmutable::parse((string) $snapshot->ts_timestamp, 'UTC')->utc()->toIso8601String(),
+                    'series' => $this->chartMapper->extractSeries($chart, is_array($data) ? $data : []),
                 ];
             })
             ->all();
