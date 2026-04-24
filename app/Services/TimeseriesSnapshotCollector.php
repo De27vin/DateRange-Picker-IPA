@@ -46,13 +46,25 @@ class TimeseriesSnapshotCollector
     public function buildSnapshotRow(Account $account, CarbonImmutable $tsUtc): array
     {
         $snapshotTs = $tsUtc->utc()->startOfHour();
-        $alertCounts = $this->currentAlertCountsForAccount((int) $account->account_id);
+        $snapshot = $this->buildSnapshotPayload($account);
+
+        return [
+            'ts_account_id' => (int) $account->account_id,
+            'ts_timestamp' => $snapshotTs->toDateTimeString(),
+            'ts_data' => json_encode($snapshot, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+        ];
+    }
+
+    public function buildSnapshotPayload(Account $account): array
+    {
+        $accountId = (int) $account->account_id;
+        $alertCounts = $this->currentAlertCountsForAccount($accountId);
         $profile = is_array($account->account_translation) ? $account->account_translation : [];
 
-        $snapshot = [
-            'devices' => $this->deviceCounts((int) $account->account_id),
+        return [
+            'devices' => $this->deviceCounts($accountId),
             'alarms' => [
-                'inbound_calls' => $this->activeAlarmSessionCount((int) $account->account_id),
+                'inbound_calls' => $this->activeAlarmSessionCount($accountId),
                 'active_alarms' => $this->sumAlertCounts(
                     $alertCounts,
                     array_keys(array_filter($profile['config']['alert']['alarm'] ?? [])),
@@ -66,12 +78,6 @@ class TimeseriesSnapshotCollector
                 'periodical_calls' => (int) ($alertCounts['PERIODICAL'] ?? 0),
                 'local_checks' => (int) ($alertCounts['TECH'] ?? 0),
             ],
-        ];
-
-        return [
-            'ts_account_id' => (int) $account->account_id,
-            'ts_timestamp' => $snapshotTs->toDateTimeString(),
-            'ts_data' => json_encode($snapshot, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
         ];
     }
 
