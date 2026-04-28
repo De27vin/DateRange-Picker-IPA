@@ -1,5 +1,5 @@
 <template>
-  <WidgetCard title="Alerts" subtitle="Last datapoint per bucket." configurable @toggle-settings="settingsOpen = !settingsOpen">
+  <WidgetCard title="Alerts" subtitle="Last datapoint per bucket." configurable :settings-error="errorMessage" @toggle-settings="settingsOpen = !settingsOpen">
     <template v-if="settingsOpen" #settings>
       <DateRangeSettings :value="range" @apply="applyRange" @cancel="settingsOpen = false" />
     </template>
@@ -76,6 +76,10 @@ export default {
     range: {
       type: Object,
       required: true,
+    },
+    errorMessage: {
+      type: String,
+      default: '',
     },
   },
   data() {

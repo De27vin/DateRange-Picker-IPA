@@ -5,6 +5,7 @@
         :summary="summary.equipment"
         :series="series.equipment"
         :range="settings.equipmentRange"
+        :error-message="errors.equipment"
         @update-range="updateRange('equipmentRange', 'equipment', $event)"
       />
 
@@ -14,6 +15,7 @@
         :summary="summary.overdues"
         :series="series.overdues"
         :range="settings.overduesRange"
+        :error-message="errors.overdues"
         @update-range="updateRange('overduesRange', 'overdues', $event)"
       />
 
@@ -21,12 +23,14 @@
         :summary="summary.alerts"
         :series="series.alerts"
         :range="settings.alertsRange"
+        :error-message="errors.alerts"
         @update-range="updateRange('alertsRange', 'alerts', $event)"
       />
 
       <ServiceLevelWidget
         :summary="summary.service_level"
         :thresholds="settings.serviceThresholds"
+        :error-message="errors.serviceLevel"
         @update-thresholds="updateThresholds"
       />
     </div>
@@ -46,6 +50,8 @@ import {
   loadWidgetSettings,
   saveWidgetSettings,
   todayYmd,
+  validateDateRange,
+  validateServiceThresholds,
 } from '../../js/utils/dashboardWidgetSettings'
 
 const DEFAULT_SUMMARY = {
@@ -89,6 +95,12 @@ export default {
           redMax: 75,
           orangeMax: 90,
         }),
+      },
+      errors: {
+        equipment: '',
+        overdues: '',
+        alerts: '',
+        serviceLevel: '',
       },
       pollHandle: null,
     }
@@ -142,6 +154,13 @@ export default {
       }
     },
     async updateRange(settingKey, widget, nextRange) {
+      const error = validateDateRange(nextRange)
+      if (error) {
+        this.$set(this.errors, widget, error)
+        return
+      }
+
+      this.$set(this.errors, widget, '')
       const fallback = this.settings[settingKey]
       const clamped = clampDateRange(nextRange, fallback)
       this.$set(this.settings, settingKey, clamped)
@@ -149,10 +168,17 @@ export default {
       await this.fetchSeries(widget)
     },
     updateThresholds(nextThresholds) {
+      const error = validateServiceThresholds(nextThresholds)
+      if (error) {
+        this.$set(this.errors, 'serviceLevel', error)
+        return
+      }
+
       const redMax = Math.max(0, Math.min(100, Number(nextThresholds.redMax || 75)))
       const orangeMax = Math.max(redMax, Math.min(100, Number(nextThresholds.orangeMax || 90)))
       const thresholds = { redMax, orangeMax }
 
+      this.$set(this.errors, 'serviceLevel', '')
       this.$set(this.settings, 'serviceThresholds', thresholds)
       saveWidgetSettings('serviceThresholds', thresholds)
     },

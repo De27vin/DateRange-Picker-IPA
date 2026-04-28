@@ -1,5 +1,5 @@
 <template>
-  <WidgetCard title="Overdues" subtitle="Last datapoint with projection." configurable @toggle-settings="settingsOpen = !settingsOpen">
+  <WidgetCard title="Overdues" subtitle="Last datapoint with projection." configurable :settings-error="errorMessage" @toggle-settings="settingsOpen = !settingsOpen">
     <template v-if="settingsOpen" #settings>
       <DateRangeSettings :value="range" @apply="applyRange" @cancel="settingsOpen = false" />
     </template>
@@ -73,6 +73,10 @@ export default {
     range: {
       type: Object,
       required: true,
+    },
+    errorMessage: {
+      type: String,
+      default: '',
     },
   },
   data() {

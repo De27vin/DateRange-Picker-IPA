@@ -1,5 +1,5 @@
 <template>
-  <WidgetCard title="Service Level" subtitle="Threshold-based interpretation." configurable @toggle-settings="settingsOpen = !settingsOpen">
+  <WidgetCard title="Service Level" subtitle="Threshold-based interpretation." configurable :settings-error="errorMessage" @toggle-settings="settingsOpen = !settingsOpen">
     <template v-if="settingsOpen" #settings>
       <div class="settings-panel">
         <div class="settings-panel__grid">
@@ -69,6 +69,10 @@ export default {
     thresholds: {
       type: Object,
       required: true,
+    },
+    errorMessage: {
+      type: String,
+      default: '',
     },
   },
   data() {

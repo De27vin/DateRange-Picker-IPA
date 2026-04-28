@@ -6,14 +6,16 @@
         <p v-if="subtitle" class="widget-card__subtitle">{{ subtitle }}</p>
       </div>
 
-      <button
-        v-if="configurable"
-        type="button"
-        class="widget-card__settings-button"
-        @click="$emit('toggle-settings')"
-      >
-        <i class="f7-icons">gear_alt</i>
-      </button>
+      <div v-if="configurable" class="widget-card__settings-control">
+        <button
+          type="button"
+          class="widget-card__settings-button"
+          @click="$emit('toggle-settings')"
+        >
+          <i class="f7-icons">gear_alt</i>
+        </button>
+        <p v-if="settingsError" class="widget-card__settings-error">{{ settingsError }}</p>
+      </div>
     </header>
 
     <div v-if="$slots.settings" class="widget-card__settings">
@@ -42,6 +44,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    settingsError: {
+      type: String,
+      default: '',
+    },
   },
 }
 </script>
@@ -66,6 +72,14 @@ export default {
   justify-content: space-between;
   gap: 1rem;
   align-items: flex-start;
+}
+
+.widget-card__settings-control {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+  max-width: 12rem;
 }
 
 .widget-card__title {
@@ -99,6 +113,14 @@ export default {
 .widget-card__settings-button:hover {
   background: #eef4fb;
   transform: translateY(-1px);
+}
+
+.widget-card__settings-error {
+  margin: 0;
+  color: #b42318;
+  font-size: 0.7rem;
+  line-height: 1.25;
+  text-align: right;
 }
 
 .widget-card__settings {
