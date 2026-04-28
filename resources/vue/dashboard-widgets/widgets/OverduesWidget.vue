@@ -6,7 +6,7 @@
 
     <div class="widget-layout">
       <div class="compact-widget__top">
-        <div class="trend-preview">
+        <div ref="preview" class="trend-preview">
           <div class="trend-preview__row">
             <svg viewBox="0 0 180 50" class="trend-chart">
               <line x1="24" y1="36" x2="172" y2="36" class="trend-chart__axis" />
@@ -15,8 +15,27 @@
               <text x="2" y="23" class="trend-chart__y-label">{{ periodic.mid }}</text>
               <text x="8" y="38" class="trend-chart__y-label">0</text>
               <polyline :points="periodic.points" fill="none" stroke="#355c8c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+              <g v-for="(point, index) in periodic.pointItems" :key="`periodic-${index}`">
+                <circle
+                  :cx="point.x"
+                  :cy="point.y"
+                  r="4.2"
+                  fill="#355c8c"
+                  @mouseenter="showTooltip($event, point.tooltip)"
+                  @mousemove="moveTooltip($event)"
+                  @mouseleave="hideTooltip"
+                />
+                <circle
+                  :cx="point.x"
+                  :cy="point.y"
+                  r="8"
+                  fill="transparent"
+                  @mouseenter="showTooltip($event, point.tooltip)"
+                  @mousemove="moveTooltip($event)"
+                  @mouseleave="hideTooltip"
+                />
+              </g>
               <polyline :points="periodic.projection" fill="none" stroke="#355c8c" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 4" />
-              <circle :cx="periodic.currentPoint.x" :cy="periodic.currentPoint.y" r="2.8" fill="#355c8c" />
             </svg>
           </div>
           <div class="trend-preview__row">
@@ -27,10 +46,34 @@
               <text x="2" y="23" class="trend-chart__y-label">{{ local.mid }}</text>
               <text x="8" y="38" class="trend-chart__y-label">0</text>
               <polyline :points="local.points" fill="none" stroke="#4b78a8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+              <g v-for="(point, index) in local.pointItems" :key="`local-${index}`">
+                <circle
+                  :cx="point.x"
+                  :cy="point.y"
+                  r="4.2"
+                  fill="#4b78a8"
+                  @mouseenter="showTooltip($event, point.tooltip)"
+                  @mousemove="moveTooltip($event)"
+                  @mouseleave="hideTooltip"
+                />
+                <circle
+                  :cx="point.x"
+                  :cy="point.y"
+                  r="8"
+                  fill="transparent"
+                  @mouseenter="showTooltip($event, point.tooltip)"
+                  @mousemove="moveTooltip($event)"
+                  @mouseleave="hideTooltip"
+                />
+              </g>
               <polyline :points="local.projection" fill="none" stroke="#4b78a8" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 4" />
-              <circle :cx="local.currentPoint.x" :cy="local.currentPoint.y" r="2.8" fill="#4b78a8" />
             </svg>
           </div>
+          <div
+            v-if="tooltip.visible"
+            class="chart-tooltip"
+            :style="{ left: `${tooltip.x}px`, top: `${tooltip.y}px` }"
+          >{{ tooltip.text }}</div>
           <div class="mini-labels" :style="labelGridStyle(periodic.labels)">
             <span v-for="(label, index) in periodic.labels" :key="index">{{ label }}</span>
           </div>
@@ -82,6 +125,12 @@ export default {
   data() {
     return {
       settingsOpen: false,
+      tooltip: {
+        visible: false,
+        text: '',
+        x: 0,
+        y: 0,
+      },
     }
   },
   computed: {
@@ -106,9 +155,16 @@ export default {
       const height = 24
       const step = this.series.length > 1 ? ((right - left) / Math.max(this.series.length - 1, 1)) : (right - left)
       const points = values.map((value, index) => {
+        const sourcePoint = this.series[index] || {}
         const x = left + (step * index)
         const y = baseY - ((value / maxValue) * height)
-        return { x, y, value }
+        const ts = sourcePoint?.point_ts || sourcePoint?.label_ts || sourcePoint?.bucket_end
+        return {
+          x,
+          y,
+          value,
+          tooltip: this.buildTooltip(this.labelForKey(key), value, ts),
+        }
       })
 
       const last = points[points.length - 1] || { x: left, y: baseY, value: 0 }
@@ -119,6 +175,7 @@ export default {
 
       return {
         points: points.map((point) => `${point.x},${point.y}`).join(' '),
+        pointItems: points,
         projection: `${last.x},${last.y} ${projectedX},${projectedY}`,
         currentPoint: last,
         max: maxValue,
@@ -131,6 +188,38 @@ export default {
       const day = String(date.getUTCDate()).padStart(2, '0')
       const month = String(date.getUTCMonth() + 1).padStart(2, '0')
       return `${day}.${month}`
+    },
+    formatTooltip(ts) {
+      const date = new Date(ts)
+      const day = String(date.getUTCDate()).padStart(2, '0')
+      const month = String(date.getUTCMonth() + 1).padStart(2, '0')
+      const hours = String(date.getUTCHours()).padStart(2, '0')
+      const minutes = String(date.getUTCMinutes()).padStart(2, '0')
+      return `${day}.${month} ${hours}:${minutes} UTC`
+    },
+    buildTooltip(label, value, ts) {
+      return `${label}: ${value}\n${this.formatTooltip(ts)}`
+    },
+    labelForKey(key) {
+      return key === 'periodical_calls' ? 'Periodic calls' : 'Local checks'
+    },
+    showTooltip(event, text) {
+      this.tooltip.visible = true
+      this.tooltip.text = text
+      this.moveTooltip(event)
+    },
+    moveTooltip(event) {
+      const preview = this.$refs.preview
+      if (!preview || !event) {
+        return
+      }
+
+      const rect = preview.getBoundingClientRect()
+      this.tooltip.x = event.clientX - rect.left + 10
+      this.tooltip.y = event.clientY - rect.top - 10
+    },
+    hideTooltip() {
+      this.tooltip.visible = false
     },
     labelGridStyle(labels) {
       return {
@@ -155,6 +244,7 @@ export default {
 }
 
 .trend-preview {
+  position: relative;
   width: 11rem;
 }
 
@@ -210,5 +300,21 @@ export default {
   text-align: right;
   color: #12243d;
   font-weight: 800;
+}
+
+.chart-tooltip {
+  position: absolute;
+  z-index: 5;
+  max-width: 10rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.55rem;
+  background: rgba(15, 23, 42, 0.94);
+  color: #ffffff;
+  font-size: 0.68rem;
+  line-height: 1.25;
+  pointer-events: none;
+  transform: translate(-50%, -100%);
+  white-space: pre-line;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.24);
 }
 </style>

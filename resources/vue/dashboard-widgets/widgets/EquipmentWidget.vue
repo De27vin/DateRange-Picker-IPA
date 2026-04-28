@@ -6,7 +6,7 @@
 
     <div class="widget-layout compact-widget">
       <div class="compact-widget__top">
-        <div class="chart-wrap compact-widget__preview">
+        <div ref="preview" class="chart-wrap compact-widget__preview">
           <svg viewBox="0 0 180 94" class="bar-chart">
             <line x1="24" y1="72" x2="170" y2="72" class="bar-chart__axis" />
             <line x1="24" y1="10" x2="24" y2="72" class="bar-chart__axis" />
@@ -23,7 +23,11 @@
                 :height="point.activeBar.height"
                 rx="4"
                 fill="#3b82f6"
-              />
+                @mouseenter="showTooltip($event, point.activeBar.tooltip)"
+                @mousemove="moveTooltip($event)"
+                @mouseleave="hideTooltip"
+              >
+              </rect>
               <rect
                 :x="point.inactiveBar.x"
                 :y="point.inactiveBar.y"
@@ -31,9 +35,18 @@
                 :height="point.inactiveBar.height"
                 rx="4"
                 fill="#94a3b8"
-              />
+                @mouseenter="showTooltip($event, point.inactiveBar.tooltip)"
+                @mousemove="moveTooltip($event)"
+                @mouseleave="hideTooltip"
+              >
+              </rect>
             </g>
           </svg>
+          <div
+            v-if="tooltip.visible"
+            class="chart-tooltip"
+            :style="{ left: `${tooltip.x}px`, top: `${tooltip.y}px` }"
+          >{{ tooltip.text }}</div>
           <div class="mini-labels" :style="labelGridStyle">
             <span v-for="(point, index) in normalizedSeries" :key="`label-${index}`">{{ point.label }}</span>
           </div>
@@ -85,6 +98,12 @@ export default {
   data() {
     return {
       settingsOpen: false,
+      tooltip: {
+        visible: false,
+        text: '',
+        x: 0,
+        y: 0,
+      },
     }
   },
   computed: {
@@ -107,6 +126,7 @@ export default {
         const disabled = Number(point?.series?.disabled || 0)
         const activeHeight = (enabled / maxValue) * 54
         const inactiveHeight = (disabled / maxValue) * 54
+        const pointTs = point?.point_ts || point?.label_ts || point?.bucket_end
 
         return {
           centerX,
@@ -116,12 +136,14 @@ export default {
             y: 70 - activeHeight,
             width: barWidth,
             height: activeHeight,
+            tooltip: this.buildTooltip('Active', enabled, pointTs),
           },
           inactiveBar: {
             x: centerX + gap,
             y: 70 - inactiveHeight,
             width: barWidth,
             height: inactiveHeight,
+            tooltip: this.buildTooltip('Inactive', disabled, pointTs),
           },
         }
       })
@@ -156,6 +178,35 @@ export default {
       const month = String(date.getUTCMonth() + 1).padStart(2, '0')
       return `${day}.${month}`
     },
+    formatTooltip(ts) {
+      const date = new Date(ts)
+      const day = String(date.getUTCDate()).padStart(2, '0')
+      const month = String(date.getUTCMonth() + 1).padStart(2, '0')
+      const hours = String(date.getUTCHours()).padStart(2, '0')
+      const minutes = String(date.getUTCMinutes()).padStart(2, '0')
+      return `${day}.${month} ${hours}:${minutes} UTC`
+    },
+    buildTooltip(label, value, ts) {
+      return `${label}: ${value}\n${this.formatTooltip(ts)}`
+    },
+    showTooltip(event, text) {
+      this.tooltip.visible = true
+      this.tooltip.text = text
+      this.moveTooltip(event)
+    },
+    moveTooltip(event) {
+      const preview = this.$refs.preview
+      if (!preview || !event) {
+        return
+      }
+
+      const rect = preview.getBoundingClientRect()
+      this.tooltip.x = event.clientX - rect.left + 10
+      this.tooltip.y = event.clientY - rect.top - 10
+    },
+    hideTooltip() {
+      this.tooltip.visible = false
+    },
   },
 }
 </script>
@@ -174,6 +225,7 @@ export default {
 }
 
 .compact-widget__preview {
+  position: relative;
   width: 11rem;
 }
 
@@ -225,5 +277,21 @@ export default {
   text-align: right;
   color: #12243d;
   font-weight: 800;
+}
+
+.chart-tooltip {
+  position: absolute;
+  z-index: 5;
+  max-width: 10rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.55rem;
+  background: rgba(15, 23, 42, 0.94);
+  color: #ffffff;
+  font-size: 0.68rem;
+  line-height: 1.25;
+  pointer-events: none;
+  transform: translate(-50%, -100%);
+  white-space: pre-line;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.24);
 }
 </style>

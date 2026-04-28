@@ -6,7 +6,7 @@
 
     <div class="widget-layout">
       <div class="compact-widget__top">
-        <div class="chart-wrap compact-widget__preview">
+        <div ref="preview" class="chart-wrap compact-widget__preview">
           <svg viewBox="0 0 180 94" class="bar-chart">
             <line x1="24" y1="72" x2="170" y2="72" class="bar-chart__axis" />
             <line x1="24" y1="10" x2="24" y2="72" class="bar-chart__axis" />
@@ -23,7 +23,11 @@
                 :height="point.nonCriticalRect.height"
                 rx="4"
                 fill="#facc15"
-              />
+                @mouseenter="showTooltip($event, point.nonCriticalRect.tooltip)"
+                @mousemove="moveTooltip($event)"
+                @mouseleave="hideTooltip"
+              >
+              </rect>
               <rect
                 :x="point.bar.x"
                 :y="point.criticalRect.y"
@@ -31,9 +35,18 @@
                 :height="point.criticalRect.height"
                 rx="4"
                 fill="#dc2626"
-              />
+                @mouseenter="showTooltip($event, point.criticalRect.tooltip)"
+                @mousemove="moveTooltip($event)"
+                @mouseleave="hideTooltip"
+              >
+              </rect>
             </g>
           </svg>
+          <div
+            v-if="tooltip.visible"
+            class="chart-tooltip"
+            :style="{ left: `${tooltip.x}px`, top: `${tooltip.y}px` }"
+          >{{ tooltip.text }}</div>
           <div class="mini-labels" :style="labelGridStyle">
             <span v-for="(point, index) in normalizedSeries" :key="`label-${index}`">{{ point.label }}</span>
           </div>
@@ -85,6 +98,12 @@ export default {
   data() {
     return {
       settingsOpen: false,
+      tooltip: {
+        visible: false,
+        text: '',
+        x: 0,
+        y: 0,
+      },
     }
   },
   computed: {
@@ -106,6 +125,7 @@ export default {
         const criticalHeight = totalHeight * (critical / Math.max(critical + nonCritical, 1))
         const nonCriticalHeight = Math.max(0, totalHeight - criticalHeight)
         const topY = 70 - totalHeight
+        const pointTs = point?.point_ts || point?.label_ts || point?.bucket_end
 
         return {
           centerX,
@@ -117,10 +137,12 @@ export default {
           criticalRect: {
             y: topY,
             height: criticalHeight,
+            tooltip: this.buildTooltip('Critical', critical, pointTs),
           },
           nonCriticalRect: {
             y: topY + criticalHeight,
             height: nonCriticalHeight,
+            tooltip: this.buildTooltip('Non-critical', nonCritical, pointTs),
           },
         }
       })
@@ -153,6 +175,35 @@ export default {
       const month = String(date.getUTCMonth() + 1).padStart(2, '0')
       return `${day}.${month}`
     },
+    formatTooltip(ts) {
+      const date = new Date(ts)
+      const day = String(date.getUTCDate()).padStart(2, '0')
+      const month = String(date.getUTCMonth() + 1).padStart(2, '0')
+      const hours = String(date.getUTCHours()).padStart(2, '0')
+      const minutes = String(date.getUTCMinutes()).padStart(2, '0')
+      return `${day}.${month} ${hours}:${minutes} UTC`
+    },
+    buildTooltip(label, value, ts) {
+      return `${label}: ${value}\n${this.formatTooltip(ts)}`
+    },
+    showTooltip(event, text) {
+      this.tooltip.visible = true
+      this.tooltip.text = text
+      this.moveTooltip(event)
+    },
+    moveTooltip(event) {
+      const preview = this.$refs.preview
+      if (!preview || !event) {
+        return
+      }
+
+      const rect = preview.getBoundingClientRect()
+      this.tooltip.x = event.clientX - rect.left + 10
+      this.tooltip.y = event.clientY - rect.top - 10
+    },
+    hideTooltip() {
+      this.tooltip.visible = false
+    },
   },
 }
 </script>
@@ -171,6 +222,7 @@ export default {
 }
 
 .compact-widget__preview {
+  position: relative;
   width: 11rem;
 }
 
@@ -222,5 +274,21 @@ export default {
   text-align: right;
   color: #12243d;
   font-weight: 800;
+}
+
+.chart-tooltip {
+  position: absolute;
+  z-index: 5;
+  max-width: 10rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.55rem;
+  background: rgba(15, 23, 42, 0.94);
+  color: #ffffff;
+  font-size: 0.68rem;
+  line-height: 1.25;
+  pointer-events: none;
+  transform: translate(-50%, -100%);
+  white-space: pre-line;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.24);
 }
 </style>
