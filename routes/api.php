@@ -37,5 +37,6 @@ Route::middleware([
 ])->group(function (): void {
     Route::get('/timeseries', [TimeSeriesController::class, 'fetch'])->name('api.timeseries');
     Route::get('/dashboard/widgets/summary', [DashboardWidgetsController::class, 'summary'])->name('api.dashboard.widgets.summary');
+    Route::get('/dashboard/widgets/settings', [DashboardWidgetsController::class, 'settings'])->name('api.dashboard.widgets.settings');
     Route::get('/dashboard/widgets/series', [DashboardWidgetsController::class, 'series'])->name('api.dashboard.widgets.series');
 });

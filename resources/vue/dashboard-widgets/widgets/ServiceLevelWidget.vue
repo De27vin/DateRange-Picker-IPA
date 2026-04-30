@@ -13,6 +13,7 @@
           </label>
         </div>
         <div class="settings-panel__actions">
+          <button type="button" class="settings-button settings-button--reset" @click="resetThresholds">Reset</button>
           <button type="button" class="settings-button settings-button--ghost" @click="cancelSettings">Cancel</button>
           <button type="button" class="settings-button settings-button--primary" @click="applyThresholds">Apply</button>
         </div>
@@ -70,6 +71,10 @@ export default {
       type: Object,
       required: true,
     },
+    defaultThresholds: {
+      type: Object,
+      required: true,
+    },
     errorMessage: {
       type: String,
       default: '',
@@ -112,6 +117,10 @@ export default {
     applyThresholds() {
       this.settingsOpen = false
       this.$emit('update-thresholds', { ...this.draftThresholds })
+    },
+    resetThresholds() {
+      this.settingsOpen = false
+      this.$emit('reset-thresholds')
     },
   },
 }
@@ -156,6 +165,10 @@ export default {
   margin-top: 0.8rem;
 }
 
+.settings-panel__actions .settings-button--reset {
+  margin-right: auto;
+}
+
 .settings-button {
   min-width: 5.5rem;
   min-height: 2.25rem;
@@ -169,6 +182,12 @@ export default {
   border: 1px solid rgba(148, 163, 184, 0.34);
   color: #516273;
   background: #ffffff;
+}
+
+.settings-button--reset {
+  border: 1px solid rgba(220, 38, 38, 0.28);
+  color: #b42318;
+  background: #fff7f7;
 }
 
 .settings-button--primary {

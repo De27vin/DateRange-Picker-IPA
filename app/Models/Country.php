@@ -51,7 +51,7 @@ class Country extends Model
     public function getNameAttribute()
     {
         $locale = session('locale', 'en');
-        return locale_get_display_region('-'.$this->country_iso,$locale);
+        return \countryDisplayName($this->country_iso, $locale);
     }
 
 }

@@ -125,7 +125,7 @@ trait DeviceFormTrait
         $countries = \App\Models\Country::all();
         $locale = session('locale', 'en');
         foreach ($countries as $key => $country) {
-            $countryList[$country->country_id] = locale_get_display_region('-'.$country->country_iso,$locale);
+            $countryList[$country->country_id] = \countryDisplayName($country->country_iso, $locale);
         }
         $countryList = $this->arraySortUTF($countryList);
         return $countryList;

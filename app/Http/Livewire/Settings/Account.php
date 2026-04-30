@@ -2,6 +2,7 @@
 namespace App\Http\Livewire\Settings;
 
 use App\Helpers\GroupCache;
+use App\Services\DashboardWidgetSettingsService;
 use App\Services\RolesService;
 use App\Services\SettingsService;
 use App\Traits\FreeswitchApiTrait;
@@ -15,14 +16,17 @@ class Account extends Component
     use FreeswitchApiTrait;
     use TranslationsTrait;
     public $accountSettings;
+    public $dashboardWidgetSettings;
     private SettingsService $settingsService;
     private RolesService $rolesService;
+    private DashboardWidgetSettingsService $dashboardWidgetSettingsService;
 
     public function __construct($id = null)
     {
         parent::__construct($id);
         $this->settingsService = new SettingsService();
         $this->rolesService = new RolesService();
+        $this->dashboardWidgetSettingsService = new DashboardWidgetSettingsService();
     }
 
     public function mount()
@@ -34,6 +38,7 @@ class Account extends Component
 
         $accountSettings = $this->settingsService->getAccountSettings(session('account.id'));
         $this->accountSettings = $this->settingsService->prepareSettingsForView(SettingsService::ACCOUNT, $accountSettings);
+        $this->dashboardWidgetSettings = $this->dashboardWidgetSettingsService->getAccountDefaults();
     }
 
     public function render()
@@ -57,6 +62,16 @@ class Account extends Component
 
         $accountSettings = $this->settingsService->getAccountSettings(session('account.id'));
         $this->accountSettings = $this->settingsService->prepareSettingsForView(SettingsService::ACCOUNT, $accountSettings);
+    }
+
+    public function updateDashboardWidgetSettings()
+    {
+        if (!Auth::user()->isAdmin) {
+            abort(403);
+        }
+
+        $this->dashboardWidgetSettings = $this->dashboardWidgetSettingsService->saveAccountDefaults($this->dashboardWidgetSettings);
+        $this->notify('success', __('Dashboard defaults updated'));
     }
 
     public function changeBoolSetting($key, $value)
@@ -96,6 +111,11 @@ class Account extends Component
     public function cancelSettings()
     {
         $this->mount();
+    }
+
+    public function cancelDashboardWidgetSettings()
+    {
+        $this->dashboardWidgetSettings = $this->dashboardWidgetSettingsService->getAccountDefaults();
     }
 
     private function makeFsReload()

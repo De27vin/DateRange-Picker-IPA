@@ -2,17 +2,25 @@
   <div class="settings-panel">
     <div class="settings-panel__grid">
       <label class="settings-panel__field">
-        <span>Start</span>
-        <input v-model="draft.start" type="date">
+        <span>Back</span>
+        <input v-model.number="draft.amount" type="number" min="1" max="365">
       </label>
 
       <label class="settings-panel__field">
-        <span>End</span>
-        <input v-model="draft.end" type="date">
+        <span>Unit</span>
+        <select v-model="draft.unit">
+          <option value="days">Days</option>
+          <option value="weeks">Weeks</option>
+          <option value="months">Months</option>
+          <option value="years">Years</option>
+        </select>
       </label>
     </div>
 
     <div class="settings-panel__actions">
+      <button type="button" class="settings-panel__button settings-panel__button--reset" @click="$emit('reset')">
+        Reset
+      </button>
       <button type="button" class="settings-panel__button settings-panel__button--ghost" @click="$emit('cancel')">
         Cancel
       </button>
@@ -28,6 +36,10 @@ export default {
   name: 'DateRangeSettings',
   props: {
     value: {
+      type: Object,
+      required: true,
+    },
+    defaultValue: {
       type: Object,
       required: true,
     },
@@ -76,7 +88,8 @@ export default {
   font-weight: 600;
 }
 
-.settings-panel__field input {
+.settings-panel__field input,
+.settings-panel__field select {
   min-height: 2.35rem;
   padding: 0.45rem 0.65rem;
   border-radius: 0.75rem;
@@ -92,6 +105,10 @@ export default {
   margin-top: 0.8rem;
 }
 
+.settings-panel__actions .settings-panel__button--reset {
+  margin-right: auto;
+}
+
 .settings-panel__button {
   min-width: 5.5rem;
   min-height: 2.25rem;
@@ -105,6 +122,12 @@ export default {
   border: 1px solid rgba(148, 163, 184, 0.34);
   color: #516273;
   background: #ffffff;
+}
+
+.settings-panel__button--reset {
+  border: 1px solid rgba(220, 38, 38, 0.28);
+  color: #b42318;
+  background: #fff7f7;
 }
 
 .settings-panel__button--primary {

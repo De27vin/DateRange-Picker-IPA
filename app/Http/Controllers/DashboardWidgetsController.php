@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DashboardWidgetSeriesRequest;
 use App\Services\DashboardCurrentStatsService;
+use App\Services\DashboardWidgetSettingsService;
 use App\Services\DashboardWidgetSeriesService;
 use Illuminate\Http\JsonResponse;
 
@@ -13,6 +14,13 @@ class DashboardWidgetsController extends Controller
     {
         return response()->json([
             'data' => $stats->get(),
+        ]);
+    }
+
+    public function settings(DashboardWidgetSettingsService $settings): JsonResponse
+    {
+        return response()->json([
+            'data' => $settings->getAccountDefaults(),
         ]);
     }
 

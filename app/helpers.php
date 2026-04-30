@@ -33,6 +33,22 @@ if (!function_exists('toBoolean')) {
     }
 }
 
+if (!function_exists('countryDisplayName')) {
+    function countryDisplayName(?string $countryIso, string $locale = 'en'): string
+    {
+        $countryIso = strtoupper((string) $countryIso);
+        if ($countryIso === '') {
+            return '';
+        }
+
+        if (function_exists('locale_get_display_region')) {
+            return locale_get_display_region('-'.$countryIso, $locale) ?: $countryIso;
+        }
+
+        return $countryIso;
+    }
+}
+
 // ------------------
 // PORTING TO TEST BELOW
 // ------------------

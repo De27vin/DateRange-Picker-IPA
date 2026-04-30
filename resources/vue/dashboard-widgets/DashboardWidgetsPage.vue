@@ -5,8 +5,10 @@
         :summary="summary.equipment"
         :series="series.equipment"
         :range="settings.equipmentRange"
+        :default-range="defaultSettings.equipmentRange"
         :error-message="errors.equipment"
         @update-range="updateRange('equipmentRange', 'equipment', $event)"
+        @reset-range="resetRange('equipmentRange', 'equipment')"
       />
 
       <AlarmWidget :summary="summary.alarms" />
@@ -15,23 +17,29 @@
         :summary="summary.overdues"
         :series="series.overdues"
         :range="settings.overduesRange"
+        :default-range="defaultSettings.overduesRange"
         :error-message="errors.overdues"
         @update-range="updateRange('overduesRange', 'overdues', $event)"
+        @reset-range="resetRange('overduesRange', 'overdues')"
       />
 
       <AlertsWidget
         :summary="summary.alerts"
         :series="series.alerts"
         :range="settings.alertsRange"
+        :default-range="defaultSettings.alertsRange"
         :error-message="errors.alerts"
         @update-range="updateRange('alertsRange', 'alerts', $event)"
+        @reset-range="resetRange('alertsRange', 'alerts')"
       />
 
       <ServiceLevelWidget
         :summary="summary.service_level"
         :thresholds="settings.serviceThresholds"
+        :default-thresholds="defaultSettings.serviceThresholds"
         :error-message="errors.serviceLevel"
         @update-thresholds="updateThresholds"
+        @reset-thresholds="resetThresholds"
       />
     </div>
   </div>
@@ -45,12 +53,12 @@ import OverduesWidget from './widgets/OverduesWidget.vue'
 import AlertsWidget from './widgets/AlertsWidget.vue'
 import ServiceLevelWidget from './widgets/ServiceLevelWidget.vue'
 import {
-  clampDateRange,
-  daysAgoYmd,
   loadWidgetSettings,
+  resolveRollingRange,
   saveWidgetSettings,
-  todayYmd,
-  validateDateRange,
+  sanitizeRollingRange,
+  SYSTEM_DASHBOARD_WIDGET_DEFAULTS,
+  validateRollingRange,
   validateServiceThresholds,
 } from '../../js/utils/dashboardWidgetSettings'
 
@@ -72,13 +80,7 @@ export default {
     ServiceLevelWidget,
   },
   data() {
-    const defaultRange = {
-      start: daysAgoYmd(90),
-      end: todayYmd(),
-    }
-    const equipmentRange = loadWidgetSettings('equipmentRange', defaultRange)
-    const overduesRange = loadWidgetSettings('overduesRange', defaultRange)
-    const alertsRange = loadWidgetSettings('alertsRange', defaultRange)
+    const systemDefaults = this.normalizeSettings(SYSTEM_DASHBOARD_WIDGET_DEFAULTS)
 
     return {
       summary: { ...DEFAULT_SUMMARY },
@@ -87,14 +89,9 @@ export default {
         overdues: [],
         alerts: [],
       },
+      defaultSettings: systemDefaults,
       settings: {
-        equipmentRange,
-        overduesRange,
-        alertsRange,
-        serviceThresholds: loadWidgetSettings('serviceThresholds', {
-          redMax: 75,
-          orangeMax: 90,
-        }),
+        ...systemDefaults,
       },
       errors: {
         equipment: '',
@@ -106,6 +103,8 @@ export default {
     }
   },
   async mounted() {
+    await this.fetchSettings()
+
     await Promise.all([
       this.fetchSummary(),
       this.fetchSeries('equipment'),
@@ -131,11 +130,40 @@ export default {
         console.error('Failed to load dashboard summary', error)
       }
     },
+    async fetchSettings() {
+      try {
+        const response = await axios.get('/api/dashboard/widgets/settings')
+        const accountDefaults = this.normalizeSettings(response?.data?.data || SYSTEM_DASHBOARD_WIDGET_DEFAULTS)
+
+        this.defaultSettings = accountDefaults
+        this.settings = {
+          equipmentRange: loadWidgetSettings('equipmentRange', accountDefaults.equipmentRange),
+          overduesRange: loadWidgetSettings('overduesRange', accountDefaults.overduesRange),
+          alertsRange: loadWidgetSettings('alertsRange', accountDefaults.alertsRange),
+          serviceThresholds: loadWidgetSettings('serviceThresholds', accountDefaults.serviceThresholds),
+        }
+      } catch (error) {
+        console.error('Failed to load dashboard widget settings', error)
+      }
+    },
+    normalizeSettings(settings) {
+      const ranges = settings?.ranges || {}
+
+      return {
+        equipmentRange: sanitizeRollingRange(ranges.equipment, SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.equipment),
+        overduesRange: sanitizeRollingRange(ranges.overdues, SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.overdues),
+        alertsRange: sanitizeRollingRange(ranges.alerts, SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.alerts),
+        serviceThresholds: {
+          ...SYSTEM_DASHBOARD_WIDGET_DEFAULTS.serviceThresholds,
+          ...(settings?.serviceThresholds || {}),
+        },
+      }
+    },
     async fetchSeries(widget) {
       const rangeMap = {
-        equipment: this.settings.equipmentRange,
-        overdues: this.settings.overduesRange,
-        alerts: this.settings.alertsRange,
+        equipment: resolveRollingRange(this.settings.equipmentRange),
+        overdues: resolveRollingRange(this.settings.overduesRange),
+        alerts: resolveRollingRange(this.settings.alertsRange),
       }
 
       try {
@@ -154,17 +182,23 @@ export default {
       }
     },
     async updateRange(settingKey, widget, nextRange) {
-      const error = validateDateRange(nextRange)
+      const error = validateRollingRange(nextRange)
       if (error) {
         this.$set(this.errors, widget, error)
         return
       }
 
       this.$set(this.errors, widget, '')
-      const fallback = this.settings[settingKey]
-      const clamped = clampDateRange(nextRange, fallback)
+      const clamped = sanitizeRollingRange(nextRange, this.settings[settingKey])
       this.$set(this.settings, settingKey, clamped)
       saveWidgetSettings(settingKey, clamped)
+      await this.fetchSeries(widget)
+    },
+    async resetRange(settingKey, widget) {
+      const defaultRange = this.defaultSettings[settingKey]
+      this.$set(this.errors, widget, '')
+      this.$set(this.settings, settingKey, defaultRange)
+      saveWidgetSettings(settingKey, defaultRange)
       await this.fetchSeries(widget)
     },
     updateThresholds(nextThresholds) {
@@ -181,6 +215,11 @@ export default {
       this.$set(this.errors, 'serviceLevel', '')
       this.$set(this.settings, 'serviceThresholds', thresholds)
       saveWidgetSettings('serviceThresholds', thresholds)
+    },
+    resetThresholds() {
+      this.$set(this.errors, 'serviceLevel', '')
+      this.$set(this.settings, 'serviceThresholds', { ...this.defaultSettings.serviceThresholds })
+      saveWidgetSettings('serviceThresholds', this.defaultSettings.serviceThresholds)
     },
   },
 }

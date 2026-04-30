@@ -1,7 +1,7 @@
 <template>
   <WidgetCard title="Overdues" subtitle="Last datapoint with projection." configurable :settings-error="errorMessage" @toggle-settings="settingsOpen = !settingsOpen">
     <template v-if="settingsOpen" #settings>
-      <DateRangeSettings :value="range" @apply="applyRange" @cancel="settingsOpen = false" />
+      <DateRangeSettings :value="range" :default-value="defaultRange" @apply="applyRange" @reset="resetRange" @cancel="settingsOpen = false" />
     </template>
 
     <div class="widget-layout">
@@ -117,6 +117,10 @@ export default {
       type: Object,
       required: true,
     },
+    defaultRange: {
+      type: Object,
+      required: true,
+    },
     errorMessage: {
       type: String,
       default: '',
@@ -145,6 +149,10 @@ export default {
     applyRange(nextRange) {
       this.settingsOpen = false
       this.$emit('update-range', nextRange)
+    },
+    resetRange() {
+      this.settingsOpen = false
+      this.$emit('reset-range')
     },
     buildTrend(key) {
       const values = this.series.map((point) => Number(point?.series?.[key] || 0))

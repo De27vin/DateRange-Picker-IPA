@@ -2140,13 +2140,7 @@ var DEFAULT_SUMMARY = {
     ServiceLevelWidget: _widgets_ServiceLevelWidget_vue__WEBPACK_IMPORTED_MODULE_5__["default"]
   },
   data: function data() {
-    var defaultRange = {
-      start: (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.daysAgoYmd)(90),
-      end: (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.todayYmd)()
-    };
-    var equipmentRange = (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.loadWidgetSettings)('equipmentRange', defaultRange);
-    var overduesRange = (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.loadWidgetSettings)('overduesRange', defaultRange);
-    var alertsRange = (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.loadWidgetSettings)('alertsRange', defaultRange);
+    var systemDefaults = this.normalizeSettings(_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.SYSTEM_DASHBOARD_WIDGET_DEFAULTS);
     return {
       summary: _objectSpread({}, DEFAULT_SUMMARY),
       series: {
@@ -2154,14 +2148,13 @@ var DEFAULT_SUMMARY = {
         overdues: [],
         alerts: []
       },
-      settings: {
-        equipmentRange: equipmentRange,
-        overduesRange: overduesRange,
-        alertsRange: alertsRange,
-        serviceThresholds: (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.loadWidgetSettings)('serviceThresholds', {
-          redMax: 75,
-          orangeMax: 90
-        })
+      defaultSettings: systemDefaults,
+      settings: _objectSpread({}, systemDefaults),
+      errors: {
+        equipment: '',
+        overdues: '',
+        alerts: '',
+        serviceLevel: ''
       },
       pollHandle: null
     };
@@ -2173,12 +2166,15 @@ var DEFAULT_SUMMARY = {
         while (1) switch (_context.prev = _context.next) {
           case 0:
             _context.next = 2;
-            return Promise.all([_this.fetchSummary(), _this.fetchSeries('equipment'), _this.fetchSeries('overdues'), _this.fetchSeries('alerts')]);
+            return _this.fetchSettings();
           case 2:
+            _context.next = 4;
+            return Promise.all([_this.fetchSummary(), _this.fetchSeries('equipment'), _this.fetchSeries('overdues'), _this.fetchSeries('alerts')]);
+          case 4:
             _this.pollHandle = window.setInterval(function () {
               _this.fetchSummary();
             }, 30000);
-          case 3:
+          case 5:
           case "end":
             return _context.stop();
         }
@@ -2217,20 +2213,62 @@ var DEFAULT_SUMMARY = {
         }, _callee2, null, [[0, 7]]);
       }))();
     },
-    fetchSeries: function fetchSeries(widget) {
+    fetchSettings: function fetchSettings() {
       var _this3 = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-        var rangeMap, _response$data2, response;
+        var _response$data2, response, accountDefaults;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
-              rangeMap = {
-                equipment: _this3.settings.equipmentRange,
-                overdues: _this3.settings.overduesRange,
-                alerts: _this3.settings.alertsRange
+              _context3.prev = 0;
+              _context3.next = 3;
+              return axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/dashboard/widgets/settings');
+            case 3:
+              response = _context3.sent;
+              accountDefaults = _this3.normalizeSettings((response === null || response === void 0 ? void 0 : (_response$data2 = response.data) === null || _response$data2 === void 0 ? void 0 : _response$data2.data) || _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.SYSTEM_DASHBOARD_WIDGET_DEFAULTS);
+              _this3.defaultSettings = accountDefaults;
+              _this3.settings = {
+                equipmentRange: (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.loadWidgetSettings)('equipmentRange', accountDefaults.equipmentRange),
+                overduesRange: (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.loadWidgetSettings)('overduesRange', accountDefaults.overduesRange),
+                alertsRange: (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.loadWidgetSettings)('alertsRange', accountDefaults.alertsRange),
+                serviceThresholds: (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.loadWidgetSettings)('serviceThresholds', accountDefaults.serviceThresholds)
               };
-              _context3.prev = 1;
-              _context3.next = 4;
+              _context3.next = 12;
+              break;
+            case 9:
+              _context3.prev = 9;
+              _context3.t0 = _context3["catch"](0);
+              console.error('Failed to load dashboard widget settings', _context3.t0);
+            case 12:
+            case "end":
+              return _context3.stop();
+          }
+        }, _callee3, null, [[0, 9]]);
+      }))();
+    },
+    normalizeSettings: function normalizeSettings(settings) {
+      var ranges = (settings === null || settings === void 0 ? void 0 : settings.ranges) || {};
+      return {
+        equipmentRange: (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.sanitizeRollingRange)(ranges.equipment, _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.equipment),
+        overduesRange: (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.sanitizeRollingRange)(ranges.overdues, _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.overdues),
+        alertsRange: (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.sanitizeRollingRange)(ranges.alerts, _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.alerts),
+        serviceThresholds: _objectSpread(_objectSpread({}, _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.SYSTEM_DASHBOARD_WIDGET_DEFAULTS.serviceThresholds), (settings === null || settings === void 0 ? void 0 : settings.serviceThresholds) || {})
+      };
+    },
+    fetchSeries: function fetchSeries(widget) {
+      var _this4 = this;
+      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+        var rangeMap, _response$data3, response;
+        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+          while (1) switch (_context4.prev = _context4.next) {
+            case 0:
+              rangeMap = {
+                equipment: (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.resolveRollingRange)(_this4.settings.equipmentRange),
+                overdues: (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.resolveRollingRange)(_this4.settings.overduesRange),
+                alerts: (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.resolveRollingRange)(_this4.settings.alertsRange)
+              };
+              _context4.prev = 1;
+              _context4.next = 4;
               return axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/dashboard/widgets/series', {
                 params: {
                   widget: widget,
@@ -2239,51 +2277,90 @@ var DEFAULT_SUMMARY = {
                 }
               });
             case 4:
-              response = _context3.sent;
-              _this3.$set(_this3.series, widget, (response === null || response === void 0 ? void 0 : (_response$data2 = response.data) === null || _response$data2 === void 0 ? void 0 : _response$data2.data) || []);
-              _context3.next = 12;
+              response = _context4.sent;
+              _this4.$set(_this4.series, widget, (response === null || response === void 0 ? void 0 : (_response$data3 = response.data) === null || _response$data3 === void 0 ? void 0 : _response$data3.data) || []);
+              _context4.next = 12;
               break;
             case 8:
-              _context3.prev = 8;
-              _context3.t0 = _context3["catch"](1);
-              console.error("Failed to load ".concat(widget, " widget series"), _context3.t0);
-              _this3.$set(_this3.series, widget, []);
+              _context4.prev = 8;
+              _context4.t0 = _context4["catch"](1);
+              console.error("Failed to load ".concat(widget, " widget series"), _context4.t0);
+              _this4.$set(_this4.series, widget, []);
             case 12:
-            case "end":
-              return _context3.stop();
-          }
-        }, _callee3, null, [[1, 8]]);
-      }))();
-    },
-    updateRange: function updateRange(settingKey, widget, nextRange) {
-      var _this4 = this;
-      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
-        var fallback, clamped;
-        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-          while (1) switch (_context4.prev = _context4.next) {
-            case 0:
-              fallback = _this4.settings[settingKey];
-              clamped = (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.clampDateRange)(nextRange, fallback);
-              _this4.$set(_this4.settings, settingKey, clamped);
-              (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.saveWidgetSettings)(settingKey, clamped);
-              _context4.next = 6;
-              return _this4.fetchSeries(widget);
-            case 6:
             case "end":
               return _context4.stop();
           }
-        }, _callee4);
+        }, _callee4, null, [[1, 8]]);
+      }))();
+    },
+    updateRange: function updateRange(settingKey, widget, nextRange) {
+      var _this5 = this;
+      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
+        var error, clamped;
+        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+          while (1) switch (_context5.prev = _context5.next) {
+            case 0:
+              error = (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.validateRollingRange)(nextRange);
+              if (!error) {
+                _context5.next = 4;
+                break;
+              }
+              _this5.$set(_this5.errors, widget, error);
+              return _context5.abrupt("return");
+            case 4:
+              _this5.$set(_this5.errors, widget, '');
+              clamped = (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.sanitizeRollingRange)(nextRange, _this5.settings[settingKey]);
+              _this5.$set(_this5.settings, settingKey, clamped);
+              (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.saveWidgetSettings)(settingKey, clamped);
+              _context5.next = 10;
+              return _this5.fetchSeries(widget);
+            case 10:
+            case "end":
+              return _context5.stop();
+          }
+        }, _callee5);
+      }))();
+    },
+    resetRange: function resetRange(settingKey, widget) {
+      var _this6 = this;
+      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
+        var defaultRange;
+        return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+          while (1) switch (_context6.prev = _context6.next) {
+            case 0:
+              defaultRange = _this6.defaultSettings[settingKey];
+              _this6.$set(_this6.errors, widget, '');
+              _this6.$set(_this6.settings, settingKey, defaultRange);
+              (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.saveWidgetSettings)(settingKey, defaultRange);
+              _context6.next = 6;
+              return _this6.fetchSeries(widget);
+            case 6:
+            case "end":
+              return _context6.stop();
+          }
+        }, _callee6);
       }))();
     },
     updateThresholds: function updateThresholds(nextThresholds) {
+      var error = (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.validateServiceThresholds)(nextThresholds);
+      if (error) {
+        this.$set(this.errors, 'serviceLevel', error);
+        return;
+      }
       var redMax = Math.max(0, Math.min(100, Number(nextThresholds.redMax || 75)));
       var orangeMax = Math.max(redMax, Math.min(100, Number(nextThresholds.orangeMax || 90)));
       var thresholds = {
         redMax: redMax,
         orangeMax: orangeMax
       };
+      this.$set(this.errors, 'serviceLevel', '');
       this.$set(this.settings, 'serviceThresholds', thresholds);
       (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.saveWidgetSettings)('serviceThresholds', thresholds);
+    },
+    resetThresholds: function resetThresholds() {
+      this.$set(this.errors, 'serviceLevel', '');
+      this.$set(this.settings, 'serviceThresholds', _objectSpread({}, this.defaultSettings.serviceThresholds));
+      (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.saveWidgetSettings)('serviceThresholds', this.defaultSettings.serviceThresholds);
     }
   }
 });
@@ -2392,6 +2469,10 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     value: {
       type: Object,
       required: true
+    },
+    defaultValue: {
+      type: Object,
+      required: true
     }
   },
   data: function data() {
@@ -2441,6 +2522,10 @@ __webpack_require__.r(__webpack_exports__);
     configurable: {
       type: Boolean,
       "default": false
+    },
+    settingsError: {
+      type: String,
+      "default": ''
     }
   }
 });
@@ -2568,11 +2653,25 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     range: {
       type: Object,
       required: true
+    },
+    defaultRange: {
+      type: Object,
+      required: true
+    },
+    errorMessage: {
+      type: String,
+      "default": ''
     }
   },
   data: function data() {
     return {
-      settingsOpen: false
+      settingsOpen: false,
+      tooltip: {
+        visible: false,
+        text: '',
+        x: 0,
+        y: 0
+      }
     };
   },
   computed: {
@@ -2596,6 +2695,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
         var criticalHeight = totalHeight * (critical / Math.max(critical + nonCritical, 1));
         var nonCriticalHeight = Math.max(0, totalHeight - criticalHeight);
         var topY = 70 - totalHeight;
+        var pointTs = (point === null || point === void 0 ? void 0 : point.point_ts) || (point === null || point === void 0 ? void 0 : point.label_ts) || (point === null || point === void 0 ? void 0 : point.bucket_end);
         return {
           centerX: centerX,
           label: _this.formatLabel((point === null || point === void 0 ? void 0 : point.label_ts) || (point === null || point === void 0 ? void 0 : point.bucket_end)),
@@ -2605,11 +2705,13 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
           },
           criticalRect: {
             y: topY,
-            height: criticalHeight
+            height: criticalHeight,
+            tooltip: _this.buildTooltip('Critical', critical, pointTs)
           },
           nonCriticalRect: {
             y: topY + criticalHeight,
-            height: nonCriticalHeight
+            height: nonCriticalHeight,
+            tooltip: _this.buildTooltip('Non-critical', nonCritical, pointTs)
           }
         };
       });
@@ -2636,11 +2738,43 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       this.settingsOpen = false;
       this.$emit('update-range', nextRange);
     },
+    resetRange: function resetRange() {
+      this.settingsOpen = false;
+      this.$emit('reset-range');
+    },
     formatLabel: function formatLabel(ts) {
       var date = new Date(ts);
       var day = String(date.getUTCDate()).padStart(2, '0');
       var month = String(date.getUTCMonth() + 1).padStart(2, '0');
       return "".concat(day, ".").concat(month);
+    },
+    formatTooltip: function formatTooltip(ts) {
+      var date = new Date(ts);
+      var day = String(date.getUTCDate()).padStart(2, '0');
+      var month = String(date.getUTCMonth() + 1).padStart(2, '0');
+      var hours = String(date.getUTCHours()).padStart(2, '0');
+      var minutes = String(date.getUTCMinutes()).padStart(2, '0');
+      return "".concat(day, ".").concat(month, " ").concat(hours, ":").concat(minutes, " UTC");
+    },
+    buildTooltip: function buildTooltip(label, value, ts) {
+      return "".concat(label, ": ").concat(value, "\n").concat(this.formatTooltip(ts));
+    },
+    showTooltip: function showTooltip(event, text) {
+      this.tooltip.visible = true;
+      this.tooltip.text = text;
+      this.moveTooltip(event);
+    },
+    moveTooltip: function moveTooltip(event) {
+      var preview = this.$refs.preview;
+      if (!preview || !event) {
+        return;
+      }
+      var rect = preview.getBoundingClientRect();
+      this.tooltip.x = event.clientX - rect.left + 10;
+      this.tooltip.y = event.clientY - rect.top - 10;
+    },
+    hideTooltip: function hideTooltip() {
+      this.tooltip.visible = false;
     }
   }
 });
@@ -2686,11 +2820,25 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     range: {
       type: Object,
       required: true
+    },
+    defaultRange: {
+      type: Object,
+      required: true
+    },
+    errorMessage: {
+      type: String,
+      "default": ''
     }
   },
   data: function data() {
     return {
-      settingsOpen: false
+      settingsOpen: false,
+      tooltip: {
+        visible: false,
+        text: '',
+        x: 0,
+        y: 0
+      }
     };
   },
   computed: {
@@ -2715,6 +2863,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
         var disabled = Number((point === null || point === void 0 ? void 0 : (_point$series4 = point.series) === null || _point$series4 === void 0 ? void 0 : _point$series4.disabled) || 0);
         var activeHeight = enabled / maxValue * 54;
         var inactiveHeight = disabled / maxValue * 54;
+        var pointTs = (point === null || point === void 0 ? void 0 : point.point_ts) || (point === null || point === void 0 ? void 0 : point.label_ts) || (point === null || point === void 0 ? void 0 : point.bucket_end);
         return {
           centerX: centerX,
           label: _this.formatLabel((point === null || point === void 0 ? void 0 : point.label_ts) || (point === null || point === void 0 ? void 0 : point.bucket_end)),
@@ -2722,13 +2871,15 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
             x: centerX - gap - barWidth,
             y: 70 - activeHeight,
             width: barWidth,
-            height: activeHeight
+            height: activeHeight,
+            tooltip: _this.buildTooltip('Active', enabled, pointTs)
           },
           inactiveBar: {
             x: centerX + gap,
             y: 70 - inactiveHeight,
             width: barWidth,
-            height: inactiveHeight
+            height: inactiveHeight,
+            tooltip: _this.buildTooltip('Inactive', disabled, pointTs)
           }
         };
       });
@@ -2757,11 +2908,43 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       this.settingsOpen = false;
       this.$emit('update-range', nextRange);
     },
+    resetRange: function resetRange() {
+      this.settingsOpen = false;
+      this.$emit('reset-range');
+    },
     formatLabel: function formatLabel(ts) {
       var date = new Date(ts);
       var day = String(date.getUTCDate()).padStart(2, '0');
       var month = String(date.getUTCMonth() + 1).padStart(2, '0');
       return "".concat(day, ".").concat(month);
+    },
+    formatTooltip: function formatTooltip(ts) {
+      var date = new Date(ts);
+      var day = String(date.getUTCDate()).padStart(2, '0');
+      var month = String(date.getUTCMonth() + 1).padStart(2, '0');
+      var hours = String(date.getUTCHours()).padStart(2, '0');
+      var minutes = String(date.getUTCMinutes()).padStart(2, '0');
+      return "".concat(day, ".").concat(month, " ").concat(hours, ":").concat(minutes, " UTC");
+    },
+    buildTooltip: function buildTooltip(label, value, ts) {
+      return "".concat(label, ": ").concat(value, "\n").concat(this.formatTooltip(ts));
+    },
+    showTooltip: function showTooltip(event, text) {
+      this.tooltip.visible = true;
+      this.tooltip.text = text;
+      this.moveTooltip(event);
+    },
+    moveTooltip: function moveTooltip(event) {
+      var preview = this.$refs.preview;
+      if (!preview || !event) {
+        return;
+      }
+      var rect = preview.getBoundingClientRect();
+      this.tooltip.x = event.clientX - rect.left + 10;
+      this.tooltip.y = event.clientY - rect.top - 10;
+    },
+    hideTooltip: function hideTooltip() {
+      this.tooltip.visible = false;
     }
   }
 });
@@ -2807,11 +2990,25 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     range: {
       type: Object,
       required: true
+    },
+    defaultRange: {
+      type: Object,
+      required: true
+    },
+    errorMessage: {
+      type: String,
+      "default": ''
     }
   },
   data: function data() {
     return {
-      settingsOpen: false
+      settingsOpen: false,
+      tooltip: {
+        visible: false,
+        text: '',
+        x: 0,
+        y: 0
+      }
     };
   },
   computed: {
@@ -2827,6 +3024,10 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       this.settingsOpen = false;
       this.$emit('update-range', nextRange);
     },
+    resetRange: function resetRange() {
+      this.settingsOpen = false;
+      this.$emit('reset-range');
+    },
     buildTrend: function buildTrend(key) {
       var _this = this;
       var values = this.series.map(function (point) {
@@ -2840,12 +3041,15 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       var height = 24;
       var step = this.series.length > 1 ? (right - left) / Math.max(this.series.length - 1, 1) : right - left;
       var points = values.map(function (value, index) {
+        var sourcePoint = _this.series[index] || {};
         var x = left + step * index;
         var y = baseY - value / maxValue * height;
+        var ts = (sourcePoint === null || sourcePoint === void 0 ? void 0 : sourcePoint.point_ts) || (sourcePoint === null || sourcePoint === void 0 ? void 0 : sourcePoint.label_ts) || (sourcePoint === null || sourcePoint === void 0 ? void 0 : sourcePoint.bucket_end);
         return {
           x: x,
           y: y,
-          value: value
+          value: value,
+          tooltip: _this.buildTooltip(_this.labelForKey(key), value, ts)
         };
       });
       var last = points[points.length - 1] || {
@@ -2861,6 +3065,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
         points: points.map(function (point) {
           return "".concat(point.x, ",").concat(point.y);
         }).join(' '),
+        pointItems: points,
         projection: "".concat(last.x, ",").concat(last.y, " ").concat(projectedX, ",").concat(projectedY),
         currentPoint: last,
         max: maxValue,
@@ -2875,6 +3080,37 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       var day = String(date.getUTCDate()).padStart(2, '0');
       var month = String(date.getUTCMonth() + 1).padStart(2, '0');
       return "".concat(day, ".").concat(month);
+    },
+    formatTooltip: function formatTooltip(ts) {
+      var date = new Date(ts);
+      var day = String(date.getUTCDate()).padStart(2, '0');
+      var month = String(date.getUTCMonth() + 1).padStart(2, '0');
+      var hours = String(date.getUTCHours()).padStart(2, '0');
+      var minutes = String(date.getUTCMinutes()).padStart(2, '0');
+      return "".concat(day, ".").concat(month, " ").concat(hours, ":").concat(minutes, " UTC");
+    },
+    buildTooltip: function buildTooltip(label, value, ts) {
+      return "".concat(label, ": ").concat(value, "\n").concat(this.formatTooltip(ts));
+    },
+    labelForKey: function labelForKey(key) {
+      return key === 'periodical_calls' ? 'Periodic calls' : 'Local checks';
+    },
+    showTooltip: function showTooltip(event, text) {
+      this.tooltip.visible = true;
+      this.tooltip.text = text;
+      this.moveTooltip(event);
+    },
+    moveTooltip: function moveTooltip(event) {
+      var preview = this.$refs.preview;
+      if (!preview || !event) {
+        return;
+      }
+      var rect = preview.getBoundingClientRect();
+      this.tooltip.x = event.clientX - rect.left + 10;
+      this.tooltip.y = event.clientY - rect.top - 10;
+    },
+    hideTooltip: function hideTooltip() {
+      this.tooltip.visible = false;
     },
     labelGridStyle: function labelGridStyle(labels) {
       return {
@@ -2921,6 +3157,14 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     thresholds: {
       type: Object,
       required: true
+    },
+    defaultThresholds: {
+      type: Object,
+      required: true
+    },
+    errorMessage: {
+      type: String,
+      "default": ''
     }
   },
   data: function data() {
@@ -2970,6 +3214,10 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     applyThresholds: function applyThresholds() {
       this.settingsOpen = false;
       this.$emit('update-thresholds', _objectSpread({}, this.draftThresholds));
+    },
+    resetThresholds: function resetThresholds() {
+      this.settingsOpen = false;
+      this.$emit('reset-thresholds');
     }
   }
 });
@@ -2999,11 +3247,16 @@ var render = function render() {
     attrs: {
       summary: _vm.summary.equipment,
       series: _vm.series.equipment,
-      range: _vm.settings.equipmentRange
+      range: _vm.settings.equipmentRange,
+      "default-range": _vm.defaultSettings.equipmentRange,
+      "error-message": _vm.errors.equipment
     },
     on: {
       "update-range": function updateRange($event) {
         return _vm.updateRange("equipmentRange", "equipment", $event);
+      },
+      "reset-range": function resetRange($event) {
+        return _vm.resetRange("equipmentRange", "equipment");
       }
     }
   }), _vm._v(" "), _c("AlarmWidget", {
@@ -3014,31 +3267,44 @@ var render = function render() {
     attrs: {
       summary: _vm.summary.overdues,
       series: _vm.series.overdues,
-      range: _vm.settings.overduesRange
+      range: _vm.settings.overduesRange,
+      "default-range": _vm.defaultSettings.overduesRange,
+      "error-message": _vm.errors.overdues
     },
     on: {
       "update-range": function updateRange($event) {
         return _vm.updateRange("overduesRange", "overdues", $event);
+      },
+      "reset-range": function resetRange($event) {
+        return _vm.resetRange("overduesRange", "overdues");
       }
     }
   }), _vm._v(" "), _c("AlertsWidget", {
     attrs: {
       summary: _vm.summary.alerts,
       series: _vm.series.alerts,
-      range: _vm.settings.alertsRange
+      range: _vm.settings.alertsRange,
+      "default-range": _vm.defaultSettings.alertsRange,
+      "error-message": _vm.errors.alerts
     },
     on: {
       "update-range": function updateRange($event) {
         return _vm.updateRange("alertsRange", "alerts", $event);
+      },
+      "reset-range": function resetRange($event) {
+        return _vm.resetRange("alertsRange", "alerts");
       }
     }
   }), _vm._v(" "), _c("ServiceLevelWidget", {
     attrs: {
       summary: _vm.summary.service_level,
-      thresholds: _vm.settings.serviceThresholds
+      thresholds: _vm.settings.serviceThresholds,
+      "default-thresholds": _vm.defaultSettings.serviceThresholds,
+      "error-message": _vm.errors.serviceLevel
     },
     on: {
-      "update-thresholds": _vm.updateThresholds
+      "update-thresholds": _vm.updateThresholds,
+      "reset-thresholds": _vm.resetThresholds
     }
   })], 1)]);
 };
@@ -3134,49 +3400,82 @@ var render = function render() {
     staticClass: "settings-panel__grid"
   }, [_c("label", {
     staticClass: "settings-panel__field"
-  }, [_c("span", [_vm._v("Start")]), _vm._v(" "), _c("input", {
+  }, [_c("span", [_vm._v("Back")]), _vm._v(" "), _c("input", {
     directives: [{
       name: "model",
-      rawName: "v-model",
-      value: _vm.draft.start,
-      expression: "draft.start"
+      rawName: "v-model.number",
+      value: _vm.draft.amount,
+      expression: "draft.amount",
+      modifiers: {
+        number: true
+      }
     }],
     attrs: {
-      type: "date"
+      type: "number",
+      min: "1",
+      max: "365"
     },
     domProps: {
-      value: _vm.draft.start
+      value: _vm.draft.amount
     },
     on: {
       input: function input($event) {
         if ($event.target.composing) return;
-        _vm.$set(_vm.draft, "start", $event.target.value);
+        _vm.$set(_vm.draft, "amount", _vm._n($event.target.value));
+      },
+      blur: function blur($event) {
+        return _vm.$forceUpdate();
       }
     }
   })]), _vm._v(" "), _c("label", {
     staticClass: "settings-panel__field"
-  }, [_c("span", [_vm._v("End")]), _vm._v(" "), _c("input", {
+  }, [_c("span", [_vm._v("Unit")]), _vm._v(" "), _c("select", {
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: _vm.draft.end,
-      expression: "draft.end"
+      value: _vm.draft.unit,
+      expression: "draft.unit"
     }],
-    attrs: {
-      type: "date"
-    },
-    domProps: {
-      value: _vm.draft.end
-    },
     on: {
-      input: function input($event) {
-        if ($event.target.composing) return;
-        _vm.$set(_vm.draft, "end", $event.target.value);
+      change: function change($event) {
+        var $$selectedVal = Array.prototype.filter.call($event.target.options, function (o) {
+          return o.selected;
+        }).map(function (o) {
+          var val = "_value" in o ? o._value : o.value;
+          return val;
+        });
+        _vm.$set(_vm.draft, "unit", $event.target.multiple ? $$selectedVal : $$selectedVal[0]);
       }
     }
-  })])]), _vm._v(" "), _c("div", {
+  }, [_c("option", {
+    attrs: {
+      value: "days"
+    }
+  }, [_vm._v("Days")]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "weeks"
+    }
+  }, [_vm._v("Weeks")]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "months"
+    }
+  }, [_vm._v("Months")]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "years"
+    }
+  }, [_vm._v("Years")])])])]), _vm._v(" "), _c("div", {
     staticClass: "settings-panel__actions"
   }, [_c("button", {
+    staticClass: "settings-panel__button settings-panel__button--reset",
+    attrs: {
+      type: "button"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.$emit("reset");
+      }
+    }
+  }, [_vm._v("\n      Reset\n    ")]), _vm._v(" "), _c("button", {
     staticClass: "settings-panel__button settings-panel__button--ghost",
     attrs: {
       type: "button"
@@ -3225,7 +3524,9 @@ var render = function render() {
     staticClass: "widget-card__title"
   }, [_vm._v(_vm._s(_vm.title))]), _vm._v(" "), _vm.subtitle ? _c("p", {
     staticClass: "widget-card__subtitle"
-  }, [_vm._v(_vm._s(_vm.subtitle))]) : _vm._e()]), _vm._v(" "), _vm.configurable ? _c("button", {
+  }, [_vm._v(_vm._s(_vm.subtitle))]) : _vm._e()]), _vm._v(" "), _vm.configurable ? _c("div", {
+    staticClass: "widget-card__settings-control"
+  }, [_c("button", {
     staticClass: "widget-card__settings-button",
     attrs: {
       type: "button"
@@ -3237,7 +3538,9 @@ var render = function render() {
     }
   }, [_c("i", {
     staticClass: "f7-icons"
-  }, [_vm._v("gear_alt")])]) : _vm._e()]), _vm._v(" "), _vm.$slots.settings ? _c("div", {
+  }, [_vm._v("gear_alt")])]), _vm._v(" "), _vm.settingsError ? _c("p", {
+    staticClass: "widget-card__settings-error"
+  }, [_vm._v(_vm._s(_vm.settingsError))]) : _vm._e()]) : _vm._e()]), _vm._v(" "), _vm.$slots.settings ? _c("div", {
     staticClass: "widget-card__settings"
   }, [_vm._t("settings")], 2) : _vm._e(), _vm._v(" "), _c("div", {
     staticClass: "widget-card__body"
@@ -3313,7 +3616,8 @@ var render = function render() {
     attrs: {
       title: "Alerts",
       subtitle: "Last datapoint per bucket.",
-      configurable: ""
+      configurable: "",
+      "settings-error": _vm.errorMessage
     },
     on: {
       "toggle-settings": function toggleSettings($event) {
@@ -3325,10 +3629,12 @@ var render = function render() {
       fn: function fn() {
         return [_c("DateRangeSettings", {
           attrs: {
-            value: _vm.range
+            value: _vm.range,
+            "default-value": _vm.defaultRange
           },
           on: {
             apply: _vm.applyRange,
+            reset: _vm.resetRange,
             cancel: function cancel($event) {
               _vm.settingsOpen = false;
             }
@@ -3342,6 +3648,7 @@ var render = function render() {
   }, [_c("div", {
     staticClass: "compact-widget__top"
   }, [_c("div", {
+    ref: "preview",
     staticClass: "chart-wrap compact-widget__preview"
   }, [_c("svg", {
     staticClass: "bar-chart",
@@ -3393,6 +3700,15 @@ var render = function render() {
         height: point.nonCriticalRect.height,
         rx: "4",
         fill: "#facc15"
+      },
+      on: {
+        mouseenter: function mouseenter($event) {
+          return _vm.showTooltip($event, point.nonCriticalRect.tooltip);
+        },
+        mousemove: function mousemove($event) {
+          return _vm.moveTooltip($event);
+        },
+        mouseleave: _vm.hideTooltip
       }
     }), _vm._v(" "), _c("rect", {
       attrs: {
@@ -3402,9 +3718,24 @@ var render = function render() {
         height: point.criticalRect.height,
         rx: "4",
         fill: "#dc2626"
+      },
+      on: {
+        mouseenter: function mouseenter($event) {
+          return _vm.showTooltip($event, point.criticalRect.tooltip);
+        },
+        mousemove: function mousemove($event) {
+          return _vm.moveTooltip($event);
+        },
+        mouseleave: _vm.hideTooltip
       }
     })]);
-  })], 2), _vm._v(" "), _c("div", {
+  })], 2), _vm._v(" "), _vm.tooltip.visible ? _c("div", {
+    staticClass: "chart-tooltip",
+    style: {
+      left: "".concat(_vm.tooltip.x, "px"),
+      top: "".concat(_vm.tooltip.y, "px")
+    }
+  }, [_vm._v(_vm._s(_vm.tooltip.text))]) : _vm._e(), _vm._v(" "), _c("div", {
     staticClass: "mini-labels",
     style: _vm.labelGridStyle
   }, _vm._l(_vm.normalizedSeries, function (point, index) {
@@ -3444,7 +3775,8 @@ var render = function render() {
     attrs: {
       title: "Equipment",
       subtitle: "Last datapoint per bucket.",
-      configurable: ""
+      configurable: "",
+      "settings-error": _vm.errorMessage
     },
     on: {
       "toggle-settings": function toggleSettings($event) {
@@ -3456,10 +3788,12 @@ var render = function render() {
       fn: function fn() {
         return [_c("DateRangeSettings", {
           attrs: {
-            value: _vm.range
+            value: _vm.range,
+            "default-value": _vm.defaultRange
           },
           on: {
             apply: _vm.applyRange,
+            reset: _vm.resetRange,
             cancel: function cancel($event) {
               _vm.settingsOpen = false;
             }
@@ -3473,6 +3807,7 @@ var render = function render() {
   }, [_c("div", {
     staticClass: "compact-widget__top"
   }, [_c("div", {
+    ref: "preview",
     staticClass: "chart-wrap compact-widget__preview"
   }, [_c("svg", {
     staticClass: "bar-chart",
@@ -3524,6 +3859,15 @@ var render = function render() {
         height: point.activeBar.height,
         rx: "4",
         fill: "#3b82f6"
+      },
+      on: {
+        mouseenter: function mouseenter($event) {
+          return _vm.showTooltip($event, point.activeBar.tooltip);
+        },
+        mousemove: function mousemove($event) {
+          return _vm.moveTooltip($event);
+        },
+        mouseleave: _vm.hideTooltip
       }
     }), _vm._v(" "), _c("rect", {
       attrs: {
@@ -3533,9 +3877,24 @@ var render = function render() {
         height: point.inactiveBar.height,
         rx: "4",
         fill: "#94a3b8"
+      },
+      on: {
+        mouseenter: function mouseenter($event) {
+          return _vm.showTooltip($event, point.inactiveBar.tooltip);
+        },
+        mousemove: function mousemove($event) {
+          return _vm.moveTooltip($event);
+        },
+        mouseleave: _vm.hideTooltip
       }
     })]);
-  })], 2), _vm._v(" "), _c("div", {
+  })], 2), _vm._v(" "), _vm.tooltip.visible ? _c("div", {
+    staticClass: "chart-tooltip",
+    style: {
+      left: "".concat(_vm.tooltip.x, "px"),
+      top: "".concat(_vm.tooltip.y, "px")
+    }
+  }, [_vm._v(_vm._s(_vm.tooltip.text))]) : _vm._e(), _vm._v(" "), _c("div", {
     staticClass: "mini-labels",
     style: _vm.labelGridStyle
   }, _vm._l(_vm.normalizedSeries, function (point, index) {
@@ -3575,7 +3934,8 @@ var render = function render() {
     attrs: {
       title: "Overdues",
       subtitle: "Last datapoint with projection.",
-      configurable: ""
+      configurable: "",
+      "settings-error": _vm.errorMessage
     },
     on: {
       "toggle-settings": function toggleSettings($event) {
@@ -3587,10 +3947,12 @@ var render = function render() {
       fn: function fn() {
         return [_c("DateRangeSettings", {
           attrs: {
-            value: _vm.range
+            value: _vm.range,
+            "default-value": _vm.defaultRange
           },
           on: {
             apply: _vm.applyRange,
+            reset: _vm.resetRange,
             cancel: function cancel($event) {
               _vm.settingsOpen = false;
             }
@@ -3604,6 +3966,7 @@ var render = function render() {
   }, [_c("div", {
     staticClass: "compact-widget__top"
   }, [_c("div", {
+    ref: "preview",
     staticClass: "trend-preview"
   }, [_c("div", {
     staticClass: "trend-preview__row"
@@ -3655,6 +4018,42 @@ var render = function render() {
       "stroke-linecap": "round",
       "stroke-linejoin": "round"
     }
+  }), _vm._v(" "), _vm._l(_vm.periodic.pointItems, function (point, index) {
+    return _c("g", {
+      key: "periodic-".concat(index)
+    }, [_c("circle", {
+      attrs: {
+        cx: point.x,
+        cy: point.y,
+        r: "4.2",
+        fill: "#355c8c"
+      },
+      on: {
+        mouseenter: function mouseenter($event) {
+          return _vm.showTooltip($event, point.tooltip);
+        },
+        mousemove: function mousemove($event) {
+          return _vm.moveTooltip($event);
+        },
+        mouseleave: _vm.hideTooltip
+      }
+    }), _vm._v(" "), _c("circle", {
+      attrs: {
+        cx: point.x,
+        cy: point.y,
+        r: "8",
+        fill: "transparent"
+      },
+      on: {
+        mouseenter: function mouseenter($event) {
+          return _vm.showTooltip($event, point.tooltip);
+        },
+        mousemove: function mousemove($event) {
+          return _vm.moveTooltip($event);
+        },
+        mouseleave: _vm.hideTooltip
+      }
+    })]);
   }), _vm._v(" "), _c("polyline", {
     attrs: {
       points: _vm.periodic.projection,
@@ -3664,14 +4063,7 @@ var render = function render() {
       "stroke-linecap": "round",
       "stroke-dasharray": "4 4"
     }
-  }), _vm._v(" "), _c("circle", {
-    attrs: {
-      cx: _vm.periodic.currentPoint.x,
-      cy: _vm.periodic.currentPoint.y,
-      r: "2.8",
-      fill: "#355c8c"
-    }
-  })])]), _vm._v(" "), _c("div", {
+  })], 2)]), _vm._v(" "), _c("div", {
     staticClass: "trend-preview__row"
   }, [_c("svg", {
     staticClass: "trend-chart",
@@ -3721,6 +4113,42 @@ var render = function render() {
       "stroke-linecap": "round",
       "stroke-linejoin": "round"
     }
+  }), _vm._v(" "), _vm._l(_vm.local.pointItems, function (point, index) {
+    return _c("g", {
+      key: "local-".concat(index)
+    }, [_c("circle", {
+      attrs: {
+        cx: point.x,
+        cy: point.y,
+        r: "4.2",
+        fill: "#4b78a8"
+      },
+      on: {
+        mouseenter: function mouseenter($event) {
+          return _vm.showTooltip($event, point.tooltip);
+        },
+        mousemove: function mousemove($event) {
+          return _vm.moveTooltip($event);
+        },
+        mouseleave: _vm.hideTooltip
+      }
+    }), _vm._v(" "), _c("circle", {
+      attrs: {
+        cx: point.x,
+        cy: point.y,
+        r: "8",
+        fill: "transparent"
+      },
+      on: {
+        mouseenter: function mouseenter($event) {
+          return _vm.showTooltip($event, point.tooltip);
+        },
+        mousemove: function mousemove($event) {
+          return _vm.moveTooltip($event);
+        },
+        mouseleave: _vm.hideTooltip
+      }
+    })]);
   }), _vm._v(" "), _c("polyline", {
     attrs: {
       points: _vm.local.projection,
@@ -3730,14 +4158,13 @@ var render = function render() {
       "stroke-linecap": "round",
       "stroke-dasharray": "4 4"
     }
-  }), _vm._v(" "), _c("circle", {
-    attrs: {
-      cx: _vm.local.currentPoint.x,
-      cy: _vm.local.currentPoint.y,
-      r: "2.8",
-      fill: "#4b78a8"
+  })], 2)]), _vm._v(" "), _vm.tooltip.visible ? _c("div", {
+    staticClass: "chart-tooltip",
+    style: {
+      left: "".concat(_vm.tooltip.x, "px"),
+      top: "".concat(_vm.tooltip.y, "px")
     }
-  })])]), _vm._v(" "), _c("div", {
+  }, [_vm._v(_vm._s(_vm.tooltip.text))]) : _vm._e(), _vm._v(" "), _c("div", {
     staticClass: "mini-labels",
     style: _vm.labelGridStyle(_vm.periodic.labels)
   }, _vm._l(_vm.periodic.labels, function (label, index) {
@@ -3777,7 +4204,8 @@ var render = function render() {
     attrs: {
       title: "Service Level",
       subtitle: "Threshold-based interpretation.",
-      configurable: ""
+      configurable: "",
+      "settings-error": _vm.errorMessage
     },
     on: {
       "toggle-settings": function toggleSettings($event) {
@@ -3852,6 +4280,14 @@ var render = function render() {
         })])]), _vm._v(" "), _c("div", {
           staticClass: "settings-panel__actions"
         }, [_c("button", {
+          staticClass: "settings-button settings-button--reset",
+          attrs: {
+            type: "button"
+          },
+          on: {
+            click: _vm.resetThresholds
+          }
+        }, [_vm._v("Reset")]), _vm._v(" "), _c("button", {
           staticClass: "settings-button settings-button--ghost",
           attrs: {
             type: "button"
@@ -3941,7 +4377,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.dashboard-widgets[data-v-1b75c1b8] {\n  padding: 0.25rem 0 1.5rem;\n}\n.dashboard-widgets__grid[data-v-1b75c1b8] {\n  display: grid;\n  gap: 1rem;\n  grid-template-columns: repeat(1, minmax(0, 1fr));\n}\n@media (min-width: 900px) {\n.dashboard-widgets__grid[data-v-1b75c1b8] {\n    grid-template-columns: repeat(2, minmax(0, 1fr));\n}\n}\n@media (min-width: 1440px) {\n.dashboard-widgets__grid[data-v-1b75c1b8] {\n    grid-template-columns: repeat(5, minmax(0, 1fr));\n}\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.dashboard-widgets[data-v-1b75c1b8] {\r\n  padding: 0.25rem 0 1.5rem;\n}\n.dashboard-widgets__grid[data-v-1b75c1b8] {\r\n  display: grid;\r\n  gap: 1rem;\r\n  grid-template-columns: repeat(1, minmax(0, 1fr));\n}\n@media (min-width: 900px) {\n.dashboard-widgets__grid[data-v-1b75c1b8] {\r\n    grid-template-columns: repeat(2, minmax(0, 1fr));\n}\n}\n@media (min-width: 1440px) {\n.dashboard-widgets__grid[data-v-1b75c1b8] {\r\n    grid-template-columns: repeat(5, minmax(0, 1fr));\n}\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -3989,7 +4425,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.settings-panel[data-v-1ab2011a] {\n  padding: 0.9rem;\n  border-radius: 1rem;\n  background: #f8fbff;\n  border: 1px solid rgba(148, 163, 184, 0.2);\n}\n.settings-panel__grid[data-v-1ab2011a] {\n  display: grid;\n  grid-template-columns: repeat(2, minmax(0, 1fr));\n  gap: 0.75rem;\n}\n.settings-panel__field[data-v-1ab2011a] {\n  display: flex;\n  flex-direction: column;\n  gap: 0.4rem;\n  color: #516273;\n  font-size: 0.8rem;\n  font-weight: 600;\n}\n.settings-panel__field input[data-v-1ab2011a] {\n  min-height: 2.35rem;\n  padding: 0.45rem 0.65rem;\n  border-radius: 0.75rem;\n  border: 1px solid rgba(148, 163, 184, 0.32);\n  background: #ffffff;\n  color: #12243d;\n}\n.settings-panel__actions[data-v-1ab2011a] {\n  display: flex;\n  justify-content: flex-end;\n  gap: 0.6rem;\n  margin-top: 0.8rem;\n}\n.settings-panel__button[data-v-1ab2011a] {\n  min-width: 5.5rem;\n  min-height: 2.25rem;\n  padding: 0 0.85rem;\n  border-radius: 999px;\n  font-size: 0.8rem;\n  font-weight: 700;\n}\n.settings-panel__button--ghost[data-v-1ab2011a] {\n  border: 1px solid rgba(148, 163, 184, 0.34);\n  color: #516273;\n  background: #ffffff;\n}\n.settings-panel__button--primary[data-v-1ab2011a] {\n  border: 0;\n  color: #ffffff;\n  background: linear-gradient(135deg, #355c8c, #4b78a8);\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.settings-panel[data-v-1ab2011a] {\n  padding: 0.9rem;\n  border-radius: 1rem;\n  background: #f8fbff;\n  border: 1px solid rgba(148, 163, 184, 0.2);\n}\n.settings-panel__grid[data-v-1ab2011a] {\n  display: grid;\n  grid-template-columns: repeat(2, minmax(0, 1fr));\n  gap: 0.75rem;\n}\n.settings-panel__field[data-v-1ab2011a] {\n  display: flex;\n  flex-direction: column;\n  gap: 0.4rem;\n  color: #516273;\n  font-size: 0.8rem;\n  font-weight: 600;\n}\n.settings-panel__field input[data-v-1ab2011a],\n.settings-panel__field select[data-v-1ab2011a] {\n  min-height: 2.35rem;\n  padding: 0.45rem 0.65rem;\n  border-radius: 0.75rem;\n  border: 1px solid rgba(148, 163, 184, 0.32);\n  background: #ffffff;\n  color: #12243d;\n}\n.settings-panel__actions[data-v-1ab2011a] {\n  display: flex;\n  justify-content: flex-end;\n  gap: 0.6rem;\n  margin-top: 0.8rem;\n}\n.settings-panel__actions .settings-panel__button--reset[data-v-1ab2011a] {\n  margin-right: auto;\n}\n.settings-panel__button[data-v-1ab2011a] {\n  min-width: 5.5rem;\n  min-height: 2.25rem;\n  padding: 0 0.85rem;\n  border-radius: 999px;\n  font-size: 0.8rem;\n  font-weight: 700;\n}\n.settings-panel__button--ghost[data-v-1ab2011a] {\n  border: 1px solid rgba(148, 163, 184, 0.34);\n  color: #516273;\n  background: #ffffff;\n}\n.settings-panel__button--reset[data-v-1ab2011a] {\n  border: 1px solid rgba(220, 38, 38, 0.28);\n  color: #b42318;\n  background: #fff7f7;\n}\n.settings-panel__button--primary[data-v-1ab2011a] {\n  border: 0;\n  color: #ffffff;\n  background: linear-gradient(135deg, #355c8c, #4b78a8);\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4013,7 +4449,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.widget-card[data-v-65fe147a] {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n  min-height: 13rem;\n  padding: 0.95rem 1rem 0.9rem;\n  border-radius: 1rem;\n  border: 1px solid rgba(15, 23, 42, 0.08);\n  background:\n    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 249, 252, 0.96)),\n    #ffffff;\n  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.08);\n}\n.widget-card__header[data-v-65fe147a] {\n  display: flex;\n  justify-content: space-between;\n  gap: 1rem;\n  align-items: flex-start;\n}\n.widget-card__title[data-v-65fe147a] {\n  margin: 0;\n  color: #12243d;\n  font-size: 1rem;\n  font-weight: 700;\n  line-height: 1.15;\n}\n.widget-card__subtitle[data-v-65fe147a] {\n  margin: 0.2rem 0 0;\n  color: #64748b;\n  font-size: 0.73rem;\n  line-height: 1.25;\n}\n.widget-card__settings-button[data-v-65fe147a] {\n  width: 2.25rem;\n  height: 2.25rem;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  border: 1px solid rgba(148, 163, 184, 0.26);\n  border-radius: 999px;\n  background: rgba(255, 255, 255, 0.86);\n  color: #355c8c;\n  transition: background-color 120ms ease, transform 120ms ease;\n}\n.widget-card__settings-button[data-v-65fe147a]:hover {\n  background: #eef4fb;\n  transform: translateY(-1px);\n}\n.widget-card__settings[data-v-65fe147a] {\n  margin-top: 0.65rem;\n}\n.widget-card__body[data-v-65fe147a] {\n  flex: 1 1 auto;\n  display: flex;\n  flex-direction: column;\n  margin-top: 0.6rem;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.widget-card[data-v-65fe147a] {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n  min-height: 13rem;\n  padding: 0.95rem 1rem 0.9rem;\n  border-radius: 1rem;\n  border: 1px solid rgba(15, 23, 42, 0.08);\n  background:\n    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 249, 252, 0.96)),\n    #ffffff;\n  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.08);\n}\n.widget-card__header[data-v-65fe147a] {\n  display: flex;\n  justify-content: space-between;\n  gap: 1rem;\n  align-items: flex-start;\n}\n.widget-card__settings-control[data-v-65fe147a] {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-end;\n  gap: 0.35rem;\n  max-width: 12rem;\n}\n.widget-card__title[data-v-65fe147a] {\n  margin: 0;\n  color: #12243d;\n  font-size: 1rem;\n  font-weight: 700;\n  line-height: 1.15;\n}\n.widget-card__subtitle[data-v-65fe147a] {\n  margin: 0.2rem 0 0;\n  color: #64748b;\n  font-size: 0.73rem;\n  line-height: 1.25;\n}\n.widget-card__settings-button[data-v-65fe147a] {\n  width: 2.25rem;\n  height: 2.25rem;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  border: 1px solid rgba(148, 163, 184, 0.26);\n  border-radius: 999px;\n  background: rgba(255, 255, 255, 0.86);\n  color: #355c8c;\n  transition: background-color 120ms ease, transform 120ms ease;\n}\n.widget-card__settings-button[data-v-65fe147a]:hover {\n  background: #eef4fb;\n  transform: translateY(-1px);\n}\n.widget-card__settings-error[data-v-65fe147a] {\n  margin: 0;\n  color: #b42318;\n  font-size: 0.7rem;\n  line-height: 1.25;\n  text-align: right;\n}\n.widget-card__settings[data-v-65fe147a] {\n  margin-top: 0.65rem;\n}\n.widget-card__body[data-v-65fe147a] {\n  flex: 1 1 auto;\n  display: flex;\n  flex-direction: column;\n  margin-top: 0.6rem;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4061,7 +4497,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.widget-layout[data-v-7069e315] {\r\n  display: flex;\r\n  flex-direction: column;\r\n  gap: 0.8rem;\r\n  height: 100%;\n}\n.compact-widget__top[data-v-7069e315] {\r\n  display: flex;\r\n  justify-content: flex-end;\n}\n.compact-widget__preview[data-v-7069e315] {\r\n  width: 11rem;\n}\n.bar-chart[data-v-7069e315] {\r\n  width: 100%;\r\n  height: 4.9rem;\n}\n.bar-chart__axis[data-v-7069e315] {\r\n  stroke: rgba(148, 163, 184, 0.45);\r\n  stroke-width: 1.5;\n}\n.bar-chart__y-label[data-v-7069e315] {\r\n  fill: #7b8ca1;\r\n  font-size: 13px;\r\n  font-weight: 700;\n}\n.mini-labels[data-v-7069e315] {\r\n  display: grid;\r\n  gap: 0.2rem;\r\n  margin-top: 0.1rem;\r\n  color: #64748b;\r\n  font-size: 0.63rem;\r\n  text-align: center;\r\n  font-weight: 600;\n}\n.compact-metrics[data-v-7069e315] {\r\n  display: grid;\r\n  grid-template-columns: minmax(0, 1fr) auto;\r\n  gap: 0.8rem;\r\n  margin-top: auto;\n}\n.compact-metrics__labels[data-v-7069e315],\r\n.compact-metrics__values[data-v-7069e315] {\r\n  display: grid;\r\n  gap: 0.35rem;\r\n  font-size: 0.9rem;\n}\n.compact-metrics__labels[data-v-7069e315] {\r\n  color: #5f7084;\n}\n.compact-metrics__values[data-v-7069e315] {\r\n  text-align: right;\r\n  color: #12243d;\r\n  font-weight: 800;\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.widget-layout[data-v-7069e315] {\n  display: flex;\n  flex-direction: column;\n  gap: 0.8rem;\n  height: 100%;\n}\n.compact-widget__top[data-v-7069e315] {\n  display: flex;\n  justify-content: flex-end;\n}\n.compact-widget__preview[data-v-7069e315] {\n  position: relative;\n  width: 11rem;\n}\n.bar-chart[data-v-7069e315] {\n  width: 100%;\n  height: 4.9rem;\n}\n.bar-chart__axis[data-v-7069e315] {\n  stroke: rgba(148, 163, 184, 0.45);\n  stroke-width: 1.5;\n}\n.bar-chart__y-label[data-v-7069e315] {\n  fill: #7b8ca1;\n  font-size: 13px;\n  font-weight: 700;\n}\n.mini-labels[data-v-7069e315] {\n  display: grid;\n  gap: 0.2rem;\n  margin-top: 0.1rem;\n  color: #64748b;\n  font-size: 0.63rem;\n  text-align: center;\n  font-weight: 600;\n}\n.compact-metrics[data-v-7069e315] {\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) auto;\n  gap: 0.8rem;\n  margin-top: auto;\n}\n.compact-metrics__labels[data-v-7069e315],\n.compact-metrics__values[data-v-7069e315] {\n  display: grid;\n  gap: 0.35rem;\n  font-size: 0.9rem;\n}\n.compact-metrics__labels[data-v-7069e315] {\n  color: #5f7084;\n}\n.compact-metrics__values[data-v-7069e315] {\n  text-align: right;\n  color: #12243d;\n  font-weight: 800;\n}\n.chart-tooltip[data-v-7069e315] {\n  position: absolute;\n  z-index: 5;\n  max-width: 10rem;\n  padding: 0.35rem 0.5rem;\n  border-radius: 0.55rem;\n  background: rgba(15, 23, 42, 0.94);\n  color: #ffffff;\n  font-size: 0.68rem;\n  line-height: 1.25;\n  pointer-events: none;\n  transform: translate(-50%, -100%);\n  white-space: pre-line;\n  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.24);\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4085,7 +4521,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.widget-layout[data-v-3bfcecf0] {\r\n  display: flex;\r\n  flex-direction: column;\r\n  gap: 0.8rem;\r\n  height: 100%;\n}\n.compact-widget__top[data-v-3bfcecf0] {\r\n  display: flex;\r\n  justify-content: flex-end;\n}\n.compact-widget__preview[data-v-3bfcecf0] {\r\n  width: 11rem;\n}\n.bar-chart[data-v-3bfcecf0] {\r\n  width: 100%;\r\n  height: 4.9rem;\n}\n.bar-chart__axis[data-v-3bfcecf0] {\r\n  stroke: rgba(148, 163, 184, 0.45);\r\n  stroke-width: 1.5;\n}\n.bar-chart__y-label[data-v-3bfcecf0] {\r\n  fill: #7b8ca1;\r\n  font-size: 13px;\r\n  font-weight: 700;\n}\n.mini-labels[data-v-3bfcecf0] {\r\n  display: grid;\r\n  gap: 0.2rem;\r\n  margin-top: 0.1rem;\r\n  color: #64748b;\r\n  font-size: 0.63rem;\r\n  text-align: center;\r\n  font-weight: 600;\n}\n.compact-metrics[data-v-3bfcecf0] {\r\n  display: grid;\r\n  grid-template-columns: minmax(0, 1fr) auto;\r\n  gap: 0.8rem;\r\n  margin-top: auto;\n}\n.compact-metrics__labels[data-v-3bfcecf0],\r\n.compact-metrics__values[data-v-3bfcecf0] {\r\n  display: grid;\r\n  gap: 0.35rem;\r\n  font-size: 0.9rem;\n}\n.compact-metrics__labels[data-v-3bfcecf0] {\r\n  color: #5f7084;\n}\n.compact-metrics__values[data-v-3bfcecf0] {\r\n  text-align: right;\r\n  color: #12243d;\r\n  font-weight: 800;\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.widget-layout[data-v-3bfcecf0] {\r\n  display: flex;\r\n  flex-direction: column;\r\n  gap: 0.8rem;\r\n  height: 100%;\n}\n.compact-widget__top[data-v-3bfcecf0] {\r\n  display: flex;\r\n  justify-content: flex-end;\n}\n.compact-widget__preview[data-v-3bfcecf0] {\n  position: relative;\n  width: 11rem;\n}\n.bar-chart[data-v-3bfcecf0] {\r\n  width: 100%;\r\n  height: 4.9rem;\n}\n.bar-chart__axis[data-v-3bfcecf0] {\r\n  stroke: rgba(148, 163, 184, 0.45);\r\n  stroke-width: 1.5;\n}\n.bar-chart__y-label[data-v-3bfcecf0] {\r\n  fill: #7b8ca1;\r\n  font-size: 13px;\r\n  font-weight: 700;\n}\n.mini-labels[data-v-3bfcecf0] {\r\n  display: grid;\r\n  gap: 0.2rem;\r\n  margin-top: 0.1rem;\r\n  color: #64748b;\r\n  font-size: 0.63rem;\r\n  text-align: center;\r\n  font-weight: 600;\n}\n.compact-metrics[data-v-3bfcecf0] {\r\n  display: grid;\r\n  grid-template-columns: minmax(0, 1fr) auto;\r\n  gap: 0.8rem;\r\n  margin-top: auto;\n}\n.compact-metrics__labels[data-v-3bfcecf0],\r\n.compact-metrics__values[data-v-3bfcecf0] {\r\n  display: grid;\r\n  gap: 0.35rem;\r\n  font-size: 0.9rem;\n}\n.compact-metrics__labels[data-v-3bfcecf0] {\r\n  color: #5f7084;\n}\n.compact-metrics__values[data-v-3bfcecf0] {\n  text-align: right;\n  color: #12243d;\n  font-weight: 800;\n}\n.chart-tooltip[data-v-3bfcecf0] {\n  position: absolute;\n  z-index: 5;\n  max-width: 10rem;\n  padding: 0.35rem 0.5rem;\n  border-radius: 0.55rem;\n  background: rgba(15, 23, 42, 0.94);\n  color: #ffffff;\n  font-size: 0.68rem;\n  line-height: 1.25;\n  pointer-events: none;\n  transform: translate(-50%, -100%);\n  white-space: pre-line;\n  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.24);\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4109,7 +4545,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.widget-layout[data-v-32776e5e] {\r\n  display: flex;\r\n  flex-direction: column;\r\n  gap: 0.8rem;\r\n  height: 100%;\n}\n.compact-widget__top[data-v-32776e5e] {\r\n  display: flex;\r\n  justify-content: flex-end;\n}\n.trend-preview[data-v-32776e5e] {\r\n  width: 11rem;\n}\n.trend-preview__row + .trend-preview__row[data-v-32776e5e] {\r\n  margin-top: 0.2rem;\n}\n.trend-chart[data-v-32776e5e] {\r\n  width: 100%;\r\n  height: 2.35rem;\n}\n.trend-chart__axis[data-v-32776e5e] {\r\n  stroke: rgba(148, 163, 184, 0.34);\r\n  stroke-width: 1.4;\n}\n.trend-chart__y-label[data-v-32776e5e] {\r\n  fill: #7b8ca1;\r\n  font-size: 13px;\r\n  font-weight: 700;\n}\n.mini-labels[data-v-32776e5e] {\r\n  display: grid;\r\n  gap: 0.2rem;\r\n  margin-top: 0.18rem;\r\n  color: #64748b;\r\n  font-size: 0.63rem;\r\n  text-align: center;\r\n  font-weight: 600;\n}\n.compact-metrics[data-v-32776e5e] {\r\n  display: grid;\r\n  grid-template-columns: minmax(0, 1fr) auto;\r\n  gap: 0.8rem;\r\n  margin-top: auto;\n}\n.compact-metrics__labels[data-v-32776e5e],\r\n.compact-metrics__values[data-v-32776e5e] {\r\n  display: grid;\r\n  gap: 0.35rem;\r\n  font-size: 0.9rem;\n}\n.compact-metrics__labels[data-v-32776e5e] {\r\n  color: #5f7084;\n}\n.compact-metrics__values[data-v-32776e5e] {\r\n  text-align: right;\r\n  color: #12243d;\r\n  font-weight: 800;\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.widget-layout[data-v-32776e5e] {\r\n  display: flex;\r\n  flex-direction: column;\r\n  gap: 0.8rem;\r\n  height: 100%;\n}\n.compact-widget__top[data-v-32776e5e] {\r\n  display: flex;\r\n  justify-content: flex-end;\n}\n.trend-preview[data-v-32776e5e] {\n  position: relative;\n  width: 11rem;\n}\n.trend-preview__row + .trend-preview__row[data-v-32776e5e] {\r\n  margin-top: 0.2rem;\n}\n.trend-chart[data-v-32776e5e] {\r\n  width: 100%;\r\n  height: 2.35rem;\n}\n.trend-chart__axis[data-v-32776e5e] {\r\n  stroke: rgba(148, 163, 184, 0.34);\r\n  stroke-width: 1.4;\n}\n.trend-chart__y-label[data-v-32776e5e] {\r\n  fill: #7b8ca1;\r\n  font-size: 13px;\r\n  font-weight: 700;\n}\n.mini-labels[data-v-32776e5e] {\r\n  display: grid;\r\n  gap: 0.2rem;\r\n  margin-top: 0.18rem;\r\n  color: #64748b;\r\n  font-size: 0.63rem;\r\n  text-align: center;\r\n  font-weight: 600;\n}\n.compact-metrics[data-v-32776e5e] {\r\n  display: grid;\r\n  grid-template-columns: minmax(0, 1fr) auto;\r\n  gap: 0.8rem;\r\n  margin-top: auto;\n}\n.compact-metrics__labels[data-v-32776e5e],\r\n.compact-metrics__values[data-v-32776e5e] {\r\n  display: grid;\r\n  gap: 0.35rem;\r\n  font-size: 0.9rem;\n}\n.compact-metrics__labels[data-v-32776e5e] {\r\n  color: #5f7084;\n}\n.compact-metrics__values[data-v-32776e5e] {\n  text-align: right;\n  color: #12243d;\n  font-weight: 800;\n}\n.chart-tooltip[data-v-32776e5e] {\n  position: absolute;\n  z-index: 5;\n  max-width: 10rem;\n  padding: 0.35rem 0.5rem;\n  border-radius: 0.55rem;\n  background: rgba(15, 23, 42, 0.94);\n  color: #ffffff;\n  font-size: 0.68rem;\n  line-height: 1.25;\n  pointer-events: none;\n  transform: translate(-50%, -100%);\n  white-space: pre-line;\n  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.24);\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4133,7 +4569,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.settings-panel[data-v-00c72ecd] {\r\n  padding: 0.9rem;\r\n  border-radius: 1rem;\r\n  background: #f8fbff;\r\n  border: 1px solid rgba(148, 163, 184, 0.2);\n}\n.settings-panel__grid[data-v-00c72ecd] {\r\n  display: grid;\r\n  grid-template-columns: repeat(2, minmax(0, 1fr));\r\n  gap: 0.75rem;\n}\n.settings-field[data-v-00c72ecd] {\r\n  display: flex;\r\n  flex-direction: column;\r\n  gap: 0.4rem;\r\n  color: #516273;\r\n  font-size: 0.8rem;\r\n  font-weight: 600;\n}\n.settings-field input[data-v-00c72ecd] {\r\n  min-height: 2.35rem;\r\n  padding: 0.45rem 0.65rem;\r\n  border-radius: 0.75rem;\r\n  border: 1px solid rgba(148, 163, 184, 0.32);\r\n  background: #ffffff;\r\n  color: #12243d;\n}\n.settings-panel__actions[data-v-00c72ecd] {\r\n  display: flex;\r\n  justify-content: flex-end;\r\n  gap: 0.6rem;\r\n  margin-top: 0.8rem;\n}\n.settings-button[data-v-00c72ecd] {\r\n  min-width: 5.5rem;\r\n  min-height: 2.25rem;\r\n  padding: 0 0.85rem;\r\n  border-radius: 999px;\r\n  font-size: 0.8rem;\r\n  font-weight: 700;\n}\n.settings-button--ghost[data-v-00c72ecd] {\r\n  border: 1px solid rgba(148, 163, 184, 0.34);\r\n  color: #516273;\r\n  background: #ffffff;\n}\n.settings-button--primary[data-v-00c72ecd] {\r\n  border: 0;\r\n  color: #ffffff;\r\n  background: linear-gradient(135deg, #355c8c, #4b78a8);\n}\n.widget-layout[data-v-00c72ecd] {\r\n  display: flex;\r\n  flex-direction: column;\r\n  gap: 0.8rem;\r\n  height: 100%;\n}\n.compact-widget__top[data-v-00c72ecd] {\r\n  display: flex;\r\n  align-items: flex-start;\r\n  justify-content: flex-end;\r\n  gap: 0.35rem;\n}\n.gauge-preview[data-v-00c72ecd] {\r\n  width: 11rem;\r\n  display: grid;\r\n  grid-template-columns: repeat(2, minmax(0, 1fr));\r\n  gap: 0.35rem;\r\n  align-items: end;\n}\n.gauge-preview__item[data-v-00c72ecd] {\r\n  display: flex;\r\n  align-items: center;\n}\n.compact-metrics[data-v-00c72ecd] {\r\n  display: grid;\r\n  grid-template-columns: minmax(0, 1fr) auto;\r\n  gap: 0.8rem;\r\n  margin-top: auto;\n}\n.compact-metrics__labels[data-v-00c72ecd],\r\n.compact-metrics__values[data-v-00c72ecd] {\r\n  display: grid;\r\n  gap: 0.35rem;\r\n  font-size: 0.9rem;\n}\n.compact-metrics__labels[data-v-00c72ecd] {\r\n  color: #5f7084;\n}\n.compact-metrics__values[data-v-00c72ecd] {\r\n  text-align: right;\r\n  color: #12243d;\r\n  font-weight: 800;\n}\n.threshold-legend[data-v-00c72ecd] {\r\n  display: flex;\r\n  justify-content: end;\r\n  gap: 0.7rem;\r\n  flex-wrap: wrap;\r\n  margin-top: 0.05rem;\r\n  color: #64748b;\r\n  font-size: 0.68rem;\r\n  font-weight: 600;\n}\n.threshold-legend span[data-v-00c72ecd] {\r\n  display: inline-flex;\r\n  align-items: center;\r\n  gap: 0.4rem;\n}\n.legend-dot[data-v-00c72ecd] {\r\n  width: 0.58rem;\r\n  height: 0.58rem;\r\n  border-radius: 999px;\r\n  display: inline-block;\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.settings-panel[data-v-00c72ecd] {\r\n  padding: 0.9rem;\r\n  border-radius: 1rem;\r\n  background: #f8fbff;\r\n  border: 1px solid rgba(148, 163, 184, 0.2);\n}\n.settings-panel__grid[data-v-00c72ecd] {\r\n  display: grid;\r\n  grid-template-columns: repeat(2, minmax(0, 1fr));\r\n  gap: 0.75rem;\n}\n.settings-field[data-v-00c72ecd] {\r\n  display: flex;\r\n  flex-direction: column;\r\n  gap: 0.4rem;\r\n  color: #516273;\r\n  font-size: 0.8rem;\r\n  font-weight: 600;\n}\n.settings-field input[data-v-00c72ecd] {\r\n  min-height: 2.35rem;\r\n  padding: 0.45rem 0.65rem;\r\n  border-radius: 0.75rem;\r\n  border: 1px solid rgba(148, 163, 184, 0.32);\r\n  background: #ffffff;\r\n  color: #12243d;\n}\n.settings-panel__actions[data-v-00c72ecd] {\n  display: flex;\n  justify-content: flex-end;\n  gap: 0.6rem;\r\n  margin-top: 0.8rem;\n}\n.settings-panel__actions .settings-button--reset[data-v-00c72ecd] {\n  margin-right: auto;\n}\n.settings-button[data-v-00c72ecd] {\r\n  min-width: 5.5rem;\r\n  min-height: 2.25rem;\r\n  padding: 0 0.85rem;\r\n  border-radius: 999px;\r\n  font-size: 0.8rem;\r\n  font-weight: 700;\n}\n.settings-button--ghost[data-v-00c72ecd] {\n  border: 1px solid rgba(148, 163, 184, 0.34);\r\n  color: #516273;\r\n  background: #ffffff;\n}\n.settings-button--reset[data-v-00c72ecd] {\n  border: 1px solid rgba(220, 38, 38, 0.28);\n  color: #b42318;\n  background: #fff7f7;\n}\n.settings-button--primary[data-v-00c72ecd] {\r\n  border: 0;\r\n  color: #ffffff;\r\n  background: linear-gradient(135deg, #355c8c, #4b78a8);\n}\n.widget-layout[data-v-00c72ecd] {\r\n  display: flex;\r\n  flex-direction: column;\r\n  gap: 0.8rem;\r\n  height: 100%;\n}\n.compact-widget__top[data-v-00c72ecd] {\r\n  display: flex;\r\n  align-items: flex-start;\r\n  justify-content: flex-end;\r\n  gap: 0.35rem;\n}\n.gauge-preview[data-v-00c72ecd] {\r\n  width: 11rem;\r\n  display: grid;\r\n  grid-template-columns: repeat(2, minmax(0, 1fr));\r\n  gap: 0.35rem;\r\n  align-items: flex-end;\n}\n.gauge-preview__item[data-v-00c72ecd] {\r\n  display: flex;\r\n  align-items: center;\n}\n.compact-metrics[data-v-00c72ecd] {\r\n  display: grid;\r\n  grid-template-columns: minmax(0, 1fr) auto;\r\n  gap: 0.8rem;\r\n  margin-top: auto;\n}\n.compact-metrics__labels[data-v-00c72ecd],\r\n.compact-metrics__values[data-v-00c72ecd] {\r\n  display: grid;\r\n  gap: 0.35rem;\r\n  font-size: 0.9rem;\n}\n.compact-metrics__labels[data-v-00c72ecd] {\r\n  color: #5f7084;\n}\n.compact-metrics__values[data-v-00c72ecd] {\r\n  text-align: right;\r\n  color: #12243d;\r\n  font-weight: 800;\n}\n.threshold-legend[data-v-00c72ecd] {\r\n  display: flex;\r\n  justify-content: flex-end;\r\n  gap: 0.7rem;\r\n  flex-wrap: wrap;\r\n  margin-top: 0.05rem;\r\n  color: #64748b;\r\n  font-size: 0.68rem;\r\n  font-weight: 600;\n}\n.threshold-legend span[data-v-00c72ecd] {\r\n  display: inline-flex;\r\n  align-items: center;\r\n  gap: 0.4rem;\n}\n.legend-dot[data-v-00c72ecd] {\r\n  width: 0.58rem;\r\n  height: 0.58rem;\r\n  border-radius: 999px;\r\n  display: inline-block;\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -17054,11 +17490,19 @@ Vue.compile = compileToFunctions;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   DASHBOARD_WIDGET_ERRORS: () => (/* binding */ DASHBOARD_WIDGET_ERRORS),
+/* harmony export */   RANGE_UNITS: () => (/* binding */ RANGE_UNITS),
+/* harmony export */   SYSTEM_DASHBOARD_WIDGET_DEFAULTS: () => (/* binding */ SYSTEM_DASHBOARD_WIDGET_DEFAULTS),
 /* harmony export */   clampDateRange: () => (/* binding */ clampDateRange),
 /* harmony export */   daysAgoYmd: () => (/* binding */ daysAgoYmd),
 /* harmony export */   loadWidgetSettings: () => (/* binding */ loadWidgetSettings),
+/* harmony export */   resolveRollingRange: () => (/* binding */ resolveRollingRange),
+/* harmony export */   sanitizeRollingRange: () => (/* binding */ sanitizeRollingRange),
 /* harmony export */   saveWidgetSettings: () => (/* binding */ saveWidgetSettings),
-/* harmony export */   todayYmd: () => (/* binding */ todayYmd)
+/* harmony export */   todayYmd: () => (/* binding */ todayYmd),
+/* harmony export */   validateDateRange: () => (/* binding */ validateDateRange),
+/* harmony export */   validateRollingRange: () => (/* binding */ validateRollingRange),
+/* harmony export */   validateServiceThresholds: () => (/* binding */ validateServiceThresholds)
 /* harmony export */ });
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
@@ -17067,6 +17511,39 @@ function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 var STORAGE_PREFIX = 'dashboard_widget_settings_v2:';
+var DASHBOARD_WIDGET_ERRORS = {
+  INVALID_DATE_ORDER: 'Start date must be before or the same as the end date.',
+  DATE_RANGE_TOO_LARGE: 'Date range cannot exceed 365 days.',
+  INVALID_RANGE_AMOUNT: 'Range amount must be between 1 and 365.',
+  INVALID_THRESHOLD_ORDER: 'Red area must be smaller than or the same as orange area.'
+};
+var SYSTEM_DASHBOARD_WIDGET_DEFAULTS = {
+  ranges: {
+    equipment: {
+      amount: 3,
+      unit: 'months'
+    },
+    overdues: {
+      amount: 3,
+      unit: 'months'
+    },
+    alerts: {
+      amount: 3,
+      unit: 'months'
+    }
+  },
+  serviceThresholds: {
+    redMax: 75,
+    orangeMax: 90
+  }
+};
+var RANGE_UNITS = ['days', 'weeks', 'months', 'years'];
+var RANGE_UNIT_MAX = {
+  days: 365,
+  weeks: 52,
+  months: 12,
+  years: 1
+};
 function loadWidgetSettings(key, fallback) {
   if (typeof window === 'undefined' || !window.localStorage) {
     return fallback;
@@ -17098,6 +17575,56 @@ function daysAgoYmd(days) {
   date.setUTCDate(date.getUTCDate() - days);
   return date.toISOString().slice(0, 10);
 }
+function sanitizeRollingRange(range) {
+  var fallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.equipment;
+  var fallbackAmount = Number((fallback === null || fallback === void 0 ? void 0 : fallback.amount) || 3);
+  var fallbackUnit = (fallback === null || fallback === void 0 ? void 0 : fallback.unit) || 'months';
+  var amount = Number(range === null || range === void 0 ? void 0 : range.amount);
+  var unit = range === null || range === void 0 ? void 0 : range.unit;
+  var safeUnit = RANGE_UNITS.includes(unit) ? unit : fallbackUnit;
+  return {
+    amount: Number.isFinite(amount) && amount >= 1 ? Math.min(RANGE_UNIT_MAX[safeUnit], Math.round(amount)) : fallbackAmount,
+    unit: safeUnit
+  };
+}
+function validateRollingRange(range) {
+  var amount = Number(range === null || range === void 0 ? void 0 : range.amount);
+  if (!RANGE_UNITS.includes(range === null || range === void 0 ? void 0 : range.unit)) {
+    return DASHBOARD_WIDGET_ERRORS.INVALID_RANGE_AMOUNT;
+  }
+  if (!Number.isFinite(amount) || amount < 1 || amount > RANGE_UNIT_MAX[range.unit]) {
+    return DASHBOARD_WIDGET_ERRORS.INVALID_RANGE_AMOUNT;
+  }
+  return null;
+}
+function subtractMonthsClamped(date, months) {
+  var year = date.getUTCFullYear();
+  var month = date.getUTCMonth();
+  var day = date.getUTCDate();
+  var target = new Date(Date.UTC(year, month - months, 1));
+  var lastDay = new Date(Date.UTC(target.getUTCFullYear(), target.getUTCMonth() + 1, 0)).getUTCDate();
+  target.setUTCDate(Math.min(day, lastDay));
+  return target;
+}
+function resolveRollingRange(range) {
+  var now = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new Date();
+  var safeRange = sanitizeRollingRange(range);
+  var end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  var start = new Date(end.getTime());
+  if (safeRange.unit === 'days') {
+    start.setUTCDate(start.getUTCDate() - safeRange.amount);
+  } else if (safeRange.unit === 'weeks') {
+    start.setUTCDate(start.getUTCDate() - safeRange.amount * 7);
+  } else if (safeRange.unit === 'months') {
+    start = subtractMonthsClamped(start, safeRange.amount);
+  } else if (safeRange.unit === 'years') {
+    start = subtractMonthsClamped(start, safeRange.amount * 12);
+  }
+  return {
+    start: start.toISOString().slice(0, 10),
+    end: end.toISOString().slice(0, 10)
+  };
+}
 function clampDateRange(range, fallback) {
   var start = (range === null || range === void 0 ? void 0 : range.start) || fallback.start;
   var end = (range === null || range === void 0 ? void 0 : range.end) || fallback.end;
@@ -17108,6 +17635,37 @@ function clampDateRange(range, fallback) {
     start: start,
     end: end
   };
+}
+function validateDateRange(range) {
+  var start = range === null || range === void 0 ? void 0 : range.start;
+  var end = range === null || range === void 0 ? void 0 : range.end;
+  if (!start || !end) {
+    return null;
+  }
+  if (start > end) {
+    return DASHBOARD_WIDGET_ERRORS.INVALID_DATE_ORDER;
+  }
+  var startDate = new Date("".concat(start, "T00:00:00Z"));
+  var endDate = new Date("".concat(end, "T00:00:00Z"));
+  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+    return DASHBOARD_WIDGET_ERRORS.INVALID_DATE_ORDER;
+  }
+  var diffDays = Math.floor((endDate.getTime() - startDate.getTime()) / 86400000);
+  if (diffDays > 365) {
+    return DASHBOARD_WIDGET_ERRORS.DATE_RANGE_TOO_LARGE;
+  }
+  return null;
+}
+function validateServiceThresholds(thresholds) {
+  var redMax = Number(thresholds === null || thresholds === void 0 ? void 0 : thresholds.redMax);
+  var orangeMax = Number(thresholds === null || thresholds === void 0 ? void 0 : thresholds.orangeMax);
+  if (Number.isNaN(redMax) || Number.isNaN(orangeMax)) {
+    return null;
+  }
+  if (redMax > orangeMax) {
+    return DASHBOARD_WIDGET_ERRORS.INVALID_THRESHOLD_ORDER;
+  }
+  return null;
 }
 
 /***/ }),

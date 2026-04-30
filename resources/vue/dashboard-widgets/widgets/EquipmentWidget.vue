@@ -1,7 +1,7 @@
 <template>
   <WidgetCard title="Equipment" subtitle="Last datapoint per bucket." configurable :settings-error="errorMessage" @toggle-settings="settingsOpen = !settingsOpen">
     <template v-if="settingsOpen" #settings>
-      <DateRangeSettings :value="range" @apply="applyRange" @cancel="settingsOpen = false" />
+      <DateRangeSettings :value="range" :default-value="defaultRange" @apply="applyRange" @reset="resetRange" @cancel="settingsOpen = false" />
     </template>
 
     <div class="widget-layout compact-widget">
@@ -90,6 +90,10 @@ export default {
       type: Object,
       required: true,
     },
+    defaultRange: {
+      type: Object,
+      required: true,
+    },
     errorMessage: {
       type: String,
       default: '',
@@ -171,6 +175,10 @@ export default {
     applyRange(nextRange) {
       this.settingsOpen = false
       this.$emit('update-range', nextRange)
+    },
+    resetRange() {
+      this.settingsOpen = false
+      this.$emit('reset-range')
     },
     formatLabel(ts) {
       const date = new Date(ts)
