@@ -1,7 +1,7 @@
 <template>
   <div id="dashboard-grid">
-  <div class="grid-box"><EquipmentChart :liveEnabled="equipmentStats.enabled" :liveDisabled="equipmentStats.disabled" /></div>
-  <div class="grid-box"><AlarmChart :live-inbound="alarmStats.inbound" :live-active="alarmStats.active" /></div>
+  <div class="grid-box"><EquipmentChart :liveEnabled="equipmentStats.enabled" :liveDisabled="equipmentStats.disabled" :default-range="chartSettings.ranges.equipment" /></div>
+  <div class="grid-box"><AlarmChart :live-inbound="alarmStats.inbound" :live-active="alarmStats.active" :default-range="chartSettings.ranges.alarms" /></div>
     <div class="grid-box"><AlertsChart
       :live-active-alarm="alertsStats.Active_alarm"
       :live-battery-malfunction="alertsStats.Battery_malfunction" 
@@ -29,8 +29,9 @@
       :live-sip-registration-failure="alertsStats.Sip_registration_failure"
       :live-speaker-malfunction="alertsStats.Speaker_malfunction"
       :live-technician-check-overdue="alertsStats.Technician_check_overdue"
-      :live-voice-alarm="alertsStats.Voice_alarm" /></div>
-    <div class="grid-box"><ServiceLevelChart :live-periodic="serviceStats.periodicalCalls" :live-local="serviceStats.localChecks" /></div>
+      :live-voice-alarm="alertsStats.Voice_alarm"
+      :default-range="chartSettings.ranges.alerts" /></div>
+    <div class="grid-box"><ServiceLevelChart :live-periodic="serviceStats.periodicalCalls" :live-local="serviceStats.localChecks" :default-range="chartSettings.ranges.serviceLevel" /></div>
   </div>
 </template>
 
@@ -39,6 +40,16 @@ import AlarmChart from './charts/AlarmChart.vue'
 import AlertsChart from './charts/AlertsChart.vue'
 import EquipmentChart from './charts/EquipmentChart.vue'
 import ServiceLevelChart from './charts/ServiceLevelChart.vue'
+import axios from 'axios'
+
+const SYSTEM_CHART_SETTINGS = {
+  ranges: {
+    equipment: { amount: 3, unit: 'months' },
+    alarms: { amount: 3, unit: 'months' },
+    alerts: { amount: 3, unit: 'months' },
+    serviceLevel: { amount: 3, unit: 'months' },
+  },
+}
 
 export default {
   components: {     
@@ -48,14 +59,9 @@ export default {
     ServiceLevelChart
   },
 
-  mounted() {
-    // DEBUG: Check if window data exists
-    console.log('window.ALERTS_STATS:', window.ALERTS_STATS)
-    console.log('alertsStats in data:', this.alertsStats)
-  },
-
   data() {
     return {
+      chartSettings: SYSTEM_CHART_SETTINGS,
       equipmentStats: (typeof window !== 'undefined' && window.EQUIPMENT_STATS) ? window.EQUIPMENT_STATS : { enabled: 0, disabled: 0 },
       alarmStats: (typeof window !== 'undefined' && window.ALARM_STATS) ? window.ALARM_STATS : { inbound: 0, active: 0 },
       alertsStats: (typeof window !== 'undefined' && window.ALERTS_STATS) ? window.ALERTS_STATS : { 
@@ -89,13 +95,15 @@ export default {
       serviceStats: (typeof window !== 'undefined' && window.SERVICE_STATS) ? window.SERVICE_STATS : { periodicalCalls: 0, localChecks: 0 }
     };
   },
-  mounted() {
-  console.log(' All Stats loaded:')
-  console.log('  equipmentStats:', this.equipmentStats)
-  console.log('  alarmStats:', this.alarmStats)
-  console.log('  alertsStats:', this.alertsStats)
-  console.log('  serviceStats:', this.serviceStats)
-}
+  async mounted() {
+    try {
+      const response = await axios.get('/api/charts/settings')
+      this.chartSettings = response?.data?.data || SYSTEM_CHART_SETTINGS
+    } catch (error) {
+      console.error('Charts settings fetch failed:', error)
+      this.chartSettings = SYSTEM_CHART_SETTINGS
+    }
+  }
 }
 </script>
 

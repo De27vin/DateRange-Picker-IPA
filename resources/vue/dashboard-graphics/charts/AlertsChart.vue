@@ -59,6 +59,11 @@ import {
 } from '../../../js/utils/timeseriesRangeValidation'
 import DatePicker from 'vue2-datepicker'
 import 'vue2-datepicker/index.css'
+import {
+    resolveRollingRange,
+    sanitizeRollingRange,
+    SYSTEM_DASHBOARD_WIDGET_DEFAULTS,
+} from '../../../js/utils/dashboardWidgetSettings'
 
 const ALERT_DEFS = [
     { key: 'active_alarm', label: 'Active alarm' },
@@ -140,16 +145,14 @@ export default {
         'live-speaker-malfunction': Number,
         'live-technician-check-overdue': Number,
         'live-voice-alarm': Number,
+        defaultRange: {
+            type: Object,
+            default: () => SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.equipment,
+        },
     },
 
     data() {
-        const today = new Date()
-        const start = new Date(today)
-        start.setDate(today.getDate() - 6)
-        start.setHours(0, 0, 0, 0)
-
-        const end = new Date(today)
-        end.setHours(23, 0, 0, 0)
+        const dateRange = this.resolveDateRange(this.defaultRange)
 
         return {
             _chart: null,
@@ -157,10 +160,11 @@ export default {
             seriesResolution: '1h',
             showFilters: false,
             filterAlerts: ALERT_DEFS,
-            dateRange: [start, end],
+            dateRange,
             dateError: '',
             fetchError: '',
-            lastValidRange: [new Date(start), new Date(end)],
+            lastValidRange: [new Date(dateRange[0]), new Date(dateRange[1])],
+            isManualDateRange: false,
             selectedAlerts: [],
         }
     },
@@ -172,6 +176,14 @@ export default {
     },
 
     watch: {
+        defaultRange: {
+            deep: true,
+            async handler(nextRange) {
+                if (!this.isManualDateRange) {
+                    await this.applyDefaultRange(nextRange)
+                }
+            },
+        },
         selectedAlerts() {
             this.renderChart()
         },
@@ -196,6 +208,22 @@ export default {
             })
         },
 
+        resolveDateRange(range) {
+            const resolved = resolveRollingRange(sanitizeRollingRange(range, SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.equipment))
+            const [startYear, startMonth, startDay] = resolved.start.split('-').map(Number)
+            const [endYear, endMonth, endDay] = resolved.end.split('-').map(Number)
+            return [
+                new Date(startYear, startMonth - 1, startDay, 0, 0, 0, 0),
+                new Date(endYear, endMonth - 1, endDay, 23, 0, 0, 0),
+            ]
+        },
+
+        async applyDefaultRange(range) {
+            this.dateRange = this.resolveDateRange(range)
+            this.lastValidRange = [new Date(this.dateRange[0]), new Date(this.dateRange[1])]
+            await this.loadData()
+        },
+
         async onDateRangeChange(value) {
             const [startRaw, endRaw] = value || this.dateRange || []
             const normalized = validateAndNormalizeRange(startRaw, endRaw)
@@ -206,6 +234,7 @@ export default {
 
             const { startUtc: start, endUtc: end } = normalized
             this.dateError = ''
+            this.isManualDateRange = true
             this.lastValidRange = [new Date(start), new Date(end)]
             await this.loadData()
         },

@@ -12,6 +12,7 @@
             if (Auth::user()->isAdmin) {
                 $tabs['passwordPolicy'] = __('Password Policy');
                 $tabs['dashboard'] = __('Dashboard');
+                $tabs['charts'] = __('Charts');
             }
         @endphp
 
@@ -26,6 +27,9 @@
                 <x-slot name="passwordPolicySlot"><livewire:admin.password-policy /></x-slot>
                 <x-slot name="dashboardSlot">
                     <x-account.dashboard-widget-settings :dashboard-widget-settings="$dashboardWidgetSettings" />
+                </x-slot>
+                <x-slot name="chartsSlot">
+                    <x-account.charts-settings :charts-settings="$chartsSettings" />
                 </x-slot>
             @endif
             <x-slot name="settingsSlot">

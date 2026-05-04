@@ -10,35 +10,30 @@ function toDate(value) {
 export function normalizeStartUtc(raw) {
   const date = toDate(raw)
   if (!date) return null
-  return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0))
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0)
 }
 
 export function normalizeEndUtc(raw) {
   const date = toDate(raw)
   if (!date) return null
-  return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 23, 0, 0, 0))
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 0, 0, 0)
 }
 
-function startOfUtcDay(date) {
-  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 0, 0, 0, 0))
+function startOfLocalDay(date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0)
 }
 
-function isSameUtcDay(a, b) {
-  return a.getUTCFullYear() === b.getUTCFullYear()
-    && a.getUTCMonth() === b.getUTCMonth()
-    && a.getUTCDate() === b.getUTCDate()
+function isSameLocalDay(a, b) {
+  return a.getFullYear() === b.getFullYear()
+    && a.getMonth() === b.getMonth()
+    && a.getDate() === b.getDate()
 }
 
-function floorUtcHour(date) {
-  return new Date(Date.UTC(
-    date.getUTCFullYear(),
-    date.getUTCMonth(),
-    date.getUTCDate(),
-    date.getUTCHours(),
-    0,
-    0,
-    0
-  ))
+function floorLocalHour(date) {
+  const floored = new Date(date)
+  floored.setMinutes(0, 0, 0)
+
+  return floored
 }
 
 export function validateAndNormalizeRange(rawStart, rawEnd) {
@@ -49,18 +44,18 @@ export function validateAndNormalizeRange(rawStart, rawEnd) {
     return { ok: false, error: 'Start and end date are required.' }
   }
 
-  const nowUtc = new Date()
-  const todayStartUtc = startOfUtcDay(nowUtc)
-  const requestedEndStartUtc = startOfUtcDay(requestedEndUtc)
+  const now = new Date()
+  const todayStart = startOfLocalDay(now)
+  const requestedEndStart = startOfLocalDay(requestedEndUtc)
 
-  // Future days stay blocked, today is allowed.
-  if (requestedEndStartUtc.getTime() > todayStartUtc.getTime()) {
+  // Future local calendar days stay blocked, today is allowed.
+  if (requestedEndStart.getTime() > todayStart.getTime()) {
     return { ok: false, error: 'Future ranges are not allowed.' }
   }
 
   let endUtc = requestedEndUtc
-  if (isSameUtcDay(requestedEndUtc, nowUtc)) {
-    endUtc = floorUtcHour(nowUtc)
+  if (isSameLocalDay(requestedEndUtc, now)) {
+    endUtc = floorLocalHour(now)
   }
 
   if (endUtc.getTime() < startUtc.getTime()) {
@@ -78,16 +73,8 @@ export function disableFutureUtc(day) {
   const selected = toDate(day)
   if (!selected) return false
 
-  const selectedStartUtc = new Date(Date.UTC(
-    selected.getFullYear(),
-    selected.getMonth(),
-    selected.getDate(),
-    0,
-    0,
-    0,
-    0
-  ))
-  const todayStartUtc = startOfUtcDay(new Date())
+  const selectedStartUtc = startOfLocalDay(selected)
+  const todayStartUtc = startOfLocalDay(new Date())
 
   return selectedStartUtc.getTime() > todayStartUtc.getTime()
 }
@@ -101,5 +88,9 @@ export function toIso8601Utc(date) {
 }
 
 export function toYmdUtc(date) {
-  return date.toISOString().slice(0, 10)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+
+  return `${year}-${month}-${day}`
 }
