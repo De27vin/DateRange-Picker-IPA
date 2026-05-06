@@ -2148,14 +2148,7 @@ var DEFAULT_SUMMARY = {
         overdues: [],
         alerts: []
       },
-      defaultSettings: systemDefaults,
       settings: _objectSpread({}, systemDefaults),
-      errors: {
-        equipment: '',
-        overdues: '',
-        alerts: '',
-        serviceLevel: ''
-      },
       pollHandle: null
     };
   },
@@ -2226,24 +2219,18 @@ var DEFAULT_SUMMARY = {
             case 3:
               response = _context3.sent;
               accountDefaults = _this3.normalizeSettings((response === null || response === void 0 ? void 0 : (_response$data2 = response.data) === null || _response$data2 === void 0 ? void 0 : _response$data2.data) || _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.SYSTEM_DASHBOARD_WIDGET_DEFAULTS);
-              _this3.defaultSettings = accountDefaults;
-              _this3.settings = {
-                equipmentRange: (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.loadWidgetSettings)('equipmentRange', accountDefaults.equipmentRange),
-                overduesRange: (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.loadWidgetSettings)('overduesRange', accountDefaults.overduesRange),
-                alertsRange: (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.loadWidgetSettings)('alertsRange', accountDefaults.alertsRange),
-                serviceThresholds: (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.loadWidgetSettings)('serviceThresholds', accountDefaults.serviceThresholds)
-              };
-              _context3.next = 12;
+              _this3.settings = _objectSpread({}, accountDefaults);
+              _context3.next = 11;
               break;
-            case 9:
-              _context3.prev = 9;
+            case 8:
+              _context3.prev = 8;
               _context3.t0 = _context3["catch"](0);
               console.error('Failed to load dashboard widget settings', _context3.t0);
-            case 12:
+            case 11:
             case "end":
               return _context3.stop();
           }
-        }, _callee3, null, [[0, 9]]);
+        }, _callee3, null, [[0, 8]]);
       }))();
     },
     normalizeSettings: function normalizeSettings(settings) {
@@ -2292,75 +2279,6 @@ var DEFAULT_SUMMARY = {
           }
         }, _callee4, null, [[1, 8]]);
       }))();
-    },
-    updateRange: function updateRange(settingKey, widget, nextRange) {
-      var _this5 = this;
-      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
-        var error, clamped;
-        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-          while (1) switch (_context5.prev = _context5.next) {
-            case 0:
-              error = (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.validateRollingRange)(nextRange);
-              if (!error) {
-                _context5.next = 4;
-                break;
-              }
-              _this5.$set(_this5.errors, widget, error);
-              return _context5.abrupt("return");
-            case 4:
-              _this5.$set(_this5.errors, widget, '');
-              clamped = (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.sanitizeRollingRange)(nextRange, _this5.settings[settingKey]);
-              _this5.$set(_this5.settings, settingKey, clamped);
-              (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.saveWidgetSettings)(settingKey, clamped);
-              _context5.next = 10;
-              return _this5.fetchSeries(widget);
-            case 10:
-            case "end":
-              return _context5.stop();
-          }
-        }, _callee5);
-      }))();
-    },
-    resetRange: function resetRange(settingKey, widget) {
-      var _this6 = this;
-      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
-        var defaultRange;
-        return _regeneratorRuntime().wrap(function _callee6$(_context6) {
-          while (1) switch (_context6.prev = _context6.next) {
-            case 0:
-              defaultRange = _this6.defaultSettings[settingKey];
-              _this6.$set(_this6.errors, widget, '');
-              _this6.$set(_this6.settings, settingKey, defaultRange);
-              (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.saveWidgetSettings)(settingKey, defaultRange);
-              _context6.next = 6;
-              return _this6.fetchSeries(widget);
-            case 6:
-            case "end":
-              return _context6.stop();
-          }
-        }, _callee6);
-      }))();
-    },
-    updateThresholds: function updateThresholds(nextThresholds) {
-      var error = (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.validateServiceThresholds)(nextThresholds);
-      if (error) {
-        this.$set(this.errors, 'serviceLevel', error);
-        return;
-      }
-      var redMax = Math.max(0, Math.min(100, Number(nextThresholds.redMax || 75)));
-      var orangeMax = Math.max(redMax, Math.min(100, Number(nextThresholds.orangeMax || 90)));
-      var thresholds = {
-        redMax: redMax,
-        orangeMax: orangeMax
-      };
-      this.$set(this.errors, 'serviceLevel', '');
-      this.$set(this.settings, 'serviceThresholds', thresholds);
-      (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.saveWidgetSettings)('serviceThresholds', thresholds);
-    },
-    resetThresholds: function resetThresholds() {
-      this.$set(this.errors, 'serviceLevel', '');
-      this.$set(this.settings, 'serviceThresholds', _objectSpread({}, this.defaultSettings.serviceThresholds));
-      (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_6__.saveWidgetSettings)('serviceThresholds', this.defaultSettings.serviceThresholds);
     }
   }
 });
@@ -2446,57 +2364,6 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-widgets/components/DateRangeSettings.vue?vue&type=script&lang=js":
-/*!******************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-widgets/components/DateRangeSettings.vue?vue&type=script&lang=js ***!
-  \******************************************************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
-function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
-function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
-function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
-function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  name: 'DateRangeSettings',
-  props: {
-    value: {
-      type: Object,
-      required: true
-    },
-    defaultValue: {
-      type: Object,
-      required: true
-    }
-  },
-  data: function data() {
-    return {
-      draft: _objectSpread({}, this.value)
-    };
-  },
-  watch: {
-    value: {
-      deep: true,
-      handler: function handler(nextValue) {
-        this.draft = _objectSpread({}, nextValue);
-      }
-    }
-  },
-  methods: {
-    apply: function apply() {
-      this.$emit('apply', _objectSpread({}, this.draft));
-    }
-  }
-});
-
-/***/ }),
-
 /***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-widgets/components/WidgetCard.vue?vue&type=script&lang=js":
 /*!***********************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-widgets/components/WidgetCard.vue?vue&type=script&lang=js ***!
@@ -2516,14 +2383,6 @@ __webpack_require__.r(__webpack_exports__);
       required: true
     },
     subtitle: {
-      type: String,
-      "default": ''
-    },
-    configurable: {
-      type: Boolean,
-      "default": false
-    },
-    settingsError: {
       type: String,
       "default": ''
     }
@@ -2626,7 +2485,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _components_WidgetCard_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/WidgetCard.vue */ "./resources/vue/dashboard-widgets/components/WidgetCard.vue");
-/* harmony import */ var _components_DateRangeSettings_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/DateRangeSettings.vue */ "./resources/vue/dashboard-widgets/components/DateRangeSettings.vue");
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -2634,12 +2492,10 @@ function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Sym
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 
-
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: 'AlertsWidget',
   components: {
-    WidgetCard: _components_WidgetCard_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
-    DateRangeSettings: _components_DateRangeSettings_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
+    WidgetCard: _components_WidgetCard_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
   props: {
     summary: {
@@ -2649,23 +2505,10 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     series: {
       type: Array,
       required: true
-    },
-    range: {
-      type: Object,
-      required: true
-    },
-    defaultRange: {
-      type: Object,
-      required: true
-    },
-    errorMessage: {
-      type: String,
-      "default": ''
     }
   },
   data: function data() {
     return {
-      settingsOpen: false,
       tooltip: {
         visible: false,
         text: '',
@@ -2734,14 +2577,6 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     }
   },
   methods: {
-    applyRange: function applyRange(nextRange) {
-      this.settingsOpen = false;
-      this.$emit('update-range', nextRange);
-    },
-    resetRange: function resetRange() {
-      this.settingsOpen = false;
-      this.$emit('reset-range');
-    },
     formatLabel: function formatLabel(ts) {
       var date = new Date(ts);
       var day = String(date.getUTCDate()).padStart(2, '0');
@@ -2793,7 +2628,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _components_WidgetCard_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/WidgetCard.vue */ "./resources/vue/dashboard-widgets/components/WidgetCard.vue");
-/* harmony import */ var _components_DateRangeSettings_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/DateRangeSettings.vue */ "./resources/vue/dashboard-widgets/components/DateRangeSettings.vue");
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -2801,12 +2635,10 @@ function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Sym
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 
-
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: 'EquipmentWidget',
   components: {
-    WidgetCard: _components_WidgetCard_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
-    DateRangeSettings: _components_DateRangeSettings_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
+    WidgetCard: _components_WidgetCard_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
   props: {
     summary: {
@@ -2816,23 +2648,10 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     series: {
       type: Array,
       required: true
-    },
-    range: {
-      type: Object,
-      required: true
-    },
-    defaultRange: {
-      type: Object,
-      required: true
-    },
-    errorMessage: {
-      type: String,
-      "default": ''
     }
   },
   data: function data() {
     return {
-      settingsOpen: false,
       tooltip: {
         visible: false,
         text: '',
@@ -2904,14 +2723,6 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     }
   },
   methods: {
-    applyRange: function applyRange(nextRange) {
-      this.settingsOpen = false;
-      this.$emit('update-range', nextRange);
-    },
-    resetRange: function resetRange() {
-      this.settingsOpen = false;
-      this.$emit('reset-range');
-    },
     formatLabel: function formatLabel(ts) {
       var date = new Date(ts);
       var day = String(date.getUTCDate()).padStart(2, '0');
@@ -2963,7 +2774,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _components_WidgetCard_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/WidgetCard.vue */ "./resources/vue/dashboard-widgets/components/WidgetCard.vue");
-/* harmony import */ var _components_DateRangeSettings_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/DateRangeSettings.vue */ "./resources/vue/dashboard-widgets/components/DateRangeSettings.vue");
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -2971,12 +2781,10 @@ function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Sym
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 
-
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: 'OverduesWidget',
   components: {
-    WidgetCard: _components_WidgetCard_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
-    DateRangeSettings: _components_DateRangeSettings_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
+    WidgetCard: _components_WidgetCard_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
   props: {
     summary: {
@@ -2986,23 +2794,10 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     series: {
       type: Array,
       required: true
-    },
-    range: {
-      type: Object,
-      required: true
-    },
-    defaultRange: {
-      type: Object,
-      required: true
-    },
-    errorMessage: {
-      type: String,
-      "default": ''
     }
   },
   data: function data() {
     return {
-      settingsOpen: false,
       tooltip: {
         visible: false,
         text: '',
@@ -3020,14 +2815,6 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     }
   },
   methods: {
-    applyRange: function applyRange(nextRange) {
-      this.settingsOpen = false;
-      this.$emit('update-range', nextRange);
-    },
-    resetRange: function resetRange() {
-      this.settingsOpen = false;
-      this.$emit('reset-range');
-    },
     buildTrend: function buildTrend(key) {
       var _this = this;
       var values = this.series.map(function (point) {
@@ -3135,12 +2922,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _components_WidgetCard_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/WidgetCard.vue */ "./resources/vue/dashboard-widgets/components/WidgetCard.vue");
 /* harmony import */ var _components_DashboardGauge_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/DashboardGauge.vue */ "./resources/vue/dashboard-widgets/components/DashboardGauge.vue");
-function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
-function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
-function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
-function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
-function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -3157,28 +2938,6 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     thresholds: {
       type: Object,
       required: true
-    },
-    defaultThresholds: {
-      type: Object,
-      required: true
-    },
-    errorMessage: {
-      type: String,
-      "default": ''
-    }
-  },
-  data: function data() {
-    return {
-      settingsOpen: false,
-      draftThresholds: _objectSpread({}, this.thresholds)
-    };
-  },
-  watch: {
-    thresholds: {
-      deep: true,
-      handler: function handler(nextValue) {
-        this.draftThresholds = _objectSpread({}, nextValue);
-      }
     }
   },
   computed: {
@@ -3204,20 +2963,6 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
         to: 100,
         color: '#16a34a'
       }];
-    }
-  },
-  methods: {
-    cancelSettings: function cancelSettings() {
-      this.settingsOpen = false;
-      this.draftThresholds = _objectSpread({}, this.thresholds);
-    },
-    applyThresholds: function applyThresholds() {
-      this.settingsOpen = false;
-      this.$emit('update-thresholds', _objectSpread({}, this.draftThresholds));
-    },
-    resetThresholds: function resetThresholds() {
-      this.settingsOpen = false;
-      this.$emit('reset-thresholds');
     }
   }
 });
@@ -3246,18 +2991,7 @@ var render = function render() {
   }, [_c("EquipmentWidget", {
     attrs: {
       summary: _vm.summary.equipment,
-      series: _vm.series.equipment,
-      range: _vm.settings.equipmentRange,
-      "default-range": _vm.defaultSettings.equipmentRange,
-      "error-message": _vm.errors.equipment
-    },
-    on: {
-      "update-range": function updateRange($event) {
-        return _vm.updateRange("equipmentRange", "equipment", $event);
-      },
-      "reset-range": function resetRange($event) {
-        return _vm.resetRange("equipmentRange", "equipment");
-      }
+      series: _vm.series.equipment
     }
   }), _vm._v(" "), _c("AlarmWidget", {
     attrs: {
@@ -3266,45 +3000,17 @@ var render = function render() {
   }), _vm._v(" "), _c("OverduesWidget", {
     attrs: {
       summary: _vm.summary.overdues,
-      series: _vm.series.overdues,
-      range: _vm.settings.overduesRange,
-      "default-range": _vm.defaultSettings.overduesRange,
-      "error-message": _vm.errors.overdues
-    },
-    on: {
-      "update-range": function updateRange($event) {
-        return _vm.updateRange("overduesRange", "overdues", $event);
-      },
-      "reset-range": function resetRange($event) {
-        return _vm.resetRange("overduesRange", "overdues");
-      }
+      series: _vm.series.overdues
     }
   }), _vm._v(" "), _c("AlertsWidget", {
     attrs: {
       summary: _vm.summary.alerts,
-      series: _vm.series.alerts,
-      range: _vm.settings.alertsRange,
-      "default-range": _vm.defaultSettings.alertsRange,
-      "error-message": _vm.errors.alerts
-    },
-    on: {
-      "update-range": function updateRange($event) {
-        return _vm.updateRange("alertsRange", "alerts", $event);
-      },
-      "reset-range": function resetRange($event) {
-        return _vm.resetRange("alertsRange", "alerts");
-      }
+      series: _vm.series.alerts
     }
   }), _vm._v(" "), _c("ServiceLevelWidget", {
     attrs: {
       summary: _vm.summary.service_level,
-      thresholds: _vm.settings.serviceThresholds,
-      "default-thresholds": _vm.defaultSettings.serviceThresholds,
-      "error-message": _vm.errors.serviceLevel
-    },
-    on: {
-      "update-thresholds": _vm.updateThresholds,
-      "reset-thresholds": _vm.resetThresholds
+      thresholds: _vm.settings.serviceThresholds
     }
   })], 1)]);
 };
@@ -3379,128 +3085,6 @@ render._withStripped = true;
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-widgets/components/DateRangeSettings.vue?vue&type=template&id=1ab2011a&scoped=true":
-/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-widgets/components/DateRangeSettings.vue?vue&type=template&id=1ab2011a&scoped=true ***!
-  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   render: () => (/* binding */ render),
-/* harmony export */   staticRenderFns: () => (/* binding */ staticRenderFns)
-/* harmony export */ });
-var render = function render() {
-  var _vm = this,
-    _c = _vm._self._c;
-  return _c("div", {
-    staticClass: "settings-panel"
-  }, [_c("div", {
-    staticClass: "settings-panel__grid"
-  }, [_c("label", {
-    staticClass: "settings-panel__field"
-  }, [_c("span", [_vm._v("Back")]), _vm._v(" "), _c("input", {
-    directives: [{
-      name: "model",
-      rawName: "v-model.number",
-      value: _vm.draft.amount,
-      expression: "draft.amount",
-      modifiers: {
-        number: true
-      }
-    }],
-    attrs: {
-      type: "number",
-      min: "1",
-      max: "365"
-    },
-    domProps: {
-      value: _vm.draft.amount
-    },
-    on: {
-      input: function input($event) {
-        if ($event.target.composing) return;
-        _vm.$set(_vm.draft, "amount", _vm._n($event.target.value));
-      },
-      blur: function blur($event) {
-        return _vm.$forceUpdate();
-      }
-    }
-  })]), _vm._v(" "), _c("label", {
-    staticClass: "settings-panel__field"
-  }, [_c("span", [_vm._v("Unit")]), _vm._v(" "), _c("select", {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: _vm.draft.unit,
-      expression: "draft.unit"
-    }],
-    on: {
-      change: function change($event) {
-        var $$selectedVal = Array.prototype.filter.call($event.target.options, function (o) {
-          return o.selected;
-        }).map(function (o) {
-          var val = "_value" in o ? o._value : o.value;
-          return val;
-        });
-        _vm.$set(_vm.draft, "unit", $event.target.multiple ? $$selectedVal : $$selectedVal[0]);
-      }
-    }
-  }, [_c("option", {
-    attrs: {
-      value: "days"
-    }
-  }, [_vm._v("Days")]), _vm._v(" "), _c("option", {
-    attrs: {
-      value: "weeks"
-    }
-  }, [_vm._v("Weeks")]), _vm._v(" "), _c("option", {
-    attrs: {
-      value: "months"
-    }
-  }, [_vm._v("Months")]), _vm._v(" "), _c("option", {
-    attrs: {
-      value: "years"
-    }
-  }, [_vm._v("Years")])])])]), _vm._v(" "), _c("div", {
-    staticClass: "settings-panel__actions"
-  }, [_c("button", {
-    staticClass: "settings-panel__button settings-panel__button--reset",
-    attrs: {
-      type: "button"
-    },
-    on: {
-      click: function click($event) {
-        return _vm.$emit("reset");
-      }
-    }
-  }, [_vm._v("\n      Reset\n    ")]), _vm._v(" "), _c("button", {
-    staticClass: "settings-panel__button settings-panel__button--ghost",
-    attrs: {
-      type: "button"
-    },
-    on: {
-      click: function click($event) {
-        return _vm.$emit("cancel");
-      }
-    }
-  }, [_vm._v("\n      Cancel\n    ")]), _vm._v(" "), _c("button", {
-    staticClass: "settings-panel__button settings-panel__button--primary",
-    attrs: {
-      type: "button"
-    },
-    on: {
-      click: _vm.apply
-    }
-  }, [_vm._v("\n      Apply\n    ")])])]);
-};
-var staticRenderFns = [];
-render._withStripped = true;
-
-
-/***/ }),
-
 /***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-widgets/components/WidgetCard.vue?vue&type=template&id=65fe147a&scoped=true":
 /*!**********************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-widgets/components/WidgetCard.vue?vue&type=template&id=65fe147a&scoped=true ***!
@@ -3524,25 +3108,7 @@ var render = function render() {
     staticClass: "widget-card__title"
   }, [_vm._v(_vm._s(_vm.title))]), _vm._v(" "), _vm.subtitle ? _c("p", {
     staticClass: "widget-card__subtitle"
-  }, [_vm._v(_vm._s(_vm.subtitle))]) : _vm._e()]), _vm._v(" "), _vm.configurable ? _c("div", {
-    staticClass: "widget-card__settings-control"
-  }, [_c("button", {
-    staticClass: "widget-card__settings-button",
-    attrs: {
-      type: "button"
-    },
-    on: {
-      click: function click($event) {
-        return _vm.$emit("toggle-settings");
-      }
-    }
-  }, [_c("i", {
-    staticClass: "f7-icons"
-  }, [_vm._v("gear_alt")])]), _vm._v(" "), _vm.settingsError ? _c("p", {
-    staticClass: "widget-card__settings-error"
-  }, [_vm._v(_vm._s(_vm.settingsError))]) : _vm._e()]) : _vm._e()]), _vm._v(" "), _vm.$slots.settings ? _c("div", {
-    staticClass: "widget-card__settings"
-  }, [_vm._t("settings")], 2) : _vm._e(), _vm._v(" "), _c("div", {
+  }, [_vm._v(_vm._s(_vm.subtitle))]) : _vm._e()])]), _vm._v(" "), _c("div", {
     staticClass: "widget-card__body"
   }, [_vm._t("default")], 2)]);
 };
@@ -3615,35 +3181,9 @@ var render = function render() {
   return _c("WidgetCard", {
     attrs: {
       title: "Alerts",
-      subtitle: "Last datapoint per bucket.",
-      configurable: "",
-      "settings-error": _vm.errorMessage
-    },
-    on: {
-      "toggle-settings": function toggleSettings($event) {
-        _vm.settingsOpen = !_vm.settingsOpen;
-      }
-    },
-    scopedSlots: _vm._u([_vm.settingsOpen ? {
-      key: "settings",
-      fn: function fn() {
-        return [_c("DateRangeSettings", {
-          attrs: {
-            value: _vm.range,
-            "default-value": _vm.defaultRange
-          },
-          on: {
-            apply: _vm.applyRange,
-            reset: _vm.resetRange,
-            cancel: function cancel($event) {
-              _vm.settingsOpen = false;
-            }
-          }
-        })];
-      },
-      proxy: true
-    } : null], null, true)
-  }, [_vm._v(" "), _c("div", {
+      subtitle: "Last datapoint per bucket."
+    }
+  }, [_c("div", {
     staticClass: "widget-layout"
   }, [_c("div", {
     staticClass: "compact-widget__top"
@@ -3774,35 +3314,9 @@ var render = function render() {
   return _c("WidgetCard", {
     attrs: {
       title: "Equipment",
-      subtitle: "Last datapoint per bucket.",
-      configurable: "",
-      "settings-error": _vm.errorMessage
-    },
-    on: {
-      "toggle-settings": function toggleSettings($event) {
-        _vm.settingsOpen = !_vm.settingsOpen;
-      }
-    },
-    scopedSlots: _vm._u([_vm.settingsOpen ? {
-      key: "settings",
-      fn: function fn() {
-        return [_c("DateRangeSettings", {
-          attrs: {
-            value: _vm.range,
-            "default-value": _vm.defaultRange
-          },
-          on: {
-            apply: _vm.applyRange,
-            reset: _vm.resetRange,
-            cancel: function cancel($event) {
-              _vm.settingsOpen = false;
-            }
-          }
-        })];
-      },
-      proxy: true
-    } : null], null, true)
-  }, [_vm._v(" "), _c("div", {
+      subtitle: "Last datapoint per bucket."
+    }
+  }, [_c("div", {
     staticClass: "widget-layout compact-widget"
   }, [_c("div", {
     staticClass: "compact-widget__top"
@@ -3933,35 +3447,9 @@ var render = function render() {
   return _c("WidgetCard", {
     attrs: {
       title: "Overdues",
-      subtitle: "Last datapoint with projection.",
-      configurable: "",
-      "settings-error": _vm.errorMessage
-    },
-    on: {
-      "toggle-settings": function toggleSettings($event) {
-        _vm.settingsOpen = !_vm.settingsOpen;
-      }
-    },
-    scopedSlots: _vm._u([_vm.settingsOpen ? {
-      key: "settings",
-      fn: function fn() {
-        return [_c("DateRangeSettings", {
-          attrs: {
-            value: _vm.range,
-            "default-value": _vm.defaultRange
-          },
-          on: {
-            apply: _vm.applyRange,
-            reset: _vm.resetRange,
-            cancel: function cancel($event) {
-              _vm.settingsOpen = false;
-            }
-          }
-        })];
-      },
-      proxy: true
-    } : null], null, true)
-  }, [_vm._v(" "), _c("div", {
+      subtitle: "Last datapoint with projection."
+    }
+  }, [_c("div", {
     staticClass: "widget-layout"
   }, [_c("div", {
     staticClass: "compact-widget__top"
@@ -4203,111 +3691,9 @@ var render = function render() {
   return _c("WidgetCard", {
     attrs: {
       title: "Service Level",
-      subtitle: "Threshold-based interpretation.",
-      configurable: "",
-      "settings-error": _vm.errorMessage
-    },
-    on: {
-      "toggle-settings": function toggleSettings($event) {
-        _vm.settingsOpen = !_vm.settingsOpen;
-      }
-    },
-    scopedSlots: _vm._u([_vm.settingsOpen ? {
-      key: "settings",
-      fn: function fn() {
-        return [_c("div", {
-          staticClass: "settings-panel"
-        }, [_c("div", {
-          staticClass: "settings-panel__grid"
-        }, [_c("label", {
-          staticClass: "settings-field"
-        }, [_c("span", [_vm._v("Red max")]), _vm._v(" "), _c("input", {
-          directives: [{
-            name: "model",
-            rawName: "v-model.number",
-            value: _vm.draftThresholds.redMax,
-            expression: "draftThresholds.redMax",
-            modifiers: {
-              number: true
-            }
-          }],
-          attrs: {
-            type: "number",
-            min: "0",
-            max: "100"
-          },
-          domProps: {
-            value: _vm.draftThresholds.redMax
-          },
-          on: {
-            input: function input($event) {
-              if ($event.target.composing) return;
-              _vm.$set(_vm.draftThresholds, "redMax", _vm._n($event.target.value));
-            },
-            blur: function blur($event) {
-              return _vm.$forceUpdate();
-            }
-          }
-        })]), _vm._v(" "), _c("label", {
-          staticClass: "settings-field"
-        }, [_c("span", [_vm._v("Orange max")]), _vm._v(" "), _c("input", {
-          directives: [{
-            name: "model",
-            rawName: "v-model.number",
-            value: _vm.draftThresholds.orangeMax,
-            expression: "draftThresholds.orangeMax",
-            modifiers: {
-              number: true
-            }
-          }],
-          attrs: {
-            type: "number",
-            min: "0",
-            max: "100"
-          },
-          domProps: {
-            value: _vm.draftThresholds.orangeMax
-          },
-          on: {
-            input: function input($event) {
-              if ($event.target.composing) return;
-              _vm.$set(_vm.draftThresholds, "orangeMax", _vm._n($event.target.value));
-            },
-            blur: function blur($event) {
-              return _vm.$forceUpdate();
-            }
-          }
-        })])]), _vm._v(" "), _c("div", {
-          staticClass: "settings-panel__actions"
-        }, [_c("button", {
-          staticClass: "settings-button settings-button--reset",
-          attrs: {
-            type: "button"
-          },
-          on: {
-            click: _vm.resetThresholds
-          }
-        }, [_vm._v("Reset")]), _vm._v(" "), _c("button", {
-          staticClass: "settings-button settings-button--ghost",
-          attrs: {
-            type: "button"
-          },
-          on: {
-            click: _vm.cancelSettings
-          }
-        }, [_vm._v("Cancel")]), _vm._v(" "), _c("button", {
-          staticClass: "settings-button settings-button--primary",
-          attrs: {
-            type: "button"
-          },
-          on: {
-            click: _vm.applyThresholds
-          }
-        }, [_vm._v("Apply")])])])];
-      },
-      proxy: true
-    } : null], null, true)
-  }, [_vm._v(" "), _c("div", {
+      subtitle: "Threshold-based interpretation."
+    }
+  }, [_c("div", {
     staticClass: "widget-layout"
   }, [_c("div", {
     staticClass: "compact-widget__top"
@@ -4408,30 +3794,6 @@ ___CSS_LOADER_EXPORT___.push([module.id, "\n.dashboard-gauge[data-v-02bb9d14] {\
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-widgets/components/DateRangeSettings.vue?vue&type=style&index=0&id=1ab2011a&scoped=true&lang=css":
-/*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-widgets/components/DateRangeSettings.vue?vue&type=style&index=0&id=1ab2011a&scoped=true&lang=css ***!
-  \**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
-// Imports
-
-var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
-// Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.settings-panel[data-v-1ab2011a] {\n  padding: 0.9rem;\n  border-radius: 1rem;\n  background: #f8fbff;\n  border: 1px solid rgba(148, 163, 184, 0.2);\n}\n.settings-panel__grid[data-v-1ab2011a] {\n  display: grid;\n  grid-template-columns: repeat(2, minmax(0, 1fr));\n  gap: 0.75rem;\n}\n.settings-panel__field[data-v-1ab2011a] {\n  display: flex;\n  flex-direction: column;\n  gap: 0.4rem;\n  color: #516273;\n  font-size: 0.8rem;\n  font-weight: 600;\n}\n.settings-panel__field input[data-v-1ab2011a],\n.settings-panel__field select[data-v-1ab2011a] {\n  min-height: 2.35rem;\n  padding: 0.45rem 0.65rem;\n  border-radius: 0.75rem;\n  border: 1px solid rgba(148, 163, 184, 0.32);\n  background: #ffffff;\n  color: #12243d;\n}\n.settings-panel__actions[data-v-1ab2011a] {\n  display: flex;\n  justify-content: flex-end;\n  gap: 0.6rem;\n  margin-top: 0.8rem;\n}\n.settings-panel__actions .settings-panel__button--reset[data-v-1ab2011a] {\n  margin-right: auto;\n}\n.settings-panel__button[data-v-1ab2011a] {\n  min-width: 5.5rem;\n  min-height: 2.25rem;\n  padding: 0 0.85rem;\n  border-radius: 999px;\n  font-size: 0.8rem;\n  font-weight: 700;\n}\n.settings-panel__button--ghost[data-v-1ab2011a] {\n  border: 1px solid rgba(148, 163, 184, 0.34);\n  color: #516273;\n  background: #ffffff;\n}\n.settings-panel__button--reset[data-v-1ab2011a] {\n  border: 1px solid rgba(220, 38, 38, 0.28);\n  color: #b42318;\n  background: #fff7f7;\n}\n.settings-panel__button--primary[data-v-1ab2011a] {\n  border: 0;\n  color: #ffffff;\n  background: linear-gradient(135deg, #355c8c, #4b78a8);\n}\n", ""]);
-// Exports
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
-
-
-/***/ }),
-
 /***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-widgets/components/WidgetCard.vue?vue&type=style&index=0&id=65fe147a&scoped=true&lang=css":
 /*!*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-widgets/components/WidgetCard.vue?vue&type=style&index=0&id=65fe147a&scoped=true&lang=css ***!
@@ -4449,7 +3811,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.widget-card[data-v-65fe147a] {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n  min-height: 13rem;\n  padding: 0.95rem 1rem 0.9rem;\n  border-radius: 1rem;\n  border: 1px solid rgba(15, 23, 42, 0.08);\n  background:\n    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 249, 252, 0.96)),\n    #ffffff;\n  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.08);\n}\n.widget-card__header[data-v-65fe147a] {\n  display: flex;\n  justify-content: space-between;\n  gap: 1rem;\n  align-items: flex-start;\n}\n.widget-card__settings-control[data-v-65fe147a] {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-end;\n  gap: 0.35rem;\n  max-width: 12rem;\n}\n.widget-card__title[data-v-65fe147a] {\n  margin: 0;\n  color: #12243d;\n  font-size: 1rem;\n  font-weight: 700;\n  line-height: 1.15;\n}\n.widget-card__subtitle[data-v-65fe147a] {\n  margin: 0.2rem 0 0;\n  color: #64748b;\n  font-size: 0.73rem;\n  line-height: 1.25;\n}\n.widget-card__settings-button[data-v-65fe147a] {\n  width: 2.25rem;\n  height: 2.25rem;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  border: 1px solid rgba(148, 163, 184, 0.26);\n  border-radius: 999px;\n  background: rgba(255, 255, 255, 0.86);\n  color: #355c8c;\n  transition: background-color 120ms ease, transform 120ms ease;\n}\n.widget-card__settings-button[data-v-65fe147a]:hover {\n  background: #eef4fb;\n  transform: translateY(-1px);\n}\n.widget-card__settings-error[data-v-65fe147a] {\n  margin: 0;\n  color: #b42318;\n  font-size: 0.7rem;\n  line-height: 1.25;\n  text-align: right;\n}\n.widget-card__settings[data-v-65fe147a] {\n  margin-top: 0.65rem;\n}\n.widget-card__body[data-v-65fe147a] {\n  flex: 1 1 auto;\n  display: flex;\n  flex-direction: column;\n  margin-top: 0.6rem;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.widget-card[data-v-65fe147a] {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n  min-height: 13rem;\n  padding: 0.95rem 1rem 0.9rem;\n  border-radius: 1rem;\n  border: 1px solid rgba(15, 23, 42, 0.08);\n  background:\n    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 249, 252, 0.96)),\n    #ffffff;\n  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.08);\n}\n.widget-card__header[data-v-65fe147a] {\n  display: flex;\n  justify-content: space-between;\n  gap: 1rem;\n  align-items: flex-start;\n}\n.widget-card__title[data-v-65fe147a] {\n  margin: 0;\n  color: #12243d;\n  font-size: 1rem;\n  font-weight: 700;\n  line-height: 1.15;\n}\n.widget-card__subtitle[data-v-65fe147a] {\n  margin: 0.2rem 0 0;\n  color: #64748b;\n  font-size: 0.73rem;\n  line-height: 1.25;\n}\n.widget-card__body[data-v-65fe147a] {\n  flex: 1 1 auto;\n  display: flex;\n  flex-direction: column;\n  margin-top: 0.6rem;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4569,7 +3931,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.settings-panel[data-v-00c72ecd] {\r\n  padding: 0.9rem;\r\n  border-radius: 1rem;\r\n  background: #f8fbff;\r\n  border: 1px solid rgba(148, 163, 184, 0.2);\n}\n.settings-panel__grid[data-v-00c72ecd] {\r\n  display: grid;\r\n  grid-template-columns: repeat(2, minmax(0, 1fr));\r\n  gap: 0.75rem;\n}\n.settings-field[data-v-00c72ecd] {\r\n  display: flex;\r\n  flex-direction: column;\r\n  gap: 0.4rem;\r\n  color: #516273;\r\n  font-size: 0.8rem;\r\n  font-weight: 600;\n}\n.settings-field input[data-v-00c72ecd] {\r\n  min-height: 2.35rem;\r\n  padding: 0.45rem 0.65rem;\r\n  border-radius: 0.75rem;\r\n  border: 1px solid rgba(148, 163, 184, 0.32);\r\n  background: #ffffff;\r\n  color: #12243d;\n}\n.settings-panel__actions[data-v-00c72ecd] {\n  display: flex;\n  justify-content: flex-end;\n  gap: 0.6rem;\r\n  margin-top: 0.8rem;\n}\n.settings-panel__actions .settings-button--reset[data-v-00c72ecd] {\n  margin-right: auto;\n}\n.settings-button[data-v-00c72ecd] {\r\n  min-width: 5.5rem;\r\n  min-height: 2.25rem;\r\n  padding: 0 0.85rem;\r\n  border-radius: 999px;\r\n  font-size: 0.8rem;\r\n  font-weight: 700;\n}\n.settings-button--ghost[data-v-00c72ecd] {\n  border: 1px solid rgba(148, 163, 184, 0.34);\r\n  color: #516273;\r\n  background: #ffffff;\n}\n.settings-button--reset[data-v-00c72ecd] {\n  border: 1px solid rgba(220, 38, 38, 0.28);\n  color: #b42318;\n  background: #fff7f7;\n}\n.settings-button--primary[data-v-00c72ecd] {\r\n  border: 0;\r\n  color: #ffffff;\r\n  background: linear-gradient(135deg, #355c8c, #4b78a8);\n}\n.widget-layout[data-v-00c72ecd] {\r\n  display: flex;\r\n  flex-direction: column;\r\n  gap: 0.8rem;\r\n  height: 100%;\n}\n.compact-widget__top[data-v-00c72ecd] {\r\n  display: flex;\r\n  align-items: flex-start;\r\n  justify-content: flex-end;\r\n  gap: 0.35rem;\n}\n.gauge-preview[data-v-00c72ecd] {\r\n  width: 11rem;\r\n  display: grid;\r\n  grid-template-columns: repeat(2, minmax(0, 1fr));\r\n  gap: 0.35rem;\r\n  align-items: flex-end;\n}\n.gauge-preview__item[data-v-00c72ecd] {\r\n  display: flex;\r\n  align-items: center;\n}\n.compact-metrics[data-v-00c72ecd] {\r\n  display: grid;\r\n  grid-template-columns: minmax(0, 1fr) auto;\r\n  gap: 0.8rem;\r\n  margin-top: auto;\n}\n.compact-metrics__labels[data-v-00c72ecd],\r\n.compact-metrics__values[data-v-00c72ecd] {\r\n  display: grid;\r\n  gap: 0.35rem;\r\n  font-size: 0.9rem;\n}\n.compact-metrics__labels[data-v-00c72ecd] {\r\n  color: #5f7084;\n}\n.compact-metrics__values[data-v-00c72ecd] {\r\n  text-align: right;\r\n  color: #12243d;\r\n  font-weight: 800;\n}\n.threshold-legend[data-v-00c72ecd] {\r\n  display: flex;\r\n  justify-content: flex-end;\r\n  gap: 0.7rem;\r\n  flex-wrap: wrap;\r\n  margin-top: 0.05rem;\r\n  color: #64748b;\r\n  font-size: 0.68rem;\r\n  font-weight: 600;\n}\n.threshold-legend span[data-v-00c72ecd] {\r\n  display: inline-flex;\r\n  align-items: center;\r\n  gap: 0.4rem;\n}\n.legend-dot[data-v-00c72ecd] {\r\n  width: 0.58rem;\r\n  height: 0.58rem;\r\n  border-radius: 999px;\r\n  display: inline-block;\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.widget-layout[data-v-00c72ecd] {\r\n  display: flex;\r\n  flex-direction: column;\r\n  gap: 0.8rem;\r\n  height: 100%;\n}\n.compact-widget__top[data-v-00c72ecd] {\r\n  display: flex;\r\n  align-items: flex-start;\r\n  justify-content: flex-end;\r\n  gap: 0.35rem;\n}\n.gauge-preview[data-v-00c72ecd] {\r\n  width: 11rem;\r\n  display: grid;\r\n  grid-template-columns: repeat(2, minmax(0, 1fr));\r\n  gap: 0.35rem;\r\n  align-items: flex-end;\n}\n.gauge-preview__item[data-v-00c72ecd] {\r\n  display: flex;\r\n  align-items: center;\n}\n.compact-metrics[data-v-00c72ecd] {\r\n  display: grid;\r\n  grid-template-columns: minmax(0, 1fr) auto;\r\n  gap: 0.8rem;\r\n  margin-top: auto;\n}\n.compact-metrics__labels[data-v-00c72ecd],\r\n.compact-metrics__values[data-v-00c72ecd] {\r\n  display: grid;\r\n  gap: 0.35rem;\r\n  font-size: 0.9rem;\n}\n.compact-metrics__labels[data-v-00c72ecd] {\r\n  color: #5f7084;\n}\n.compact-metrics__values[data-v-00c72ecd] {\r\n  text-align: right;\r\n  color: #12243d;\r\n  font-weight: 800;\n}\n.threshold-legend[data-v-00c72ecd] {\r\n  display: flex;\r\n  justify-content: flex-end;\r\n  gap: 0.7rem;\r\n  flex-wrap: wrap;\r\n  margin-top: 0.05rem;\r\n  color: #64748b;\r\n  font-size: 0.68rem;\r\n  font-weight: 600;\n}\n.threshold-legend span[data-v-00c72ecd] {\r\n  display: inline-flex;\r\n  align-items: center;\r\n  gap: 0.4rem;\n}\n.legend-dot[data-v-00c72ecd] {\r\n  width: 0.58rem;\r\n  height: 0.58rem;\r\n  border-radius: 999px;\r\n  display: inline-block;\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4903,36 +4265,6 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_DashboardGauge_vue_vue_type_style_index_0_id_02bb9d14_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-widgets/components/DateRangeSettings.vue?vue&type=style&index=0&id=1ab2011a&scoped=true&lang=css":
-/*!******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-widgets/components/DateRangeSettings.vue?vue&type=style&index=0&id=1ab2011a&scoped=true&lang=css ***!
-  \******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_DateRangeSettings_vue_vue_type_style_index_0_id_1ab2011a_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./DateRangeSettings.vue?vue&type=style&index=0&id=1ab2011a&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-widgets/components/DateRangeSettings.vue?vue&type=style&index=0&id=1ab2011a&scoped=true&lang=css");
-
-            
-
-var options = {};
-
-options.insert = "head";
-options.singleton = false;
-
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_DateRangeSettings_vue_vue_type_style_index_0_id_1ab2011a_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"], options);
-
-
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_DateRangeSettings_vue_vue_type_style_index_0_id_1ab2011a_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
 
 /***/ }),
 
@@ -17842,94 +17174,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   staticRenderFns: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_DashboardGauge_vue_vue_type_template_id_02bb9d14_scoped_true__WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
 /* harmony export */ });
 /* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_DashboardGauge_vue_vue_type_template_id_02bb9d14_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./DashboardGauge.vue?vue&type=template&id=02bb9d14&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-widgets/components/DashboardGauge.vue?vue&type=template&id=02bb9d14&scoped=true");
-
-
-/***/ }),
-
-/***/ "./resources/vue/dashboard-widgets/components/DateRangeSettings.vue":
-/*!**************************************************************************!*\
-  !*** ./resources/vue/dashboard-widgets/components/DateRangeSettings.vue ***!
-  \**************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _DateRangeSettings_vue_vue_type_template_id_1ab2011a_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DateRangeSettings.vue?vue&type=template&id=1ab2011a&scoped=true */ "./resources/vue/dashboard-widgets/components/DateRangeSettings.vue?vue&type=template&id=1ab2011a&scoped=true");
-/* harmony import */ var _DateRangeSettings_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./DateRangeSettings.vue?vue&type=script&lang=js */ "./resources/vue/dashboard-widgets/components/DateRangeSettings.vue?vue&type=script&lang=js");
-/* harmony import */ var _DateRangeSettings_vue_vue_type_style_index_0_id_1ab2011a_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./DateRangeSettings.vue?vue&type=style&index=0&id=1ab2011a&scoped=true&lang=css */ "./resources/vue/dashboard-widgets/components/DateRangeSettings.vue?vue&type=style&index=0&id=1ab2011a&scoped=true&lang=css");
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
-
-
-
-;
-
-
-/* normalize component */
-
-var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
-  _DateRangeSettings_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"],
-  _DateRangeSettings_vue_vue_type_template_id_1ab2011a_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render,
-  _DateRangeSettings_vue_vue_type_template_id_1ab2011a_scoped_true__WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
-  false,
-  null,
-  "1ab2011a",
-  null
-  
-)
-
-/* hot reload */
-if (false) // removed by dead control flow
-{ var api; }
-component.options.__file = "resources/vue/dashboard-widgets/components/DateRangeSettings.vue"
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);
-
-/***/ }),
-
-/***/ "./resources/vue/dashboard-widgets/components/DateRangeSettings.vue?vue&type=script&lang=js":
-/*!**************************************************************************************************!*\
-  !*** ./resources/vue/dashboard-widgets/components/DateRangeSettings.vue?vue&type=script&lang=js ***!
-  \**************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_DateRangeSettings_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./DateRangeSettings.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-widgets/components/DateRangeSettings.vue?vue&type=script&lang=js");
- /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_DateRangeSettings_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"]); 
-
-/***/ }),
-
-/***/ "./resources/vue/dashboard-widgets/components/DateRangeSettings.vue?vue&type=style&index=0&id=1ab2011a&scoped=true&lang=css":
-/*!**********************************************************************************************************************************!*\
-  !*** ./resources/vue/dashboard-widgets/components/DateRangeSettings.vue?vue&type=style&index=0&id=1ab2011a&scoped=true&lang=css ***!
-  \**********************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_DateRangeSettings_vue_vue_type_style_index_0_id_1ab2011a_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./DateRangeSettings.vue?vue&type=style&index=0&id=1ab2011a&scoped=true&lang=css */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-widgets/components/DateRangeSettings.vue?vue&type=style&index=0&id=1ab2011a&scoped=true&lang=css");
-
-
-/***/ }),
-
-/***/ "./resources/vue/dashboard-widgets/components/DateRangeSettings.vue?vue&type=template&id=1ab2011a&scoped=true":
-/*!********************************************************************************************************************!*\
-  !*** ./resources/vue/dashboard-widgets/components/DateRangeSettings.vue?vue&type=template&id=1ab2011a&scoped=true ***!
-  \********************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_DateRangeSettings_vue_vue_type_template_id_1ab2011a_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render),
-/* harmony export */   staticRenderFns: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_DateRangeSettings_vue_vue_type_template_id_1ab2011a_scoped_true__WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
-/* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_DateRangeSettings_vue_vue_type_template_id_1ab2011a_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./DateRangeSettings.vue?vue&type=template&id=1ab2011a&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-widgets/components/DateRangeSettings.vue?vue&type=template&id=1ab2011a&scoped=true");
 
 
 /***/ }),

@@ -20,7 +20,7 @@ class DashboardWidgetsController extends Controller
     public function settings(DashboardWidgetSettingsService $settings): JsonResponse
     {
         return response()->json([
-            'data' => $settings->getAccountDefaults(),
+            'data' => $settings->getEffectiveDefaults(),
         ]);
     }
 
