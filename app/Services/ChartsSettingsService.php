@@ -59,6 +59,10 @@ class ChartsSettingsService
     {
         $profile = $this->getProfileData();
         $profile['charts_page'] = $this->sanitizeSettings($settings);
+        $profile['charts_page_users'] = $this->replaceUserDefaults(
+            $profile['charts_page_users'] ?? [],
+            $profile['charts_page']
+        );
         $this->saveProfileData($profile);
 
         return $profile['charts_page'];
@@ -128,6 +132,15 @@ class ChartsSettingsService
             'amount' => $amount,
             'unit' => $unit,
         ];
+    }
+
+    private function replaceUserDefaults(mixed $userDefaults, array $settings): array
+    {
+        if (!is_array($userDefaults)) {
+            return [];
+        }
+
+        return array_fill_keys(array_keys($userDefaults), $settings);
     }
 
     private function getProfileData(): array

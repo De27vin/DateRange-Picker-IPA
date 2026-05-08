@@ -2080,28 +2080,56 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _charts_AlertsChart_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./charts/AlertsChart.vue */ "./resources/vue/dashboard-graphics/charts/AlertsChart.vue");
 /* harmony import */ var _charts_EquipmentChart_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./charts/EquipmentChart.vue */ "./resources/vue/dashboard-graphics/charts/EquipmentChart.vue");
 /* harmony import */ var _charts_ServiceLevelChart_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./charts/ServiceLevelChart.vue */ "./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_4__);
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
-function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
-function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+function _regeneratorRuntime() { "use strict"; var r = _regenerator(), e = r.m(_regeneratorRuntime), t = (Object.getPrototypeOf ? Object.getPrototypeOf(e) : e.__proto__).constructor; function n(r) { var e = "function" == typeof r && r.constructor; return !!e && (e === t || "GeneratorFunction" === (e.displayName || e.name)); } var o = { "throw": 1, "return": 2, "break": 3, "continue": 3 }; function a(r) { var e, t; return function (n) { e || (e = { stop: function stop() { return t(n.a, 2); }, "catch": function _catch() { return n.v; }, abrupt: function abrupt(r, e) { return t(n.a, o[r], e); }, delegateYield: function delegateYield(r, o, a) { return e.resultName = o, t(n.d, _regeneratorValues(r), a); }, finish: function finish(r) { return t(n.f, r); } }, t = function t(r, _t, o) { n.p = e.prev, n.n = e.next; try { return r(_t, o); } finally { e.next = n.n; } }), e.resultName && (e[e.resultName] = n.v, e.resultName = void 0), e.sent = n.v, e.next = n.n; try { return r.call(this, e); } finally { n.p = e.prev, n.n = e.next; } }; } return (_regeneratorRuntime = function _regeneratorRuntime() { return { wrap: function wrap(e, t, n, o) { return r.w(a(e), t, n, o && o.reverse()); }, isGeneratorFunction: n, mark: r.m, awrap: function awrap(r, e) { return new _OverloadYield(r, e); }, AsyncIterator: _regeneratorAsyncIterator, async: function async(r, e, t, o, u) { return (n(e) ? _regeneratorAsyncGen : _regeneratorAsync)(a(r), e, t, o, u); }, keys: _regeneratorKeys, values: _regeneratorValues }; })(); }
+function _regeneratorValues(e) { if (null != e) { var t = e["function" == typeof Symbol && Symbol.iterator || "@@iterator"], r = 0; if (t) return t.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) return { next: function next() { return e && r >= e.length && (e = void 0), { value: e && e[r++], done: !e }; } }; } throw new TypeError(_typeof(e) + " is not iterable"); }
+function _regeneratorKeys(e) { var n = Object(e), r = []; for (var t in n) r.unshift(t); return function e() { for (; r.length;) if ((t = r.pop()) in n) return e.value = t, e.done = !1, e; return e.done = !0, e; }; }
+function _regeneratorAsync(n, e, r, t, o) { var a = _regeneratorAsyncGen(n, e, r, t, o); return a.next().then(function (n) { return n.done ? n.value : a.next(); }); }
+function _regeneratorAsyncGen(r, e, t, o, n) { return new _regeneratorAsyncIterator(_regenerator().w(r, e, t, o), n || Promise); }
+function _regeneratorAsyncIterator(t, e) { function n(r, o, i, f) { try { var c = t[r](o), u = c.value; return u instanceof _OverloadYield ? e.resolve(u.v).then(function (t) { n("next", t, i, f); }, function (t) { n("throw", t, i, f); }) : e.resolve(u).then(function (t) { c.value = t, i(c); }, function (t) { return n("throw", t, i, f); }); } catch (t) { f(t); } } var r; this.next || (_regeneratorDefine2(_regeneratorAsyncIterator.prototype), _regeneratorDefine2(_regeneratorAsyncIterator.prototype, "function" == typeof Symbol && Symbol.asyncIterator || "@asyncIterator", function () { return this; })), _regeneratorDefine2(this, "_invoke", function (t, o, i) { function f() { return new e(function (e, r) { n(t, i, e, r); }); } return r = r ? r.then(f, f) : f(); }, !0); }
+function _regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */ var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i["return"]) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
+function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } r ? i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2)); }, _regeneratorDefine2(e, r, n, t); }
+function _OverloadYield(e, d) { this.v = e, this.k = d; }
+function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
+function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 
 
 
 
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_defineProperty({
+
+var SYSTEM_CHART_SETTINGS = {
+  ranges: {
+    equipment: {
+      amount: 3,
+      unit: 'months'
+    },
+    alarms: {
+      amount: 3,
+      unit: 'months'
+    },
+    alerts: {
+      amount: 3,
+      unit: 'months'
+    },
+    serviceLevel: {
+      amount: 3,
+      unit: 'months'
+    }
+  }
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   components: {
     AlarmChart: _charts_AlarmChart_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
     AlertsChart: _charts_AlertsChart_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
     EquipmentChart: _charts_EquipmentChart_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
     ServiceLevelChart: _charts_ServiceLevelChart_vue__WEBPACK_IMPORTED_MODULE_3__["default"]
   },
-  mounted: function mounted() {
-    // DEBUG: Check if window data exists
-    console.log('window.ALERTS_STATS:', window.ALERTS_STATS);
-    console.log('alertsStats in data:', this.alertsStats);
-  },
   data: function data() {
     return {
+      chartSettings: SYSTEM_CHART_SETTINGS,
+      settingsLoaded: false,
       equipmentStats: typeof window !== 'undefined' && window.EQUIPMENT_STATS ? window.EQUIPMENT_STATS : {
         enabled: 0,
         disabled: 0
@@ -2144,14 +2172,39 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
         localChecks: 0
       }
     };
+  },
+  mounted: function mounted() {
+    var _this = this;
+    return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+      var _response$data, response;
+      return _regeneratorRuntime().wrap(function _callee$(_context) {
+        while (1) switch (_context.prev = _context.next) {
+          case 0:
+            _context.prev = 0;
+            _context.next = 3;
+            return axios__WEBPACK_IMPORTED_MODULE_4___default().get('/api/charts/settings');
+          case 3:
+            response = _context.sent;
+            _this.chartSettings = (response === null || response === void 0 ? void 0 : (_response$data = response.data) === null || _response$data === void 0 ? void 0 : _response$data.data) || SYSTEM_CHART_SETTINGS;
+            _context.next = 11;
+            break;
+          case 7:
+            _context.prev = 7;
+            _context.t0 = _context["catch"](0);
+            console.error('Charts settings fetch failed:', _context.t0);
+            _this.chartSettings = SYSTEM_CHART_SETTINGS;
+          case 11:
+            _context.prev = 11;
+            _this.settingsLoaded = true;
+            return _context.finish(11);
+          case 14:
+          case "end":
+            return _context.stop();
+        }
+      }, _callee, null, [[0, 7, 11, 14]]);
+    }))();
   }
-}, "mounted", function mounted() {
-  console.log(' All Stats loaded:');
-  console.log('  equipmentStats:', this.equipmentStats);
-  console.log('  alarmStats:', this.alarmStats);
-  console.log('  alertsStats:', this.alertsStats);
-  console.log('  serviceStats:', this.serviceStats);
-}));
+});
 
 /***/ }),
 
@@ -2175,6 +2228,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../js/utils/timeseriesRangeValidation */ "./resources/js/utils/timeseriesRangeValidation.js");
 /* harmony import */ var vue2_datepicker__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vue2-datepicker */ "./node_modules/vue2-datepicker/index.esm.js");
 /* harmony import */ var vue2_datepicker_index_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vue2-datepicker/index.css */ "./node_modules/vue2-datepicker/index.css");
+/* harmony import */ var _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../js/utils/dashboardWidgetSettings */ "./resources/js/utils/dashboardWidgetSettings.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -2200,6 +2254,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
 
 
 
+
 var ALARM_SERIES_KEYS = ['inbound_calls', 'active_alarms'];
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: 'AlarmChart',
@@ -2208,27 +2263,51 @@ var ALARM_SERIES_KEYS = ['inbound_calls', 'active_alarms'];
   },
   props: {
     liveInbound: Number,
-    liveActive: Number
+    liveActive: Number,
+    defaultRange: {
+      type: Object,
+      "default": function _default() {
+        return _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.equipment;
+      }
+    }
   },
   data: function data() {
-    var today = new Date();
-    var start = new Date(today);
-    start.setDate(today.getDate() - 6);
-    start.setHours(0, 0, 0, 0);
-    var end = new Date(today);
-    end.setHours(23, 0, 0, 0);
+    var dateRange = this.resolveDateRange(this.defaultRange);
     return {
       _chart: null,
       series: [],
       seriesResolution: '1h',
       // date range
-      dateRange: [start, end],
+      dateRange: dateRange,
       dateError: '',
       fetchError: '',
-      lastValidRange: [new Date(start), new Date(end)]
+      lastValidRange: [new Date(dateRange[0]), new Date(dateRange[1])],
+      isManualDateRange: false
     };
   },
   watch: {
+    defaultRange: {
+      deep: true,
+      handler: function handler(nextRange) {
+        var _this = this;
+        return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+          return _regeneratorRuntime().wrap(function _callee$(_context) {
+            while (1) switch (_context.prev = _context.next) {
+              case 0:
+                if (_this.isManualDateRange) {
+                  _context.next = 3;
+                  break;
+                }
+                _context.next = 3;
+                return _this.applyDefaultRange(nextRange);
+              case 3:
+              case "end":
+                return _context.stop();
+            }
+          }, _callee);
+        }))();
+      }
+    },
     liveInbound: function liveInbound() {
       this.injectLiveData();
       this.renderChart();
@@ -2239,18 +2318,18 @@ var ALARM_SERIES_KEYS = ['inbound_calls', 'active_alarms'];
     }
   },
   mounted: function mounted() {
-    var _this = this;
-    return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-      return _regeneratorRuntime().wrap(function _callee$(_context) {
-        while (1) switch (_context.prev = _context.next) {
+    var _this2 = this;
+    return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+        while (1) switch (_context2.prev = _context2.next) {
           case 0:
-            _context.next = 2;
-            return _this.loadData();
+            _context2.next = 2;
+            return _this2.loadData();
           case 2:
           case "end":
-            return _context.stop();
+            return _context2.stop();
         }
-      }, _callee);
+      }, _callee2);
     }))();
   },
   methods: {
@@ -2269,84 +2348,116 @@ var ALARM_SERIES_KEYS = ['inbound_calls', 'active_alarms'];
         displayMode: 'local'
       });
     },
-    // Method: Handle date range changes
-    onDateRangeChange: function onDateRangeChange(value) {
-      var _this2 = this;
-      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-        var _ref, _ref2, startRaw, endRaw, normalized, start, end;
-        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-          while (1) switch (_context2.prev = _context2.next) {
-            case 0:
-              _ref = value || _this2.dateRange || [], _ref2 = _slicedToArray(_ref, 2), startRaw = _ref2[0], endRaw = _ref2[1];
-              normalized = (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.validateAndNormalizeRange)(startRaw, endRaw);
-              if (normalized.ok) {
-                _context2.next = 5;
-                break;
-              }
-              _this2.dateError = normalized.error;
-              return _context2.abrupt("return");
-            case 5:
-              start = normalized.startUtc, end = normalized.endUtc;
-              _this2.dateError = '';
-              _this2.lastValidRange = [new Date(start), new Date(end)];
-              _context2.next = 10;
-              return _this2.loadData();
-            case 10:
-            case "end":
-              return _context2.stop();
-          }
-        }, _callee2);
-      }))();
+    resolveDateRange: function resolveDateRange(range) {
+      var resolved = (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.resolveRollingRange)((0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.sanitizeRollingRange)(range, _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.equipment));
+      var _resolved$start$split = resolved.start.split('-').map(Number),
+        _resolved$start$split2 = _slicedToArray(_resolved$start$split, 3),
+        startYear = _resolved$start$split2[0],
+        startMonth = _resolved$start$split2[1],
+        startDay = _resolved$start$split2[2];
+      var _resolved$end$split$m = resolved.end.split('-').map(Number),
+        _resolved$end$split$m2 = _slicedToArray(_resolved$end$split$m, 3),
+        endYear = _resolved$end$split$m2[0],
+        endMonth = _resolved$end$split$m2[1],
+        endDay = _resolved$end$split$m2[2];
+      return [new Date(startYear, startMonth - 1, startDay, 0, 0, 0, 0), new Date(endYear, endMonth - 1, endDay, 23, 0, 0, 0)];
     },
-    loadData: function loadData() {
+    applyDefaultRange: function applyDefaultRange(range) {
       var _this3 = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-        var _ref3, _ref4, startRaw, endRaw, normalized, start, end, _res$data$meta$resolu, _res$data, _res$data$meta, _res$data2, res, _e$response;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
-              _ref3 = _this3.dateRange || [], _ref4 = _slicedToArray(_ref3, 2), startRaw = _ref4[0], endRaw = _ref4[1];
-              normalized = (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.validateAndNormalizeRange)(startRaw, endRaw);
-              if (normalized.ok) {
-                _context3.next = 5;
-                break;
-              }
-              _this3.dateError = normalized.error;
-              return _context3.abrupt("return");
-            case 5:
-              start = normalized.startUtc, end = normalized.endUtc;
-              _this3.dateError = '';
-              _context3.prev = 7;
-              _this3.fetchError = '';
-              _context3.next = 11;
-              return axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/timeseries', {
-                params: {
-                  chart: 'AlarmChart',
-                  start: _this3.toIso(start),
-                  end: _this3.toIso(end)
-                }
-              });
-            case 11:
-              res = _context3.sent;
-              _this3.seriesResolution = (_res$data$meta$resolu = res === null || res === void 0 ? void 0 : (_res$data = res.data) === null || _res$data === void 0 ? void 0 : (_res$data$meta = _res$data.meta) === null || _res$data$meta === void 0 ? void 0 : _res$data$meta.resolution) !== null && _res$data$meta$resolu !== void 0 ? _res$data$meta$resolu : '1h';
-              _this3.series = (0,_js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__.normalizeSeriesRows)(res === null || res === void 0 ? void 0 : (_res$data2 = res.data) === null || _res$data2 === void 0 ? void 0 : _res$data2.data, ALARM_SERIES_KEYS);
-              _this3.injectLiveData();
-              _this3.renderChart();
-              _context3.next = 25;
-              break;
-            case 18:
-              _context3.prev = 18;
-              _context3.t0 = _context3["catch"](7);
-              console.error('Timeseries fetch failed:', _context3.t0);
-              _this3.series = [];
-              _this3.fetchError = (_context3.t0 === null || _context3.t0 === void 0 ? void 0 : (_e$response = _context3.t0.response) === null || _e$response === void 0 ? void 0 : _e$response.status) === 422 ? 'Invalid date range' : 'Failed to load data';
-              _this3.injectLiveData();
-              _this3.renderChart();
-            case 25:
+              _this3.dateRange = _this3.resolveDateRange(range);
+              _this3.lastValidRange = [new Date(_this3.dateRange[0]), new Date(_this3.dateRange[1])];
+              _context3.next = 4;
+              return _this3.loadData();
+            case 4:
             case "end":
               return _context3.stop();
           }
-        }, _callee3, null, [[7, 18]]);
+        }, _callee3);
+      }))();
+    },
+    // Method: Handle date range changes
+    onDateRangeChange: function onDateRangeChange(value) {
+      var _this4 = this;
+      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+        var _ref, _ref2, startRaw, endRaw, normalized, start, end;
+        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+          while (1) switch (_context4.prev = _context4.next) {
+            case 0:
+              _ref = value || _this4.dateRange || [], _ref2 = _slicedToArray(_ref, 2), startRaw = _ref2[0], endRaw = _ref2[1];
+              normalized = (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.validateAndNormalizeRange)(startRaw, endRaw);
+              if (normalized.ok) {
+                _context4.next = 5;
+                break;
+              }
+              _this4.dateError = normalized.error;
+              return _context4.abrupt("return");
+            case 5:
+              start = normalized.startUtc, end = normalized.endUtc;
+              _this4.dateError = '';
+              _this4.isManualDateRange = true;
+              _this4.lastValidRange = [new Date(start), new Date(end)];
+              _context4.next = 11;
+              return _this4.loadData();
+            case 11:
+            case "end":
+              return _context4.stop();
+          }
+        }, _callee4);
+      }))();
+    },
+    loadData: function loadData() {
+      var _this5 = this;
+      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
+        var _ref3, _ref4, startRaw, endRaw, normalized, start, end, _res$data$meta$resolu, _res$data, _res$data$meta, _res$data2, res, _e$response;
+        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+          while (1) switch (_context5.prev = _context5.next) {
+            case 0:
+              _ref3 = _this5.dateRange || [], _ref4 = _slicedToArray(_ref3, 2), startRaw = _ref4[0], endRaw = _ref4[1];
+              normalized = (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.validateAndNormalizeRange)(startRaw, endRaw);
+              if (normalized.ok) {
+                _context5.next = 5;
+                break;
+              }
+              _this5.dateError = normalized.error;
+              return _context5.abrupt("return");
+            case 5:
+              start = normalized.startUtc, end = normalized.endUtc;
+              _this5.dateError = '';
+              _context5.prev = 7;
+              _this5.fetchError = '';
+              _context5.next = 11;
+              return axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/timeseries', {
+                params: {
+                  chart: 'AlarmChart',
+                  start: _this5.toIso(start),
+                  end: _this5.toIso(end)
+                }
+              });
+            case 11:
+              res = _context5.sent;
+              _this5.seriesResolution = (_res$data$meta$resolu = res === null || res === void 0 ? void 0 : (_res$data = res.data) === null || _res$data === void 0 ? void 0 : (_res$data$meta = _res$data.meta) === null || _res$data$meta === void 0 ? void 0 : _res$data$meta.resolution) !== null && _res$data$meta$resolu !== void 0 ? _res$data$meta$resolu : '1h';
+              _this5.series = (0,_js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__.normalizeSeriesRows)(res === null || res === void 0 ? void 0 : (_res$data2 = res.data) === null || _res$data2 === void 0 ? void 0 : _res$data2.data, ALARM_SERIES_KEYS);
+              _this5.injectLiveData();
+              _this5.renderChart();
+              _context5.next = 25;
+              break;
+            case 18:
+              _context5.prev = 18;
+              _context5.t0 = _context5["catch"](7);
+              console.error('Timeseries fetch failed:', _context5.t0);
+              _this5.series = [];
+              _this5.fetchError = (_context5.t0 === null || _context5.t0 === void 0 ? void 0 : (_e$response = _context5.t0.response) === null || _e$response === void 0 ? void 0 : _e$response.status) === 422 ? 'Invalid date range' : 'Failed to load data';
+              _this5.injectLiveData();
+              _this5.renderChart();
+            case 25:
+            case "end":
+              return _context5.stop();
+          }
+        }, _callee5, null, [[7, 18]]);
       }))();
     },
     injectLiveData: function injectLiveData() {
@@ -2359,7 +2470,7 @@ var ALARM_SERIES_KEYS = ['inbound_calls', 'active_alarms'];
       }));
     },
     renderChart: function renderChart() {
-      var _this4 = this;
+      var _this6 = this;
       var ctx = this.$refs.chart.getContext('2d');
       var inboundGradient = ctx.createLinearGradient(0, 0, 0, 400);
       inboundGradient.addColorStop(0, 'rgba(193,117,121,0.45)');
@@ -2369,7 +2480,7 @@ var ALARM_SERIES_KEYS = ['inbound_calls', 'active_alarms'];
       activeGradient.addColorStop(0, 'rgba(162,35,42,0)');
       var isSingleDay = this.toYmd(new Date(this.lastValidRange[0])) === this.toYmd(new Date(this.lastValidRange[1]));
       var labels = this.series.map(function (item) {
-        return _this4.buildLabel(item.timestamp, _this4.seriesResolution, isSingleDay);
+        return _this6.buildLabel(item.timestamp, _this6.seriesResolution, isSingleDay);
       });
       var inbound = this.series.map(function (x) {
         var _x$inbound_calls;
@@ -2476,6 +2587,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../js/utils/timeseriesRangeValidation */ "./resources/js/utils/timeseriesRangeValidation.js");
 /* harmony import */ var vue2_datepicker__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vue2-datepicker */ "./node_modules/vue2-datepicker/index.esm.js");
 /* harmony import */ var vue2_datepicker_index_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vue2-datepicker/index.css */ "./node_modules/vue2-datepicker/index.css");
+/* harmony import */ var _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../js/utils/dashboardWidgetSettings */ "./resources/js/utils/dashboardWidgetSettings.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _regeneratorRuntime() { "use strict"; var r = _regenerator(), e = r.m(_regeneratorRuntime), t = (Object.getPrototypeOf ? Object.getPrototypeOf(e) : e.__proto__).constructor; function n(r) { var e = "function" == typeof r && r.constructor; return !!e && (e === t || "GeneratorFunction" === (e.displayName || e.name)); } var o = { "throw": 1, "return": 2, "break": 3, "continue": 3 }; function a(r) { var e, t; return function (n) { e || (e = { stop: function stop() { return t(n.a, 2); }, "catch": function _catch() { return n.v; }, abrupt: function abrupt(r, e) { return t(n.a, o[r], e); }, delegateYield: function delegateYield(r, o, a) { return e.resultName = o, t(n.d, _regeneratorValues(r), a); }, finish: function finish(r) { return t(n.f, r); } }, t = function t(r, _t, o) { n.p = e.prev, n.n = e.next; try { return r(_t, o); } finally { e.next = n.n; } }), e.resultName && (e[e.resultName] = n.v, e.resultName = void 0), e.sent = n.v, e.next = n.n; try { return r.call(this, e); } finally { n.p = e.prev, n.n = e.next; } }; } return (_regeneratorRuntime = function _regeneratorRuntime() { return { wrap: function wrap(e, t, n, o) { return r.w(a(e), t, n, o && o.reverse()); }, isGeneratorFunction: n, mark: r.m, awrap: function awrap(r, e) { return new _OverloadYield(r, e); }, AsyncIterator: _regeneratorAsyncIterator, async: function async(r, e, t, o, u) { return (n(e) ? _regeneratorAsyncGen : _regeneratorAsync)(a(r), e, t, o, u); }, keys: _regeneratorKeys, values: _regeneratorValues }; })(); }
 function _regeneratorValues(e) { if (null != e) { var t = e["function" == typeof Symbol && Symbol.iterator || "@@iterator"], r = 0; if (t) return t.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) return { next: function next() { return e && r >= e.length && (e = void 0), { value: e && e[r++], done: !e }; } }; } throw new TypeError(_typeof(e) + " is not iterable"); }
@@ -2494,6 +2606,7 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
+
 
 
 
@@ -2634,25 +2747,27 @@ function gradientColor(index, total) {
     'live-sip-registration-failure': Number,
     'live-speaker-malfunction': Number,
     'live-technician-check-overdue': Number,
-    'live-voice-alarm': Number
+    'live-voice-alarm': Number,
+    defaultRange: {
+      type: Object,
+      "default": function _default() {
+        return _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.equipment;
+      }
+    }
   },
   data: function data() {
-    var today = new Date();
-    var start = new Date(today);
-    start.setDate(today.getDate() - 6);
-    start.setHours(0, 0, 0, 0);
-    var end = new Date(today);
-    end.setHours(23, 0, 0, 0);
+    var dateRange = this.resolveDateRange(this.defaultRange);
     return {
       _chart: null,
       series: [],
       seriesResolution: '1h',
       showFilters: false,
       filterAlerts: ALERT_DEFS,
-      dateRange: [start, end],
+      dateRange: dateRange,
       dateError: '',
       fetchError: '',
-      lastValidRange: [new Date(start), new Date(end)],
+      lastValidRange: [new Date(dateRange[0]), new Date(dateRange[1])],
+      isManualDateRange: false,
       selectedAlerts: []
     };
   },
@@ -2675,6 +2790,28 @@ function gradientColor(index, total) {
     }))();
   },
   watch: {
+    defaultRange: {
+      deep: true,
+      handler: function handler(nextRange) {
+        var _this2 = this;
+        return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+          return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+            while (1) switch (_context2.prev = _context2.next) {
+              case 0:
+                if (_this2.isManualDateRange) {
+                  _context2.next = 3;
+                  break;
+                }
+                _context2.next = 3;
+                return _this2.applyDefaultRange(nextRange);
+              case 3:
+              case "end":
+                return _context2.stop();
+            }
+          }, _callee2);
+        }))();
+      }
+    },
     selectedAlerts: function selectedAlerts() {
       this.renderChart();
     }
@@ -2694,85 +2831,117 @@ function gradientColor(index, total) {
         displayMode: 'local'
       });
     },
-    onDateRangeChange: function onDateRangeChange(value) {
-      var _this2 = this;
-      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-        var _ref, _ref2, startRaw, endRaw, normalized, start, end;
-        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-          while (1) switch (_context2.prev = _context2.next) {
-            case 0:
-              _ref = value || _this2.dateRange || [], _ref2 = _slicedToArray(_ref, 2), startRaw = _ref2[0], endRaw = _ref2[1];
-              normalized = (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.validateAndNormalizeRange)(startRaw, endRaw);
-              if (normalized.ok) {
-                _context2.next = 5;
-                break;
-              }
-              _this2.dateError = normalized.error;
-              return _context2.abrupt("return");
-            case 5:
-              start = normalized.startUtc, end = normalized.endUtc;
-              _this2.dateError = '';
-              _this2.lastValidRange = [new Date(start), new Date(end)];
-              _context2.next = 10;
-              return _this2.loadData();
-            case 10:
-            case "end":
-              return _context2.stop();
-          }
-        }, _callee2);
-      }))();
+    resolveDateRange: function resolveDateRange(range) {
+      var resolved = (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.resolveRollingRange)((0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.sanitizeRollingRange)(range, _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.equipment));
+      var _resolved$start$split = resolved.start.split('-').map(Number),
+        _resolved$start$split2 = _slicedToArray(_resolved$start$split, 3),
+        startYear = _resolved$start$split2[0],
+        startMonth = _resolved$start$split2[1],
+        startDay = _resolved$start$split2[2];
+      var _resolved$end$split$m = resolved.end.split('-').map(Number),
+        _resolved$end$split$m2 = _slicedToArray(_resolved$end$split$m, 3),
+        endYear = _resolved$end$split$m2[0],
+        endMonth = _resolved$end$split$m2[1],
+        endDay = _resolved$end$split$m2[2];
+      return [new Date(startYear, startMonth - 1, startDay, 0, 0, 0, 0), new Date(endYear, endMonth - 1, endDay, 23, 0, 0, 0)];
     },
-    loadData: function loadData() {
+    applyDefaultRange: function applyDefaultRange(range) {
       var _this3 = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-        var _ref3, _ref4, startRaw, endRaw, normalized, start, end, _res$data$meta$resolu, _res$data, _res$data$meta, _res$data2, res, _e$response;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
-              _ref3 = _this3.dateRange || [], _ref4 = _slicedToArray(_ref3, 2), startRaw = _ref4[0], endRaw = _ref4[1];
-              normalized = (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.validateAndNormalizeRange)(startRaw, endRaw);
-              if (normalized.ok) {
-                _context3.next = 5;
-                break;
-              }
-              _this3.dateError = normalized.error;
-              return _context3.abrupt("return");
-            case 5:
-              start = normalized.startUtc, end = normalized.endUtc;
-              _this3.dateError = '';
-              _context3.prev = 7;
-              _this3.fetchError = '';
-              _context3.next = 11;
-              return axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/timeseries', {
-                params: {
-                  chart: 'AlertsChart',
-                  start: _this3.toIso(start),
-                  end: _this3.toIso(end)
-                }
-              });
-            case 11:
-              res = _context3.sent;
-              _this3.seriesResolution = (_res$data$meta$resolu = res === null || res === void 0 ? void 0 : (_res$data = res.data) === null || _res$data === void 0 ? void 0 : (_res$data$meta = _res$data.meta) === null || _res$data$meta === void 0 ? void 0 : _res$data$meta.resolution) !== null && _res$data$meta$resolu !== void 0 ? _res$data$meta$resolu : '1h';
-              _this3.series = (0,_js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__.normalizeSeriesRows)(res === null || res === void 0 ? void 0 : (_res$data2 = res.data) === null || _res$data2 === void 0 ? void 0 : _res$data2.data, ALERT_DEFS.map(function (alert) {
-                return alert.key;
-              }));
-              _this3.injectLiveData();
-              _this3.renderChart();
-              _context3.next = 25;
-              break;
-            case 18:
-              _context3.prev = 18;
-              _context3.t0 = _context3["catch"](7);
-              console.error('Timeseries fetch failed:', _context3.t0);
-              _this3.series = [];
-              _this3.fetchError = (_context3.t0 === null || _context3.t0 === void 0 ? void 0 : (_e$response = _context3.t0.response) === null || _e$response === void 0 ? void 0 : _e$response.status) === 422 ? 'Invalid date range' : 'Failed to load data';
-              _this3.injectLiveData();
-              _this3.renderChart();
-            case 25:
+              _this3.dateRange = _this3.resolveDateRange(range);
+              _this3.lastValidRange = [new Date(_this3.dateRange[0]), new Date(_this3.dateRange[1])];
+              _context3.next = 4;
+              return _this3.loadData();
+            case 4:
             case "end":
               return _context3.stop();
           }
-        }, _callee3, null, [[7, 18]]);
+        }, _callee3);
+      }))();
+    },
+    onDateRangeChange: function onDateRangeChange(value) {
+      var _this4 = this;
+      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+        var _ref, _ref2, startRaw, endRaw, normalized, start, end;
+        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+          while (1) switch (_context4.prev = _context4.next) {
+            case 0:
+              _ref = value || _this4.dateRange || [], _ref2 = _slicedToArray(_ref, 2), startRaw = _ref2[0], endRaw = _ref2[1];
+              normalized = (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.validateAndNormalizeRange)(startRaw, endRaw);
+              if (normalized.ok) {
+                _context4.next = 5;
+                break;
+              }
+              _this4.dateError = normalized.error;
+              return _context4.abrupt("return");
+            case 5:
+              start = normalized.startUtc, end = normalized.endUtc;
+              _this4.dateError = '';
+              _this4.isManualDateRange = true;
+              _this4.lastValidRange = [new Date(start), new Date(end)];
+              _context4.next = 11;
+              return _this4.loadData();
+            case 11:
+            case "end":
+              return _context4.stop();
+          }
+        }, _callee4);
+      }))();
+    },
+    loadData: function loadData() {
+      var _this5 = this;
+      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
+        var _ref3, _ref4, startRaw, endRaw, normalized, start, end, _res$data$meta$resolu, _res$data, _res$data$meta, _res$data2, res, _e$response;
+        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+          while (1) switch (_context5.prev = _context5.next) {
+            case 0:
+              _ref3 = _this5.dateRange || [], _ref4 = _slicedToArray(_ref3, 2), startRaw = _ref4[0], endRaw = _ref4[1];
+              normalized = (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.validateAndNormalizeRange)(startRaw, endRaw);
+              if (normalized.ok) {
+                _context5.next = 5;
+                break;
+              }
+              _this5.dateError = normalized.error;
+              return _context5.abrupt("return");
+            case 5:
+              start = normalized.startUtc, end = normalized.endUtc;
+              _this5.dateError = '';
+              _context5.prev = 7;
+              _this5.fetchError = '';
+              _context5.next = 11;
+              return axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/timeseries', {
+                params: {
+                  chart: 'AlertsChart',
+                  start: _this5.toIso(start),
+                  end: _this5.toIso(end)
+                }
+              });
+            case 11:
+              res = _context5.sent;
+              _this5.seriesResolution = (_res$data$meta$resolu = res === null || res === void 0 ? void 0 : (_res$data = res.data) === null || _res$data === void 0 ? void 0 : (_res$data$meta = _res$data.meta) === null || _res$data$meta === void 0 ? void 0 : _res$data$meta.resolution) !== null && _res$data$meta$resolu !== void 0 ? _res$data$meta$resolu : '1h';
+              _this5.series = (0,_js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__.normalizeSeriesRows)(res === null || res === void 0 ? void 0 : (_res$data2 = res.data) === null || _res$data2 === void 0 ? void 0 : _res$data2.data, ALERT_DEFS.map(function (alert) {
+                return alert.key;
+              }));
+              _this5.injectLiveData();
+              _this5.renderChart();
+              _context5.next = 25;
+              break;
+            case 18:
+              _context5.prev = 18;
+              _context5.t0 = _context5["catch"](7);
+              console.error('Timeseries fetch failed:', _context5.t0);
+              _this5.series = [];
+              _this5.fetchError = (_context5.t0 === null || _context5.t0 === void 0 ? void 0 : (_e$response = _context5.t0.response) === null || _e$response === void 0 ? void 0 : _e$response.status) === 422 ? 'Invalid date range' : 'Failed to load data';
+              _this5.injectLiveData();
+              _this5.renderChart();
+            case 25:
+            case "end":
+              return _context5.stop();
+          }
+        }, _callee5, null, [[7, 18]]);
       }))();
     },
     injectLiveData: function injectLiveData() {
@@ -2815,7 +2984,7 @@ function gradientColor(index, total) {
       });
     },
     renderChart: function renderChart() {
-      var _this4 = this;
+      var _this6 = this;
       var data = this.series;
       var ctx = this.$refs.chart.getContext('2d');
       var isSingleDay = this.toYmd(new Date(this.lastValidRange[0])) === this.toYmd(new Date(this.lastValidRange[1]));
@@ -2823,7 +2992,7 @@ function gradientColor(index, total) {
         if (item.timestamp === null) {
           return 'Live';
         }
-        return _this4.buildLabel(item.timestamp, _this4.seriesResolution, isSingleDay);
+        return _this6.buildLabel(item.timestamp, _this6.seriesResolution, isSingleDay);
       });
       if (this._chart) this._chart.destroy();
       this._chart = new (chart_js__WEBPACK_IMPORTED_MODULE_1___default())(ctx, {
@@ -2831,7 +3000,7 @@ function gradientColor(index, total) {
         data: {
           labels: labels,
           datasets: ALERT_DEFS.filter(function (alert) {
-            return _this4.selectedAlerts.includes(alert.key);
+            return _this6.selectedAlerts.includes(alert.key);
           }).map(function (alert, index, arr) {
             var color = gradientColor(index, arr.length);
             return {
@@ -2929,6 +3098,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../js/utils/timeseriesRangeValidation */ "./resources/js/utils/timeseriesRangeValidation.js");
 /* harmony import */ var vue2_datepicker__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vue2-datepicker */ "./node_modules/vue2-datepicker/index.esm.js");
 /* harmony import */ var vue2_datepicker_index_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vue2-datepicker/index.css */ "./node_modules/vue2-datepicker/index.css");
+/* harmony import */ var _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../js/utils/dashboardWidgetSettings */ "./resources/js/utils/dashboardWidgetSettings.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -2954,6 +3124,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
 
 
 
+
 var EQUIPMENT_SERIES_KEYS = ['enabled', 'disabled'];
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: 'EquipmentChart',
@@ -2963,27 +3134,51 @@ var EQUIPMENT_SERIES_KEYS = ['enabled', 'disabled'];
   // Props for live data from Charts.vue
   props: {
     liveEnabled: Number,
-    liveDisabled: Number
+    liveDisabled: Number,
+    defaultRange: {
+      type: Object,
+      "default": function _default() {
+        return _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.equipment;
+      }
+    }
   },
   data: function data() {
-    var today = new Date();
-    var start = new Date(today);
-    start.setDate(today.getDate() - 6);
-    start.setHours(0, 0, 0, 0);
-    var end = new Date(today);
-    end.setHours(23, 0, 0, 0);
+    var dateRange = this.resolveDateRange(this.defaultRange);
     return {
       _chart: null,
       series: [],
       seriesResolution: '1h',
       // date range
-      dateRange: [start, end],
+      dateRange: dateRange,
       dateError: '',
       fetchError: '',
-      lastValidRange: [new Date(start), new Date(end)]
+      lastValidRange: [new Date(dateRange[0]), new Date(dateRange[1])],
+      isManualDateRange: false
     };
   },
   watch: {
+    defaultRange: {
+      deep: true,
+      handler: function handler(nextRange) {
+        var _this = this;
+        return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+          return _regeneratorRuntime().wrap(function _callee$(_context) {
+            while (1) switch (_context.prev = _context.next) {
+              case 0:
+                if (_this.isManualDateRange) {
+                  _context.next = 3;
+                  break;
+                }
+                _context.next = 3;
+                return _this.applyDefaultRange(nextRange);
+              case 3:
+              case "end":
+                return _context.stop();
+            }
+          }, _callee);
+        }))();
+      }
+    },
     liveEnabled: function liveEnabled() {
       this.injectLiveData();
       this.renderChart();
@@ -2994,18 +3189,18 @@ var EQUIPMENT_SERIES_KEYS = ['enabled', 'disabled'];
     }
   },
   mounted: function mounted() {
-    var _this = this;
-    return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-      return _regeneratorRuntime().wrap(function _callee$(_context) {
-        while (1) switch (_context.prev = _context.next) {
+    var _this2 = this;
+    return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+        while (1) switch (_context2.prev = _context2.next) {
           case 0:
-            _context.next = 2;
-            return _this.loadData();
+            _context2.next = 2;
+            return _this2.loadData();
           case 2:
           case "end":
-            return _context.stop();
+            return _context2.stop();
         }
-      }, _callee);
+      }, _callee2);
     }))();
   },
   methods: {
@@ -3025,85 +3220,117 @@ var EQUIPMENT_SERIES_KEYS = ['enabled', 'disabled'];
         displayMode: 'local'
       });
     },
-    // Method: Handle date range changes
-    onDateRangeChange: function onDateRangeChange(value) {
-      var _this2 = this;
-      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-        var _ref, _ref2, startRaw, endRaw, normalized, start, end;
-        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-          while (1) switch (_context2.prev = _context2.next) {
-            case 0:
-              _ref = value || _this2.dateRange || [], _ref2 = _slicedToArray(_ref, 2), startRaw = _ref2[0], endRaw = _ref2[1]; // Reuse the shared UTC validation before fetching new data
-              normalized = (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.validateAndNormalizeRange)(startRaw, endRaw);
-              if (normalized.ok) {
-                _context2.next = 5;
-                break;
-              }
-              _this2.dateError = normalized.error;
-              return _context2.abrupt("return");
-            case 5:
-              start = normalized.startUtc, end = normalized.endUtc;
-              _this2.dateError = '';
-              _this2.lastValidRange = [new Date(start), new Date(end)];
-              _context2.next = 10;
-              return _this2.loadData();
-            case 10:
-            case "end":
-              return _context2.stop();
-          }
-        }, _callee2);
-      }))();
+    resolveDateRange: function resolveDateRange(range) {
+      var resolved = (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.resolveRollingRange)((0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.sanitizeRollingRange)(range, _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.equipment));
+      var _resolved$start$split = resolved.start.split('-').map(Number),
+        _resolved$start$split2 = _slicedToArray(_resolved$start$split, 3),
+        startYear = _resolved$start$split2[0],
+        startMonth = _resolved$start$split2[1],
+        startDay = _resolved$start$split2[2];
+      var _resolved$end$split$m = resolved.end.split('-').map(Number),
+        _resolved$end$split$m2 = _slicedToArray(_resolved$end$split$m, 3),
+        endYear = _resolved$end$split$m2[0],
+        endMonth = _resolved$end$split$m2[1],
+        endDay = _resolved$end$split$m2[2];
+      return [new Date(startYear, startMonth - 1, startDay, 0, 0, 0, 0), new Date(endYear, endMonth - 1, endDay, 23, 0, 0, 0)];
     },
-    loadData: function loadData() {
+    applyDefaultRange: function applyDefaultRange(range) {
       var _this3 = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-        var _ref3, _ref4, startRaw, endRaw, normalized, start, end, _res$data$meta$resolu, _res$data, _res$data$meta, _res$data2, res, _e$response;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
-              _ref3 = _this3.dateRange || [], _ref4 = _slicedToArray(_ref3, 2), startRaw = _ref4[0], endRaw = _ref4[1]; // Normalize, validate date range and handle errors
-              normalized = (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.validateAndNormalizeRange)(startRaw, endRaw);
-              if (normalized.ok) {
-                _context3.next = 5;
-                break;
-              }
-              _this3.dateError = normalized.error;
-              return _context3.abrupt("return");
-            case 5:
-              start = normalized.startUtc, end = normalized.endUtc;
-              _this3.dateError = '';
-              _context3.prev = 7;
-              _this3.fetchError = '';
-              // Load timeseries data from API with axios
-              _context3.next = 11;
-              return axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/timeseries', {
-                params: {
-                  chart: 'EquipmentChart',
-                  start: _this3.toIso(start),
-                  end: _this3.toIso(end)
-                }
-              });
-            case 11:
-              res = _context3.sent;
-              _this3.seriesResolution = (_res$data$meta$resolu = res === null || res === void 0 ? void 0 : (_res$data = res.data) === null || _res$data === void 0 ? void 0 : (_res$data$meta = _res$data.meta) === null || _res$data$meta === void 0 ? void 0 : _res$data$meta.resolution) !== null && _res$data$meta$resolu !== void 0 ? _res$data$meta$resolu : '1h';
-              _this3.series = (0,_js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__.normalizeSeriesRows)(res === null || res === void 0 ? void 0 : (_res$data2 = res.data) === null || _res$data2 === void 0 ? void 0 : _res$data2.data, EQUIPMENT_SERIES_KEYS);
-              _this3.injectLiveData();
-              _this3.renderChart();
-              _context3.next = 25;
-              break;
-            case 18:
-              _context3.prev = 18;
-              _context3.t0 = _context3["catch"](7);
-              console.error('Timeseries fetch failed:', _context3.t0);
-              _this3.series = [];
-              _this3.fetchError = (_context3.t0 === null || _context3.t0 === void 0 ? void 0 : (_e$response = _context3.t0.response) === null || _e$response === void 0 ? void 0 : _e$response.status) === 422 ? 'Invalid date range' : 'Failed to load data';
-              _this3.injectLiveData();
-              _this3.renderChart();
-            case 25:
+              _this3.dateRange = _this3.resolveDateRange(range);
+              _this3.lastValidRange = [new Date(_this3.dateRange[0]), new Date(_this3.dateRange[1])];
+              _context3.next = 4;
+              return _this3.loadData();
+            case 4:
             case "end":
               return _context3.stop();
           }
-        }, _callee3, null, [[7, 18]]);
+        }, _callee3);
+      }))();
+    },
+    // Method: Handle date range changes
+    onDateRangeChange: function onDateRangeChange(value) {
+      var _this4 = this;
+      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+        var _ref, _ref2, startRaw, endRaw, normalized, start, end;
+        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+          while (1) switch (_context4.prev = _context4.next) {
+            case 0:
+              _ref = value || _this4.dateRange || [], _ref2 = _slicedToArray(_ref, 2), startRaw = _ref2[0], endRaw = _ref2[1]; // Reuse the shared UTC validation before fetching new data
+              normalized = (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.validateAndNormalizeRange)(startRaw, endRaw);
+              if (normalized.ok) {
+                _context4.next = 5;
+                break;
+              }
+              _this4.dateError = normalized.error;
+              return _context4.abrupt("return");
+            case 5:
+              start = normalized.startUtc, end = normalized.endUtc;
+              _this4.dateError = '';
+              _this4.isManualDateRange = true;
+              _this4.lastValidRange = [new Date(start), new Date(end)];
+              _context4.next = 11;
+              return _this4.loadData();
+            case 11:
+            case "end":
+              return _context4.stop();
+          }
+        }, _callee4);
+      }))();
+    },
+    loadData: function loadData() {
+      var _this5 = this;
+      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
+        var _ref3, _ref4, startRaw, endRaw, normalized, start, end, _res$data$meta$resolu, _res$data, _res$data$meta, _res$data2, res, _e$response;
+        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+          while (1) switch (_context5.prev = _context5.next) {
+            case 0:
+              _ref3 = _this5.dateRange || [], _ref4 = _slicedToArray(_ref3, 2), startRaw = _ref4[0], endRaw = _ref4[1]; // Normalize, validate date range and handle errors
+              normalized = (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.validateAndNormalizeRange)(startRaw, endRaw);
+              if (normalized.ok) {
+                _context5.next = 5;
+                break;
+              }
+              _this5.dateError = normalized.error;
+              return _context5.abrupt("return");
+            case 5:
+              start = normalized.startUtc, end = normalized.endUtc;
+              _this5.dateError = '';
+              _context5.prev = 7;
+              _this5.fetchError = '';
+              // Load timeseries data from API with axios
+              _context5.next = 11;
+              return axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/timeseries', {
+                params: {
+                  chart: 'EquipmentChart',
+                  start: _this5.toIso(start),
+                  end: _this5.toIso(end)
+                }
+              });
+            case 11:
+              res = _context5.sent;
+              _this5.seriesResolution = (_res$data$meta$resolu = res === null || res === void 0 ? void 0 : (_res$data = res.data) === null || _res$data === void 0 ? void 0 : (_res$data$meta = _res$data.meta) === null || _res$data$meta === void 0 ? void 0 : _res$data$meta.resolution) !== null && _res$data$meta$resolu !== void 0 ? _res$data$meta$resolu : '1h';
+              _this5.series = (0,_js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__.normalizeSeriesRows)(res === null || res === void 0 ? void 0 : (_res$data2 = res.data) === null || _res$data2 === void 0 ? void 0 : _res$data2.data, EQUIPMENT_SERIES_KEYS);
+              _this5.injectLiveData();
+              _this5.renderChart();
+              _context5.next = 25;
+              break;
+            case 18:
+              _context5.prev = 18;
+              _context5.t0 = _context5["catch"](7);
+              console.error('Timeseries fetch failed:', _context5.t0);
+              _this5.series = [];
+              _this5.fetchError = (_context5.t0 === null || _context5.t0 === void 0 ? void 0 : (_e$response = _context5.t0.response) === null || _e$response === void 0 ? void 0 : _e$response.status) === 422 ? 'Invalid date range' : 'Failed to load data';
+              _this5.injectLiveData();
+              _this5.renderChart();
+            case 25:
+            case "end":
+              return _context5.stop();
+          }
+        }, _callee5, null, [[7, 18]]);
       }))();
     },
     // Method: Inject live data point into series
@@ -3119,7 +3346,7 @@ var EQUIPMENT_SERIES_KEYS = ['enabled', 'disabled'];
     },
     // line chart rendering
     renderChart: function renderChart() {
-      var _this4 = this;
+      var _this6 = this;
       var ctx = this.$refs.barChart.getContext('2d');
       var enabledGradient = ctx.createLinearGradient(0, 0, 0, 400);
       enabledGradient.addColorStop(0, 'rgba(214,15,18,0.45)');
@@ -3130,7 +3357,7 @@ var EQUIPMENT_SERIES_KEYS = ['enabled', 'disabled'];
       var isSingleDay = this.toYmd(new Date(this.lastValidRange[0])) === this.toYmd(new Date(this.lastValidRange[1]));
       // Labels depend on both the selected resolution and whether only one day is shown
       var labels = this.series.map(function (item) {
-        return _this4.buildLabel(item.timestamp, _this4.seriesResolution, isSingleDay);
+        return _this6.buildLabel(item.timestamp, _this6.seriesResolution, isSingleDay);
       });
       var enabled = this.series.map(function (x) {
         return x.enabled;
@@ -3239,6 +3466,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../js/utils/timeseriesRangeValidation */ "./resources/js/utils/timeseriesRangeValidation.js");
 /* harmony import */ var vue2_datepicker__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vue2-datepicker */ "./node_modules/vue2-datepicker/index.esm.js");
 /* harmony import */ var vue2_datepicker_index_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vue2-datepicker/index.css */ "./node_modules/vue2-datepicker/index.css");
+/* harmony import */ var _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../js/utils/dashboardWidgetSettings */ "./resources/js/utils/dashboardWidgetSettings.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -3264,6 +3492,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
 
 
 
+
 var SERVICE_LEVEL_SERIES_KEYS = ['periodical_calls', 'local_checks'];
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: 'ServiceLevelChart',
@@ -3272,27 +3501,51 @@ var SERVICE_LEVEL_SERIES_KEYS = ['periodical_calls', 'local_checks'];
   },
   props: {
     livePeriodic: Number,
-    liveLocal: Number
+    liveLocal: Number,
+    defaultRange: {
+      type: Object,
+      "default": function _default() {
+        return _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.equipment;
+      }
+    }
   },
   data: function data() {
-    var today = new Date();
-    var start = new Date(today);
-    start.setDate(today.getDate() - 6);
-    start.setHours(0, 0, 0, 0);
-    var end = new Date(today);
-    end.setHours(23, 0, 0, 0);
+    var dateRange = this.resolveDateRange(this.defaultRange);
     return {
       _chart: null,
       series: [],
       seriesResolution: '1h',
       // date range
-      dateRange: [start, end],
+      dateRange: dateRange,
       dateError: '',
       fetchError: '',
-      lastValidRange: [new Date(start), new Date(end)]
+      lastValidRange: [new Date(dateRange[0]), new Date(dateRange[1])],
+      isManualDateRange: false
     };
   },
   watch: {
+    defaultRange: {
+      deep: true,
+      handler: function handler(nextRange) {
+        var _this = this;
+        return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+          return _regeneratorRuntime().wrap(function _callee$(_context) {
+            while (1) switch (_context.prev = _context.next) {
+              case 0:
+                if (_this.isManualDateRange) {
+                  _context.next = 3;
+                  break;
+                }
+                _context.next = 3;
+                return _this.applyDefaultRange(nextRange);
+              case 3:
+              case "end":
+                return _context.stop();
+            }
+          }, _callee);
+        }))();
+      }
+    },
     livePeriodic: function livePeriodic() {
       this.injectLiveData();
       this.renderChart();
@@ -3303,18 +3556,18 @@ var SERVICE_LEVEL_SERIES_KEYS = ['periodical_calls', 'local_checks'];
     }
   },
   mounted: function mounted() {
-    var _this = this;
-    return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-      return _regeneratorRuntime().wrap(function _callee$(_context) {
-        while (1) switch (_context.prev = _context.next) {
+    var _this2 = this;
+    return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+        while (1) switch (_context2.prev = _context2.next) {
           case 0:
-            _context.next = 2;
-            return _this.loadData();
+            _context2.next = 2;
+            return _this2.loadData();
           case 2:
           case "end":
-            return _context.stop();
+            return _context2.stop();
         }
-      }, _callee);
+      }, _callee2);
     }))();
   },
   methods: {
@@ -3333,84 +3586,116 @@ var SERVICE_LEVEL_SERIES_KEYS = ['periodical_calls', 'local_checks'];
         displayMode: 'local'
       });
     },
-    // Method: Handle date range changes
-    onDateRangeChange: function onDateRangeChange(value) {
-      var _this2 = this;
-      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-        var _ref, _ref2, startRaw, endRaw, normalized, start, end;
-        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-          while (1) switch (_context2.prev = _context2.next) {
-            case 0:
-              _ref = value || _this2.dateRange || [], _ref2 = _slicedToArray(_ref, 2), startRaw = _ref2[0], endRaw = _ref2[1];
-              normalized = (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.validateAndNormalizeRange)(startRaw, endRaw);
-              if (normalized.ok) {
-                _context2.next = 5;
-                break;
-              }
-              _this2.dateError = normalized.error;
-              return _context2.abrupt("return");
-            case 5:
-              start = normalized.startUtc, end = normalized.endUtc;
-              _this2.dateError = '';
-              _this2.lastValidRange = [new Date(start), new Date(end)];
-              _context2.next = 10;
-              return _this2.loadData();
-            case 10:
-            case "end":
-              return _context2.stop();
-          }
-        }, _callee2);
-      }))();
+    resolveDateRange: function resolveDateRange(range) {
+      var resolved = (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.resolveRollingRange)((0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.sanitizeRollingRange)(range, _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.equipment));
+      var _resolved$start$split = resolved.start.split('-').map(Number),
+        _resolved$start$split2 = _slicedToArray(_resolved$start$split, 3),
+        startYear = _resolved$start$split2[0],
+        startMonth = _resolved$start$split2[1],
+        startDay = _resolved$start$split2[2];
+      var _resolved$end$split$m = resolved.end.split('-').map(Number),
+        _resolved$end$split$m2 = _slicedToArray(_resolved$end$split$m, 3),
+        endYear = _resolved$end$split$m2[0],
+        endMonth = _resolved$end$split$m2[1],
+        endDay = _resolved$end$split$m2[2];
+      return [new Date(startYear, startMonth - 1, startDay, 0, 0, 0, 0), new Date(endYear, endMonth - 1, endDay, 23, 0, 0, 0)];
     },
-    loadData: function loadData() {
+    applyDefaultRange: function applyDefaultRange(range) {
       var _this3 = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-        var _ref3, _ref4, startRaw, endRaw, normalized, start, end, _res$data$meta$resolu, _res$data, _res$data$meta, _res$data2, res, _e$response;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
-              _ref3 = _this3.dateRange || [], _ref4 = _slicedToArray(_ref3, 2), startRaw = _ref4[0], endRaw = _ref4[1];
-              normalized = (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.validateAndNormalizeRange)(startRaw, endRaw);
-              if (normalized.ok) {
-                _context3.next = 5;
-                break;
-              }
-              _this3.dateError = normalized.error;
-              return _context3.abrupt("return");
-            case 5:
-              start = normalized.startUtc, end = normalized.endUtc;
-              _this3.dateError = '';
-              _context3.prev = 7;
-              _this3.fetchError = '';
-              _context3.next = 11;
-              return axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/timeseries', {
-                params: {
-                  chart: 'ServiceLevelChart',
-                  start: _this3.toIso(start),
-                  end: _this3.toIso(end)
-                }
-              });
-            case 11:
-              res = _context3.sent;
-              _this3.seriesResolution = (_res$data$meta$resolu = res === null || res === void 0 ? void 0 : (_res$data = res.data) === null || _res$data === void 0 ? void 0 : (_res$data$meta = _res$data.meta) === null || _res$data$meta === void 0 ? void 0 : _res$data$meta.resolution) !== null && _res$data$meta$resolu !== void 0 ? _res$data$meta$resolu : '1h';
-              _this3.series = (0,_js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__.normalizeSeriesRows)(res === null || res === void 0 ? void 0 : (_res$data2 = res.data) === null || _res$data2 === void 0 ? void 0 : _res$data2.data, SERVICE_LEVEL_SERIES_KEYS);
-              _this3.injectLiveData();
-              _this3.renderChart();
-              _context3.next = 25;
-              break;
-            case 18:
-              _context3.prev = 18;
-              _context3.t0 = _context3["catch"](7);
-              console.error('Timeseries fetch failed:', _context3.t0);
-              _this3.series = [];
-              _this3.fetchError = (_context3.t0 === null || _context3.t0 === void 0 ? void 0 : (_e$response = _context3.t0.response) === null || _e$response === void 0 ? void 0 : _e$response.status) === 422 ? 'Invalid date range' : 'Failed to load data';
-              _this3.injectLiveData();
-              _this3.renderChart();
-            case 25:
+              _this3.dateRange = _this3.resolveDateRange(range);
+              _this3.lastValidRange = [new Date(_this3.dateRange[0]), new Date(_this3.dateRange[1])];
+              _context3.next = 4;
+              return _this3.loadData();
+            case 4:
             case "end":
               return _context3.stop();
           }
-        }, _callee3, null, [[7, 18]]);
+        }, _callee3);
+      }))();
+    },
+    // Method: Handle date range changes
+    onDateRangeChange: function onDateRangeChange(value) {
+      var _this4 = this;
+      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+        var _ref, _ref2, startRaw, endRaw, normalized, start, end;
+        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+          while (1) switch (_context4.prev = _context4.next) {
+            case 0:
+              _ref = value || _this4.dateRange || [], _ref2 = _slicedToArray(_ref, 2), startRaw = _ref2[0], endRaw = _ref2[1];
+              normalized = (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.validateAndNormalizeRange)(startRaw, endRaw);
+              if (normalized.ok) {
+                _context4.next = 5;
+                break;
+              }
+              _this4.dateError = normalized.error;
+              return _context4.abrupt("return");
+            case 5:
+              start = normalized.startUtc, end = normalized.endUtc;
+              _this4.dateError = '';
+              _this4.isManualDateRange = true;
+              _this4.lastValidRange = [new Date(start), new Date(end)];
+              _context4.next = 11;
+              return _this4.loadData();
+            case 11:
+            case "end":
+              return _context4.stop();
+          }
+        }, _callee4);
+      }))();
+    },
+    loadData: function loadData() {
+      var _this5 = this;
+      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
+        var _ref3, _ref4, startRaw, endRaw, normalized, start, end, _res$data$meta$resolu, _res$data, _res$data$meta, _res$data2, res, _e$response;
+        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+          while (1) switch (_context5.prev = _context5.next) {
+            case 0:
+              _ref3 = _this5.dateRange || [], _ref4 = _slicedToArray(_ref3, 2), startRaw = _ref4[0], endRaw = _ref4[1];
+              normalized = (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.validateAndNormalizeRange)(startRaw, endRaw);
+              if (normalized.ok) {
+                _context5.next = 5;
+                break;
+              }
+              _this5.dateError = normalized.error;
+              return _context5.abrupt("return");
+            case 5:
+              start = normalized.startUtc, end = normalized.endUtc;
+              _this5.dateError = '';
+              _context5.prev = 7;
+              _this5.fetchError = '';
+              _context5.next = 11;
+              return axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/timeseries', {
+                params: {
+                  chart: 'ServiceLevelChart',
+                  start: _this5.toIso(start),
+                  end: _this5.toIso(end)
+                }
+              });
+            case 11:
+              res = _context5.sent;
+              _this5.seriesResolution = (_res$data$meta$resolu = res === null || res === void 0 ? void 0 : (_res$data = res.data) === null || _res$data === void 0 ? void 0 : (_res$data$meta = _res$data.meta) === null || _res$data$meta === void 0 ? void 0 : _res$data$meta.resolution) !== null && _res$data$meta$resolu !== void 0 ? _res$data$meta$resolu : '1h';
+              _this5.series = (0,_js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__.normalizeSeriesRows)(res === null || res === void 0 ? void 0 : (_res$data2 = res.data) === null || _res$data2 === void 0 ? void 0 : _res$data2.data, SERVICE_LEVEL_SERIES_KEYS);
+              _this5.injectLiveData();
+              _this5.renderChart();
+              _context5.next = 25;
+              break;
+            case 18:
+              _context5.prev = 18;
+              _context5.t0 = _context5["catch"](7);
+              console.error('Timeseries fetch failed:', _context5.t0);
+              _this5.series = [];
+              _this5.fetchError = (_context5.t0 === null || _context5.t0 === void 0 ? void 0 : (_e$response = _context5.t0.response) === null || _e$response === void 0 ? void 0 : _e$response.status) === 422 ? 'Invalid date range' : 'Failed to load data';
+              _this5.injectLiveData();
+              _this5.renderChart();
+            case 25:
+            case "end":
+              return _context5.stop();
+          }
+        }, _callee5, null, [[7, 18]]);
       }))();
     },
     injectLiveData: function injectLiveData() {
@@ -3423,7 +3708,7 @@ var SERVICE_LEVEL_SERIES_KEYS = ['periodical_calls', 'local_checks'];
       }));
     },
     renderChart: function renderChart() {
-      var _this4 = this;
+      var _this6 = this;
       var ctx = this.$refs.chart.getContext('2d');
       var periodicGradient = ctx.createLinearGradient(0, 0, 0, 400);
       periodicGradient.addColorStop(0, 'rgba(214,15,18,0.45)');
@@ -3433,7 +3718,7 @@ var SERVICE_LEVEL_SERIES_KEYS = ['periodical_calls', 'local_checks'];
       localGradient.addColorStop(0, 'rgba(193,117,121,0)');
       var isSingleDay = this.toYmd(new Date(this.lastValidRange[0])) === this.toYmd(new Date(this.lastValidRange[1]));
       var labels = this.series.map(function (item) {
-        return _this4.buildLabel(item.timestamp, _this4.seriesResolution, isSingleDay);
+        return _this6.buildLabel(item.timestamp, _this6.seriesResolution, isSingleDay);
       });
       var periodic = this.series.map(function (x) {
         var _x$periodical_calls;
@@ -3535,7 +3820,7 @@ __webpack_require__.r(__webpack_exports__);
 var render = function render() {
   var _vm = this,
     _c = _vm._self._c;
-  return _c("div", {
+  return _vm.settingsLoaded ? _c("div", {
     attrs: {
       id: "dashboard-grid"
     }
@@ -3544,14 +3829,16 @@ var render = function render() {
   }, [_c("EquipmentChart", {
     attrs: {
       liveEnabled: _vm.equipmentStats.enabled,
-      liveDisabled: _vm.equipmentStats.disabled
+      liveDisabled: _vm.equipmentStats.disabled,
+      "default-range": _vm.chartSettings.ranges.equipment
     }
   })], 1), _vm._v(" "), _c("div", {
     staticClass: "grid-box"
   }, [_c("AlarmChart", {
     attrs: {
       "live-inbound": _vm.alarmStats.inbound,
-      "live-active": _vm.alarmStats.active
+      "live-active": _vm.alarmStats.active,
+      "default-range": _vm.chartSettings.ranges.alarms
     }
   })], 1), _vm._v(" "), _c("div", {
     staticClass: "grid-box"
@@ -3583,16 +3870,18 @@ var render = function render() {
       "live-sip-registration-failure": _vm.alertsStats.Sip_registration_failure,
       "live-speaker-malfunction": _vm.alertsStats.Speaker_malfunction,
       "live-technician-check-overdue": _vm.alertsStats.Technician_check_overdue,
-      "live-voice-alarm": _vm.alertsStats.Voice_alarm
+      "live-voice-alarm": _vm.alertsStats.Voice_alarm,
+      "default-range": _vm.chartSettings.ranges.alerts
     }
   })], 1), _vm._v(" "), _c("div", {
     staticClass: "grid-box"
   }, [_c("ServiceLevelChart", {
     attrs: {
       "live-periodic": _vm.serviceStats.periodicalCalls,
-      "live-local": _vm.serviceStats.localChecks
+      "live-local": _vm.serviceStats.localChecks,
+      "default-range": _vm.chartSettings.ranges.serviceLevel
     }
-  })], 1)]);
+  })], 1)]) : _vm._e();
 };
 var staticRenderFns = [];
 render._withStripped = true;
@@ -59675,6 +59964,195 @@ _extends(DatePicker, {
 
 /***/ }),
 
+/***/ "./resources/js/utils/dashboardWidgetSettings.js":
+/*!*******************************************************!*\
+  !*** ./resources/js/utils/dashboardWidgetSettings.js ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   DASHBOARD_WIDGET_ERRORS: () => (/* binding */ DASHBOARD_WIDGET_ERRORS),
+/* harmony export */   RANGE_UNITS: () => (/* binding */ RANGE_UNITS),
+/* harmony export */   SYSTEM_DASHBOARD_WIDGET_DEFAULTS: () => (/* binding */ SYSTEM_DASHBOARD_WIDGET_DEFAULTS),
+/* harmony export */   clampDateRange: () => (/* binding */ clampDateRange),
+/* harmony export */   daysAgoYmd: () => (/* binding */ daysAgoYmd),
+/* harmony export */   loadWidgetSettings: () => (/* binding */ loadWidgetSettings),
+/* harmony export */   resolveRollingRange: () => (/* binding */ resolveRollingRange),
+/* harmony export */   sanitizeRollingRange: () => (/* binding */ sanitizeRollingRange),
+/* harmony export */   saveWidgetSettings: () => (/* binding */ saveWidgetSettings),
+/* harmony export */   todayYmd: () => (/* binding */ todayYmd),
+/* harmony export */   validateDateRange: () => (/* binding */ validateDateRange),
+/* harmony export */   validateRollingRange: () => (/* binding */ validateRollingRange),
+/* harmony export */   validateServiceThresholds: () => (/* binding */ validateServiceThresholds)
+/* harmony export */ });
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+var STORAGE_PREFIX = 'dashboard_widget_settings_v2:';
+var DASHBOARD_WIDGET_ERRORS = {
+  INVALID_DATE_ORDER: 'Start date must be before or the same as the end date.',
+  DATE_RANGE_TOO_LARGE: 'Date range cannot exceed 365 days.',
+  INVALID_RANGE_AMOUNT: 'Range amount must be between 1 and 365.',
+  INVALID_THRESHOLD_ORDER: 'Red area must be smaller than or the same as orange area.'
+};
+var SYSTEM_DASHBOARD_WIDGET_DEFAULTS = {
+  ranges: {
+    equipment: {
+      amount: 3,
+      unit: 'months'
+    },
+    overdues: {
+      amount: 3,
+      unit: 'months'
+    },
+    alerts: {
+      amount: 3,
+      unit: 'months'
+    }
+  },
+  serviceThresholds: {
+    redMax: 75,
+    orangeMax: 90
+  }
+};
+var RANGE_UNITS = ['days', 'weeks', 'months', 'years'];
+var RANGE_UNIT_MAX = {
+  days: 365,
+  weeks: 52,
+  months: 12,
+  years: 1
+};
+function loadWidgetSettings(key, fallback) {
+  if (typeof window === 'undefined' || !window.localStorage) {
+    return fallback;
+  }
+  try {
+    var raw = window.localStorage.getItem("".concat(STORAGE_PREFIX).concat(key));
+    if (!raw) return fallback;
+    return _objectSpread(_objectSpread({}, fallback), JSON.parse(raw));
+  } catch (error) {
+    return fallback;
+  }
+}
+function saveWidgetSettings(key, value) {
+  if (typeof window === 'undefined' || !window.localStorage) {
+    return;
+  }
+  try {
+    window.localStorage.setItem("".concat(STORAGE_PREFIX).concat(key), JSON.stringify(value));
+  } catch (error) {
+    // Ignore localStorage failures in restricted browsers.
+  }
+}
+function todayYmd() {
+  var now = new Date();
+  return now.toISOString().slice(0, 10);
+}
+function daysAgoYmd(days) {
+  var date = new Date();
+  date.setUTCDate(date.getUTCDate() - days);
+  return date.toISOString().slice(0, 10);
+}
+function sanitizeRollingRange(range) {
+  var fallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.equipment;
+  var fallbackAmount = Number((fallback === null || fallback === void 0 ? void 0 : fallback.amount) || 3);
+  var fallbackUnit = (fallback === null || fallback === void 0 ? void 0 : fallback.unit) || 'months';
+  var amount = Number(range === null || range === void 0 ? void 0 : range.amount);
+  var unit = range === null || range === void 0 ? void 0 : range.unit;
+  var safeUnit = RANGE_UNITS.includes(unit) ? unit : fallbackUnit;
+  return {
+    amount: Number.isFinite(amount) && amount >= 1 ? Math.min(RANGE_UNIT_MAX[safeUnit], Math.round(amount)) : fallbackAmount,
+    unit: safeUnit
+  };
+}
+function validateRollingRange(range) {
+  var amount = Number(range === null || range === void 0 ? void 0 : range.amount);
+  if (!RANGE_UNITS.includes(range === null || range === void 0 ? void 0 : range.unit)) {
+    return DASHBOARD_WIDGET_ERRORS.INVALID_RANGE_AMOUNT;
+  }
+  if (!Number.isFinite(amount) || amount < 1 || amount > RANGE_UNIT_MAX[range.unit]) {
+    return DASHBOARD_WIDGET_ERRORS.INVALID_RANGE_AMOUNT;
+  }
+  return null;
+}
+function subtractMonthsClamped(date, months) {
+  var year = date.getUTCFullYear();
+  var month = date.getUTCMonth();
+  var day = date.getUTCDate();
+  var target = new Date(Date.UTC(year, month - months, 1));
+  var lastDay = new Date(Date.UTC(target.getUTCFullYear(), target.getUTCMonth() + 1, 0)).getUTCDate();
+  target.setUTCDate(Math.min(day, lastDay));
+  return target;
+}
+function resolveRollingRange(range) {
+  var now = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new Date();
+  var safeRange = sanitizeRollingRange(range);
+  var end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  var start = new Date(end.getTime());
+  if (safeRange.unit === 'days') {
+    start.setUTCDate(start.getUTCDate() - safeRange.amount);
+  } else if (safeRange.unit === 'weeks') {
+    start.setUTCDate(start.getUTCDate() - safeRange.amount * 7);
+  } else if (safeRange.unit === 'months') {
+    start = subtractMonthsClamped(start, safeRange.amount);
+  } else if (safeRange.unit === 'years') {
+    start = subtractMonthsClamped(start, safeRange.amount * 12);
+  }
+  return {
+    start: start.toISOString().slice(0, 10),
+    end: end.toISOString().slice(0, 10)
+  };
+}
+function clampDateRange(range, fallback) {
+  var start = (range === null || range === void 0 ? void 0 : range.start) || fallback.start;
+  var end = (range === null || range === void 0 ? void 0 : range.end) || fallback.end;
+  if (start > end) {
+    return fallback;
+  }
+  return {
+    start: start,
+    end: end
+  };
+}
+function validateDateRange(range) {
+  var start = range === null || range === void 0 ? void 0 : range.start;
+  var end = range === null || range === void 0 ? void 0 : range.end;
+  if (!start || !end) {
+    return null;
+  }
+  if (start > end) {
+    return DASHBOARD_WIDGET_ERRORS.INVALID_DATE_ORDER;
+  }
+  var startDate = new Date("".concat(start, "T00:00:00Z"));
+  var endDate = new Date("".concat(end, "T00:00:00Z"));
+  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+    return DASHBOARD_WIDGET_ERRORS.INVALID_DATE_ORDER;
+  }
+  var diffDays = Math.floor((endDate.getTime() - startDate.getTime()) / 86400000);
+  if (diffDays > 365) {
+    return DASHBOARD_WIDGET_ERRORS.DATE_RANGE_TOO_LARGE;
+  }
+  return null;
+}
+function validateServiceThresholds(thresholds) {
+  var redMax = Number(thresholds === null || thresholds === void 0 ? void 0 : thresholds.redMax);
+  var orangeMax = Number(thresholds === null || thresholds === void 0 ? void 0 : thresholds.orangeMax);
+  if (Number.isNaN(redMax) || Number.isNaN(orangeMax)) {
+    return null;
+  }
+  if (redMax > orangeMax) {
+    return DASHBOARD_WIDGET_ERRORS.INVALID_THRESHOLD_ORDER;
+  }
+  return null;
+}
+
+/***/ }),
+
 /***/ "./resources/js/utils/timeseriesDisplay.js":
 /*!*************************************************!*\
   !*** ./resources/js/utils/timeseriesDisplay.js ***!
@@ -59788,21 +60266,23 @@ function toDate(value) {
 function normalizeStartUtc(raw) {
   var date = toDate(raw);
   if (!date) return null;
-  return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0));
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
 }
 function normalizeEndUtc(raw) {
   var date = toDate(raw);
   if (!date) return null;
-  return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 23, 0, 0, 0));
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 0, 0, 0);
 }
-function startOfUtcDay(date) {
-  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 0, 0, 0, 0));
+function startOfLocalDay(date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
 }
-function isSameUtcDay(a, b) {
-  return a.getUTCFullYear() === b.getUTCFullYear() && a.getUTCMonth() === b.getUTCMonth() && a.getUTCDate() === b.getUTCDate();
+function isSameLocalDay(a, b) {
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 }
-function floorUtcHour(date) {
-  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), 0, 0, 0));
+function floorLocalHour(date) {
+  var floored = new Date(date);
+  floored.setMinutes(0, 0, 0);
+  return floored;
 }
 function validateAndNormalizeRange(rawStart, rawEnd) {
   var startUtc = normalizeStartUtc(rawStart);
@@ -59813,20 +60293,20 @@ function validateAndNormalizeRange(rawStart, rawEnd) {
       error: 'Start and end date are required.'
     };
   }
-  var nowUtc = new Date();
-  var todayStartUtc = startOfUtcDay(nowUtc);
-  var requestedEndStartUtc = startOfUtcDay(requestedEndUtc);
+  var now = new Date();
+  var todayStart = startOfLocalDay(now);
+  var requestedEndStart = startOfLocalDay(requestedEndUtc);
 
-  // Future days stay blocked, today is allowed.
-  if (requestedEndStartUtc.getTime() > todayStartUtc.getTime()) {
+  // Future local calendar days stay blocked, today is allowed.
+  if (requestedEndStart.getTime() > todayStart.getTime()) {
     return {
       ok: false,
       error: 'Future ranges are not allowed.'
     };
   }
   var endUtc = requestedEndUtc;
-  if (isSameUtcDay(requestedEndUtc, nowUtc)) {
-    endUtc = floorUtcHour(nowUtc);
+  if (isSameLocalDay(requestedEndUtc, now)) {
+    endUtc = floorLocalHour(now);
   }
   if (endUtc.getTime() < startUtc.getTime()) {
     return {
@@ -59849,8 +60329,8 @@ function validateAndNormalizeRange(rawStart, rawEnd) {
 function disableFutureUtc(day) {
   var selected = toDate(day);
   if (!selected) return false;
-  var selectedStartUtc = new Date(Date.UTC(selected.getFullYear(), selected.getMonth(), selected.getDate(), 0, 0, 0, 0));
-  var todayStartUtc = startOfUtcDay(new Date());
+  var selectedStartUtc = startOfLocalDay(selected);
+  var todayStartUtc = startOfLocalDay(new Date());
   return selectedStartUtc.getTime() > todayStartUtc.getTime();
 }
 function daysInRangeUtc(startUtc, endUtc) {
@@ -59860,7 +60340,10 @@ function toIso8601Utc(date) {
   return date.toISOString();
 }
 function toYmdUtc(date) {
-  return date.toISOString().slice(0, 10);
+  var year = date.getFullYear();
+  var month = String(date.getMonth() + 1).padStart(2, '0');
+  var day = String(date.getDate()).padStart(2, '0');
+  return "".concat(year, "-").concat(month, "-").concat(day);
 }
 
 /***/ }),

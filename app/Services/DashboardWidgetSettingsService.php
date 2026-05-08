@@ -62,6 +62,10 @@ class DashboardWidgetSettingsService
     {
         $profile = $this->getProfileData();
         $profile['dashboard_widgets'] = $this->sanitizeSettings($settings);
+        $profile['dashboard_widgets_users'] = $this->replaceUserDefaults(
+            $profile['dashboard_widgets_users'] ?? [],
+            $profile['dashboard_widgets']
+        );
         $this->saveProfileData($profile);
 
         return $profile['dashboard_widgets'];
@@ -152,6 +156,15 @@ class DashboardWidgetSettingsService
             'redMax' => $redMax,
             'orangeMax' => $orangeMax,
         ];
+    }
+
+    private function replaceUserDefaults(mixed $userDefaults, array $settings): array
+    {
+        if (!is_array($userDefaults)) {
+            return [];
+        }
+
+        return array_fill_keys(array_keys($userDefaults), $settings);
     }
 
     private function getProfileData(): array

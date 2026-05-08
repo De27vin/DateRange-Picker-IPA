@@ -1,5 +1,5 @@
 <template>
-  <div id="dashboard-grid">
+  <div v-if="settingsLoaded" id="dashboard-grid">
   <div class="grid-box"><EquipmentChart :liveEnabled="equipmentStats.enabled" :liveDisabled="equipmentStats.disabled" :default-range="chartSettings.ranges.equipment" /></div>
   <div class="grid-box"><AlarmChart :live-inbound="alarmStats.inbound" :live-active="alarmStats.active" :default-range="chartSettings.ranges.alarms" /></div>
     <div class="grid-box"><AlertsChart
@@ -62,6 +62,7 @@ export default {
   data() {
     return {
       chartSettings: SYSTEM_CHART_SETTINGS,
+      settingsLoaded: false,
       equipmentStats: (typeof window !== 'undefined' && window.EQUIPMENT_STATS) ? window.EQUIPMENT_STATS : { enabled: 0, disabled: 0 },
       alarmStats: (typeof window !== 'undefined' && window.ALARM_STATS) ? window.ALARM_STATS : { inbound: 0, active: 0 },
       alertsStats: (typeof window !== 'undefined' && window.ALERTS_STATS) ? window.ALERTS_STATS : { 
@@ -102,6 +103,8 @@ export default {
     } catch (error) {
       console.error('Charts settings fetch failed:', error)
       this.chartSettings = SYSTEM_CHART_SETTINGS
+    } finally {
+      this.settingsLoaded = true
     }
   }
 }
