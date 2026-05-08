@@ -36,6 +36,7 @@
   'ucp.export-devices' => 'App\\Http\\Livewire\\Ucp\\ExportDevices',
   'ucp.export-devices-new' => 'App\\Http\\Livewire\\Ucp\\ExportDevicesNew',
   'ucp.site-settings-and-custom-fields' => 'App\\Http\\Livewire\\Ucp\\SiteSettingsAndCustomFields',
+  'user.change-charts' => 'App\\Http\\Livewire\\User\\ChangeCharts',
   'user.change-dashboard' => 'App\\Http\\Livewire\\User\\ChangeDashboard',
   'user.change-filters' => 'App\\Http\\Livewire\\User\\ChangeFilters',
   'user.change-language' => 'App\\Http\\Livewire\\User\\ChangeLanguage',

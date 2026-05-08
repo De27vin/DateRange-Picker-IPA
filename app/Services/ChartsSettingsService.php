@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Helpers\GroupCache;
 use App\Models\Account;
+use Illuminate\Support\Facades\Auth;
 
 class ChartsSettingsService
 {
@@ -35,6 +36,25 @@ class ChartsSettingsService
         return $this->sanitizeSettings($settings);
     }
 
+    public function getEffectiveDefaults(): array
+    {
+        $accountDefaults = $this->getAccountDefaults();
+        $userDefaults = $this->getUserDefaults();
+
+        return $this->sanitizeSettings(array_replace_recursive($accountDefaults, $userDefaults));
+    }
+
+    public function getUserDefaults(): array
+    {
+        $profile = $this->getProfileData();
+        $userId = $this->currentUserId();
+        $settings = $userId && is_array($profile['charts_page_users'][$userId] ?? null)
+            ? $profile['charts_page_users'][$userId]
+            : [];
+
+        return $this->sanitizeSettings(array_replace_recursive($this->getAccountDefaults(), $settings));
+    }
+
     public function saveAccountDefaults(array $settings): array
     {
         $profile = $this->getProfileData();
@@ -42,6 +62,34 @@ class ChartsSettingsService
         $this->saveProfileData($profile);
 
         return $profile['charts_page'];
+    }
+
+    public function saveUserDefaults(array $settings): array
+    {
+        $profile = $this->getProfileData();
+        $userId = $this->currentUserId();
+        if (!$userId) {
+            return $this->getAccountDefaults();
+        }
+
+        $profile['charts_page_users'][$userId] = $this->sanitizeSettings($settings);
+        $this->saveProfileData($profile);
+
+        return $profile['charts_page_users'][$userId];
+    }
+
+    public function resetUserDefaults(): array
+    {
+        $profile = $this->getProfileData();
+        $userId = $this->currentUserId();
+        if (!$userId) {
+            return $this->getAccountDefaults();
+        }
+
+        unset($profile['charts_page_users'][$userId]);
+        $this->saveProfileData($profile);
+
+        return $this->getAccountDefaults();
     }
 
     public function sanitizeSettings(array $settings): array
@@ -116,5 +164,12 @@ class ChartsSettingsService
         $account->save();
 
         GroupCache::forgetGroup('profile_data');
+    }
+
+    private function currentUserId(): ?string
+    {
+        $userId = Auth::user()?->user_id;
+
+        return $userId ? (string) $userId : null;
     }
 }
