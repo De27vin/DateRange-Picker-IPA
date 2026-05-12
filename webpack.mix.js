@@ -30,6 +30,7 @@ mix
     .js('resources/assets/vue/vue-equipment-filters.js', 'public/vue/vue-equipment-filters.js').vue()
     .js('resources/assets/vue/vue-loading-indicator.js', 'public/vue/vue-loading-indicator.js').vue()
     .js('resources/assets/vue/vue-charts.js', 'public/vue/vue-charts.js').vue()
+    .js('resources/assets/vue/vue-dashboard-widgets.js', 'public/vue/vue-dashboard-widgets.js').vue()
     .sass('resources/assets/sass/app-new.scss', 'public/assets/css')
     // .sass('resources/assets/sass/app.scss', 'public/assets/css')
     // .copy('resources/assets/images', 'public/assets/images')
