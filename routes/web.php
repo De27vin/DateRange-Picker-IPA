@@ -10,8 +10,6 @@ use Illuminate\Support\Facades\Redirect;
 //use App\Http\Controllers\DocsController;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Http\Controllers\TimeSeriesController;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -33,22 +31,18 @@ Route::get('/', function () {
     return Redirect::to('/login');
 });
 
-Route::get('charts', function () {
-    return view('pages.charts-new');
-})->name('charts');
-
-
 Route::get('/login', \App\Http\Livewire\Auth\Login::class)->name('login');
 Route::get('join/{token}', [\App\Http\Controllers\InviteController::class, 'join'])->name('join');
 Route::post('accept', [\App\Http\Controllers\InviteController::class, 'accept'])->name('accept');
 
-Route::get('/export-history-progress', [DownloadProgressController::class, 'getExportHistoryProgress'])
-    ->name('exportHistoryProgress')
-    ->middleware('auth');
-
-Route::get('/export-devices-progress', [DownloadProgressController::class, 'getExportDevicesProgress'])
-    ->name('exportDevicesProgress')
-    ->middleware('auth');
+Route::middleware('auth')->group(function () {
+    Route::post('/exports', [\App\Http\Controllers\ExportController::class, 'store'])
+        ->name('exports.store');
+    Route::get('/exports/{type}/{downloadId}/progress', [\App\Http\Controllers\ExportController::class, 'progress'])
+        ->name('exports.progress');
+    Route::get('/exports/{type}/{downloadId}/download', [\App\Http\Controllers\ExportController::class, 'download'])
+        ->name('exports.download');
+});
     
 Route::get('/import-devices-progress', [DownloadProgressController::class, 'getImportDevicesProgress'])
     ->name('importDevicesProgress')
@@ -62,6 +56,7 @@ Route::middleware(['auth','setTimezone'])->group(function() {
     // Pages routes
     Route::get('dashboard', function () { return view('pages.dashboard-new'); })->name('dashboard');
     Route::get('equipment', function () { return view('pages.equipment-new'); })->name('equipment');
+    Route::get('charts', function () { return view('pages.charts-new'); })->name('charts');
 
     // Api routes
     Route::middleware(['apiRequest'])->group(function() {
@@ -109,18 +104,19 @@ Route::middleware(['auth','setTimezone'])->group(function() {
 
     Route::get('/accounts', \App\Http\Livewire\Admin\Accounts::class)->name('accounts');
     Route::get('/callcenter/{device_id}', \App\Http\Livewire\Admin\Callcenter::class)->name('callcenter');
+    Route::post('/callcenter/connect-agent', [\App\Http\Controllers\Api\AlarmAgentController::class, 'connectAgent'])->name('callcenter.connect-agent');
+    Route::post('/callcenter/classify-alarm', [\App\Http\Controllers\Api\AlarmAgentController::class, 'classifyAlarm'])->name('callcenter.classify-alarm');
     Route::get('/amwin-classification/{device_equipment}', \App\Http\Livewire\Admin\AmwinClassification::class)->name('amwin-classification');
 
     Route::get('/devices-site-create', \App\Http\Livewire\Create\CreateSite::class)->name('devices-site-create');
 
     Route::get('/device-site/{device_site_id}', \App\Http\Livewire\Ucp\DeviceSiteDetails::class)->name('device-site-details');
-    Route::post('export-devices', [\App\Http\Controllers\ExportDevicesController::class, 'export'])->name('export.devices');
-    Route::get('export-gateways/{tab}', [\App\Http\Controllers\ExportGatewaysController::class, 'download'])->name('export-gateways');
 
-    // Download generated devices export by id
-    Route::get('download/devices/{id}', [\App\Http\Controllers\ExportDevicesController::class, 'downloadGenerated'])
-        ->name('download.devices');
-    // Progress tracking routes handled by DownloadProgressController
+    // Import devices routes
+    Route::post('import-devices-validate', [\App\Http\Controllers\ImportDevicesController::class, 'validateImportFile'])->name('import.devices.validate');
+    Route::post('import-devices-execute', [\App\Http\Controllers\ImportDevicesController::class, 'execute'])->name('import.devices.execute');
+    Route::get('import-devices-template', [\App\Http\Controllers\ImportDevicesController::class, 'downloadTemplate'])->name('import.devices.template');
+    Route::get('import-devices-instructions', [\App\Http\Controllers\ImportDevicesController::class, 'downloadInstructions'])->name('import.devices.instructions');
 
     Route::get('/user-profile', \App\Http\Livewire\User\UserProfile::class)->name('user-profile');
 
@@ -154,10 +150,7 @@ Route::middleware(['auth','setTimezone'])->group(function() {
 });
 
 Route::get('/logout', function(Request $request) {
-    Cookie::queue(Cookie::forget('ucp_account'));
-    Auth::logout();
-    session()->invalidate();
-    session()->regenerateToken();
+    app(\App\Services\UserContextService::class)->logoutActiveUser();
     return redirect('/login');
 });
 
@@ -169,214 +162,23 @@ if (env('EXTERNAL_LINK_URL') && $json = json_decode(env('EXTERNAL_LINK_URL'), tr
     }
 }
 
-
-// todo: before generating ask Ben about the correct modules mapping and account id
-//Route::get('import_basf_devices', function () {
-//    try {
-//        $data = Excel::toArray(new ExcelToArrayImport, '/home/jacek/workspace/serv24/devices4.xlsx');
-//        $devices = $data[0];
-//        $sites = $data[1];
-//        $accountId = 2;
+// Test SignalWireService
+//Route::get('/test-signalwire-service', function () {
+//    $signalWireService = new \App\Services\SignalWireService();
 //
-//        $deviceColumnMap = [
-//            'Equipment-ID' => 'device_equipment',
-//            'Notrufgerät' => 'custom1', // 61
-//            'Bau' => 'custom2', // ignore
-//            'Identity' => 'device_identity',
-//            'Device Module' => 'device_module',
-//            'Gerätetyp' => 'protocol_type',
-//            'Protocol Module' => 'protocol_module',
-//            'Sprechstellentyp' => 'custom3', // 2
-//            'CALL_ALARM_ROUTE1_CLI_NUMBER' => 'alarm_number_1',
-//            'SAP-TP' => 'custom4' // 71
-//        ];
+//    // Get a user for testing (adjust user_id as needed)
+//    $user = \App\Models\User::find(1);
 //
-//        $siteColumnMap = [
-//            'Equipment-ID' => 'site_equipment',
-//            'SiteName' => 'ds_name',
-//            'PBX' => 'pbx',
-//            'Protocol' => 'site_protocol',
-//            'Installationsort' => 'custom5', // 11
-//        ];
-//
-//        $customFieldsIdsMap = [
-//            'custom1' => 61,
-////            'custom2' => 4,
-//            'custom3' => 2,
-//            'custom4' => 71,
-//            'custom5' => 11, // site
-//        ];
-//
-////        $protocolModuleMap = [
-////            '2901AN' => 'TA-TELENOT-COM2901',
-////            'T7008D-AN' => 'TA-TELENOT-7008',
-////        ];
-//
-//        // devices
-//        $columns = array_shift($devices);
-//        foreach ($columns as &$column) {
-//            $column = $deviceColumnMap[$column];
-//        }
-//        unset($column);
-//        $eqs = [];
-//        $eqsMoreThan1 = [];
-//        foreach ($devices as $key => $device) {
-//            $device = array_map('trim', $device);
-//            $deviceEq = $device[0];
-//
-//            if (in_array($deviceEq, $eqs)) {
-//                $eqsMoreThan1[] = $deviceEq;
-//            }
-//            $eqs[] = $deviceEq;
-//
-//            $device = array_combine($columns, $device);
-//            $devices[$deviceEq] = $device;
-//            unset($devices[$key]);
-//        }
-//
-//        // sites
-//        $columns = array_shift($sites);
-//        foreach ($columns as &$column) {
-//            $column = $siteColumnMap[$column];
-//        }
-//        unset($column);
-//        foreach ($sites as $key => $site) {
-//            $site = array_map('trim', $site);
-//            $siteEq = $site[0];
-//            $site = array_combine($columns, $site);
-//            $sites[$siteEq] = $site;
-//            unset($sites[$key]);
-//        }
-//
-//        $sqls = [];
-//        $equipmentsWoProtocolModule = [];
-//        $equipmentsWUrecognizedModule = [];
-//        foreach ($sites as $site) {
-//
-//            $devicesSite = [];
-//            $devicesKeys = array_keys($devices);
-//            foreach ($devicesKeys as $key) {
-//                $keys2 = explode('-', $key);
-//                $siteEq = $keys2[0];
-//                $deviceEqPart = $keys2[1];
-//
-//                if ($siteEq === $site['site_equipment']) {
-//                    $devicesSite[] = $devices[$key];
-////                    unset($devices[$key]);
-//                }
-//            }
-//
-//            $dsName = $site['ds_name'];
-//            $selectProtocolId = "(SELECT module_id FROM modules WHERE module_name = 'PROT-TELENOT' LIMIT 1)";
-//
-//            $sqlSite = "INSERT INTO ucp21.device_sites (ds_account_id, ds_protocol_id, ds_name, ds_created) VALUES ($accountId, $selectProtocolId, '$dsName', NOW());";
-//            $sqlSiteId = "SET @site_id = LAST_INSERT_ID();";
-//
-//            // site pbx
-//            $sqlSitePbx = "INSERT INTO ucp21.numbers (number_nt_id, number_account_id, number_ds_id, number_value, number_created) VALUES ((SELECT nt_id FROM ucp21.number_types WHERE nt_type = 'PBX'), $accountId, @site_id, {$site['pbx']}, NOW());";
-//
-//            // site custom fields
-//            $custom5 = $site['custom5'];
-//            if (!empty($custom5)) {
-//                $sqlSiteCustom5 = "INSERT INTO ucp21.custom_field_values (cfv_cfc_id, cfv_ds_id, cfv_value) VALUES ({$customFieldsIdsMap['custom5']}, @site_id, '$custom5');";
-//            } else {
-//                $sqlSiteCustom5 = null;
-//            }
-//
-//
-//            $sqlsDevices = [];
-//            foreach ($devicesSite as $device) {
-//
-//                $deviceEq = $device['device_equipment'];
-//                if (explode('-', $deviceEq)[0] !== $device['device_identity']) {
-//                    die('site equipment is not equal to identity at eq: '.$deviceEq);
-//                }
-//
-////                $device = $devices[$deviceEq];
-//                $moduleName = null;
-//                if ($device['protocol_type'] === 'INTERCOM') {
-//                    $moduleName = 'ICOM-TELENOT';
-//                } elseif ($device['protocol_type'] === 'TELEALARM') {
-//                    if (!$device['protocol_module']) {
-//                        $equipmentsWoProtocolModule[] = $deviceEq;
-//                    } elseif ($device['protocol_module'] === '2901AN') {
-//                        $moduleName = 'TA-TELENOT-COM2901';
-//                    } elseif ($device['protocol_module'] === 'T7008D-AN' || $device['protocol_module'] === 'T7008D-AN/1') {
-//                        $moduleName = 'TA-TELENOT-7008';
-//                    } else {
-//                        $equipmentsWUrecognizedModule[] = $deviceEq;
-//                    }
-//                    if (empty($moduleName)) {
-//                        continue;
-//                    }
-//                } else {
-//                    die('Unrecognized protocol type for Eq: '. $deviceEq);
-//                }
-//                $selectModuleSql = "(SELECT module_id FROM modules WHERE module_name = '$moduleName' LIMIT 1)";
-//                $identity = $device['device_identity'];
-//                if (empty($identity)) {
-//                    die('Empty identity for Eq: '. $deviceEq);
-//                }
-//                $module = $device['device_module'];
-//                if (!is_numeric($module)) {
-//                    die('Not numeric device module for Eq: '. $deviceEq);
-//                }
-//
-//                $sqlsDevices[] = "INSERT INTO ucp21.devices (device_ds_id, device_module_id, device_account_id, device_equipment,device_identity, device_module, device_created, device_enabled) VALUES (@site_id, $selectModuleSql, 2, '$deviceEq', '$identity', $module, NOW(), 1);";
-//                $sqlsDevices[] = "SET @device_id = LAST_INSERT_ID();";
-//
-//                // site custom fields
-//
-//
-//                if (!empty($device['custom1'])) {
-//                    $sqlDeviceCustom1 = "INSERT INTO ucp21.custom_field_values (cfv_cfc_id, cfv_device_id, cfv_value) VALUES ({$customFieldsIdsMap['custom1']}, @device_id, '{$device['custom1']}');";
-//                    $sqlsDevices[] = $sqlDeviceCustom1;
-//                }
-//
-//                // ignore Bau
-////                if (!empty($device['custom2'])) {
-////                    $sqlDeviceCustom2 = "INSERT INTO ucp21.custom_field_values (cfv_cfc_id, cfv_device_id, cfv_value) VALUES ({$customFieldsIdsMap['custom2']}, @device_id, '{$device['custom2']}');";
-////                    $sqlsDevices[] = $sqlDeviceCustom2;
-////                }
-//
-//                if (!empty($device['custom3'])) {
-//                    $sqlDeviceCustom3 = "INSERT INTO ucp21.custom_field_values (cfv_cfc_id, cfv_device_id, cfv_value) VALUES ({$customFieldsIdsMap['custom3']}, @device_id, '{$device['custom3']}');";
-//                    $sqlsDevices[] = $sqlDeviceCustom3;
-//                }
-//
-//                if (!empty($device['custom4'])) {
-//                    $sqlDeviceCustom4 = "INSERT INTO ucp21.custom_field_values (cfv_cfc_id, cfv_device_id, cfv_value) VALUES ({$customFieldsIdsMap['custom4']}, @device_id, '{$device['custom4']}');";
-//                    $sqlsDevices[] = $sqlDeviceCustom4;
-//                }
-//
-//                if (!empty($device['alarm_number_1'])) {
-//                    $sqlDeviceAlarm = "INSERT INTO ucp21.device_settings (ds_device_id, ds_setting_id, ds_value) VALUES (@device_id, (SELECT setting_id FROM ucp21.settings WHERE setting_key = 'call.alarm.route1.cli.number'), {$device['alarm_number_1']});";
-//                    $sqlsDevices[] = $sqlDeviceAlarm;
-//                }
-//
-//            }
-//
-//            $sqls[] = $sqlSite;
-//            $sqls[] = $sqlSiteId;
-//            $sqls[] = $sqlSitePbx;
-//            if (!empty($sqlSiteCustom5)) {
-//                $sqls[] = $sqlSiteCustom5;
-//            }
-//            $sqls = array_merge($sqls, $sqlsDevices);
-//
-//        }
-//
-//
-//
-//        $content = implode(PHP_EOL, ['START TRANSACTION;', ...$sqls, 'COMMIT;']) .PHP_EOL;
-//
-//        // Write to file (creates the file if it does not exist)
-//        file_put_contents('/home/jacek/workspace/serv24/devices4.sql', $content);
-//
-//        dd($eqsMoreThan1, $equipmentsWoProtocolModule, $equipmentsWUrecognizedModule, $sqls);
-//
-//    } catch (\Throwable $e) {
-//        die ($e->getMessage());
+//    if (!$user) {
+//        return response()->json(['error' => 'User not found']);
 //    }
 //
+//    return response()->json([
+//        'user_id' => $user->user_id,
+//        'user_name' => $user->name,
+//        'primary_email' => $user->getPrimaryEmail(),
+//        'sip_username' => $user->getSipUsername(),
+//        'has_mandown_role' => $user->hasMandownRole(),
+//        'test_password_hash' => hash('sha256', 'test123'),
+//    ]);
 //});

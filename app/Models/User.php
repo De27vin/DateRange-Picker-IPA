@@ -11,18 +11,21 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
-use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class User extends Authenticatable implements CanResetPassword
 {
     use Notifiable;
-	use HasApiTokens;
     use SoftDeletes;
 
 	protected $table = 'users';
 	protected $primaryKey = 'user_id';
 	protected $appends = ['name', 'hasLogin', 'isAgent', 'isMobile', 'isUser', 'isAdmin', 'isSite'];
+
+	// TODO: remove after implementing granular permissions system
+	protected static $urTagColumnExists = null;
 
 	// public $timestamps = false;
 	public $with = ['emails','locale', 'roles'];
@@ -129,8 +132,21 @@ class User extends Authenticatable implements CanResetPassword
 
 	public function roles()
 	{
-		return $this->belongsToMany(Role::class, 'users_roles', 'ur_user_id', 'ur_role_id')
+		// TODO: temporary solution for liftcare subtenants - remove after implementing granular permissions system
+
+		// TODO: remove column check after implementing granular permissions system
+		if (self::$urTagColumnExists === null) {
+			self::$urTagColumnExists = Schema::hasColumn('users_roles', 'ur_tag');
+		}
+
+		$relation = $this->belongsToMany(Role::class, 'users_roles', 'ur_user_id', 'ur_role_id')
 					->withPivot('ur_account_id');
+
+		if (self::$urTagColumnExists) {
+			$relation->withPivot('ur_tag');
+		}
+
+		return $relation;
 	}
 
 	public function getPasswordAttribute()
@@ -189,12 +205,14 @@ class User extends Authenticatable implements CanResetPassword
 		return !empty($this->roles->where('role_type', 'login')->first());
 	}
 
+    /** @deprecated */
 	public function getAccountsAttribute()
 	{
 		$accountIds = $this->getAccountIds();
 		return Account::select('account_id','account_name','account_translation','account_slug','account_enabled')->whereIn('account_id',$accountIds)->enabled()->get();
 	}
 
+    /** @deprecated */
 	public function getAccountAttribute()
 	{
 		if(session('account.id') == null){
@@ -207,6 +225,27 @@ class User extends Authenticatable implements CanResetPassword
 	public function hasRole($role)
 	{
 		return !empty($this->roles->where('role_type', $role)->first());
+	}
+
+	public function hasMandownRole()
+	{
+		return $this->hasRole('mandown');
+	}
+
+	public function canImport(): bool
+	{
+		return app(\App\Services\RolesService::class)->canUserImport($this);
+	}
+
+	public function getPrimaryEmail(): string
+	{
+		$email = $this->emails()->orderBy('email_id', 'asc')->first();
+		return $email ? $email->email_address : '';
+	}
+
+	public function getSipUsername(): string
+	{
+		return hash('sha256', $this->getPrimaryEmail());
 	}
 
 	public function getAccountIds()
@@ -257,5 +296,40 @@ class User extends Authenticatable implements CanResetPassword
         $this->user_lastip = $loginIp;
         $this->user_logins = $this->user_logins + 1;
         $this->save();
+    }
+
+    // TODO: temporary solution for liftcare subtenants - remove after implementing granular permissions system
+    public function isSubtenantUser(): bool
+    {
+        try {
+            return DB::table('users_roles')
+                ->where('ur_user_id', $this->user_id)
+                ->whereNotNull('ur_tag')
+                ->exists();
+        } catch (\Throwable $e) {
+            // Column ur_tag doesn't exist - backward compatibility
+            return false;
+        }
+    }
+
+    // TODO: temporary solution for liftcare subtenants - remove after implementing granular permissions system
+    public function getSubtenantTag(?int $accountId = null): ?string
+    {
+        try {
+            $query = DB::table('users_roles')
+                ->where('ur_user_id', $this->user_id)
+                ->whereNotNull('ur_tag');
+
+            if ($accountId) {
+                $query->where('ur_account_id', $accountId);
+            }
+
+            $role = $query->first();
+
+            return $role?->ur_tag ?? null;
+        } catch (\Throwable $e) {
+            // Column ur_tag doesn't exist - backward compatibility
+            return null;
+        }
     }
 }

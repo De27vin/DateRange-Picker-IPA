@@ -2,7 +2,7 @@
 
 namespace App\Http\Livewire\Ucp;
 
-use App\Exports\DevicesExport;
+use App\Jobs\ExportJob;
 use App\Services\CustomFieldsService;
 use Livewire\Component;
 use App\Traits\TranslationsTrait;
@@ -31,6 +31,7 @@ class ExportDevicesNew extends Component
     public $alertTranslations;
     public $exportFormat = 'csv';
     public $initialList;
+    public string $exportComponentId;
     
     // Preset management properties
     public $presets = [];
@@ -69,6 +70,7 @@ class ExportDevicesNew extends Component
         $this->locale = session('locale', 'en');
         $this->initExportList();
         $this->loadPresets();
+        $this->exportComponentId = (string) Str::uuid();
     }
 
     public function render()
@@ -161,38 +163,35 @@ class ExportDevicesNew extends Component
         $this->lockedFields = ['Installation ID', 'Device ID'];
     }
 
-    public function doExportDevices($format = null)
+    public function doExportDevices($format = null, $delivery = 'browser')
     {
         if ($format) {
             $this->exportFormat = $format;
         }
-        $downloadId = (string) Str::uuid();
 
-        $payload = [
-            'filters_id'   => $this->filtersId,
-            'export_list'  => json_encode($this->export_list),
-            'export_sites' => $this->exportSites,
-            'format'       => $this->exportFormat,
-            'download_id'  => $downloadId,
+        $downloadId = (string) Str::uuid();
+        $locale     = $this->locale ?? session('locale', 'en');
+
+        $params = [
+            'filters'     => $this->getDeviceSearchFilter($this->filtersId),
+            'exportList'  => $this->export_list,
+            'exportSites' => $this->exportSites,
+            'locale'      => $locale,
+            'accountId'   => session('account.id'),
         ];
 
-        if ($this->exportFormat === 'csv') {
-            // For CSV we still use form + iframe streaming
-            $exportUrl = route('export.devices');
-            $this->dispatchBrowserEvent('start-download-csv', [
-                'url'         => $exportUrl,
-                'params'      => $payload,
+        $this->dispatchBrowserEvent('start-export', [
+            'type'    => 'devices',
+            'component_id' => $this->exportComponentId,
+            'request' => [
+                'type'        => 'devices',
+                'format'      => $this->exportFormat,
+                'delivery'    => $delivery,
+                'params'      => $params,
                 'download_id' => $downloadId,
-            ]);
-        } else {
-            // Excel – asynchronous generation
-            $exportUrl = route('export.devices');
-            $this->dispatchBrowserEvent('start-export-excel', [
-                'url'         => $exportUrl,
-                'params'      => $payload,
-                'download_id' => $downloadId,
-            ]);
-        }
+                'component_id' => $this->exportComponentId,
+            ],
+        ]);
     }
 
     public function moveAllDeviceFields()
@@ -214,7 +213,7 @@ class ExportDevicesNew extends Component
         $this->newPresetName = '';
     }
 
-    // Export methods have been moved to ExportDevicesController for streaming performance
+    // Legacy note kept for context; exports now handled by ExportJob via ExportController
     
     /**
      * Load all presets for current account from profile data

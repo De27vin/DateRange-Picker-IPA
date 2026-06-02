@@ -157,7 +157,7 @@
 
                             <div class="f7-icons-wrapper tt" style="height: 1.6rem; cursor: help;">
                                 <i class="f7-icons sm tts">question_circle</i>
-                                <span class="ttt elip ttt-tr bg-white border border-slate-300 text-dark shadow-md text-sm">{{ __('use primary phone number as CLI setting (call.alarm.route1.cli.number)') }}</span>
+                                <span class="ttt elip ttt-tr bg-white border border-slate-300 text-dark shadow-md text-sm">{{ __('use primary phone number as CLI settings (call.alarm.route1.cli.number & call.outbound.trunk.cli.number)') }}</span>
                             </div>
                         </div>
                     @endif

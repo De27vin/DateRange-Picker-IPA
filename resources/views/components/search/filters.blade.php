@@ -1,3 +1,4 @@
+{{-- @deprecated --}}
 @props([
     'searchTabs',
     'listCount',
@@ -62,16 +63,16 @@
     <div x-cloak @dropdown-select.window="selected == $event.detail.element ? selected = null : selected = $event.detail.element">
         <dic class="">
             <div x-show="selected === 'toggleExport'" class="relative bg-white bg-opacity-20 w-full shadow-lg p-8 pt-4 my-4">
-                <livewire:ucp.export-devices
+                <livewire:ucp.export-devices-new
                         :filtersId="$filtersId"
                         :exportSites="($exportSites ?? false)"
-                ></livewire:ucp.export-devices>
+                ></livewire:ucp.export-devices-new>
             </div>
             <div x-show="selected === 'toggleExportComments'" class="relative bg-white bg-opacity-20 w-full shadow-lg p-8 pt-4 my-4">
-                <livewire:ucp.export-comments
+                <livewire:ucp.export-comments-new
                         :filtersId="$filtersId"
                         :exportSites="($exportSites ?? false)"
-                ></livewire:ucp.export-comments>
+                ></livewire:ucp.export-comments-new>
             </div>
             <div x-show="selected === 'toggleSearchFilter'" class="relative bg-white bg-opacity-20 w-full shadow-lg p-8 pt-4 my-4">
 

@@ -51,7 +51,7 @@ class CustomFields extends Component
             abort(500);
         }
         $this->accountId = session('account.id');
-        $this->languages = Language::where('language_enabled', 1)->pluck('language_code')->toArray();
+        $this->languages = app(\App\Services\LanguageService::class)->getEnabledLanguages();
         $this->icons = json_decode(file_get_contents(config_path('f7icons.json')), true);
 
         $this->setupFieldSet(['Site', 'Device']);

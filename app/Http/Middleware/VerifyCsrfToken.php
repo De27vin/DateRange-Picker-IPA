@@ -16,6 +16,5 @@ class VerifyCsrfToken extends Middleware
         'https://serv24.com/api/basf:443',
         'http://pixelfieber.ch/*',
         'livewire/*',
-        '/timeseries',
     ];
 }

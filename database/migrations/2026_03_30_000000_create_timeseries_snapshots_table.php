@@ -1,20 +1,23 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('timeseries', function (Blueprint $table): void {
-            $table->unsignedInteger('ts_account_id');
-            $table->timestamp('ts_timestamp');
-            $table->json('ts_data');
-
-            $table->primary(['ts_account_id', 'ts_timestamp']);
-        });
+        DB::statement(<<<'SQL'
+create table timeseries
+(
+    ts_account_id int                                   not null,
+    ts_timestamp  timestamp default current_timestamp() not null on update current_timestamp(),
+    ts_data       longtext collate utf8mb4_bin          not null
+        check (json_valid(`ts_data`)),
+    primary key (ts_account_id, ts_timestamp)
+)
+SQL);
     }
 
     public function down(): void

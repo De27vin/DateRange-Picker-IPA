@@ -21,8 +21,21 @@
                             </p>
                             <p class="mt-2 flex items-center justify-between">
                                 <span class="flex">
-                                    @foreach($invite['roles'] as $role)
-                                        <x-form.badge :size="'sm'" class="rounded-sm mr-4">{{ __($role['role_type']) }}</x-form.badge>
+{{--                                    TODO: sub-tenant logic to remove after new permissions logic introduced--}}
+{{--                                    @foreach($invite['roles'] as $role)--}}
+{{--                                        <x-form.badge :size="'sm'" class="rounded-sm mr-4">{{ __($role['role_type']) }}</x-form.badge>--}}
+{{--                                    @endforeach--}}
+                                    @if($invite['allowSite'])
+                                        <x-form.badge :size="'sm'" class="rounded-sm mr-4">{{ __('site') }}</x-form.badge>
+                                    @elseif($invite['allowAdmin'])
+                                        <x-form.badge :size="'sm'" class="rounded-sm mr-4">{{ __('admin') }}</x-form.badge>
+                                    @elseif($invite['isSubtenant'])
+                                        <x-form.badge :size="'sm'" class="rounded-sm mr-4">{{ __('sub-tenant') }}</x-form.badge>
+                                    @else
+                                        <x-form.badge :size="'sm'" class="rounded-sm mr-4">{{ __('user') }}</x-form.badge>
+                                    @endif
+                                    @foreach($invite['optionalRoles'] as $role)
+                                        <x-form.badge :size="'sm'" class="rounded-sm mr-4">{{ __($role) }}</x-form.badge>
                                     @endforeach
                                 </span>
                                 <span class="text-gray-800 uppercase flex">

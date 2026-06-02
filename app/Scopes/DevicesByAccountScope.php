@@ -2,25 +2,20 @@
 
 namespace App\Scopes;
 
-use Illuminate\Database\Eloquent\Scope;
-use Illuminate\Database\Eloquent\Model;
+use App\Services\AccountContext;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Scope;
 
 class DevicesByAccountScope implements Scope
 {
-    /**
-     * Apply the scope to a given Eloquent query builder.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
-     * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @return void
-     */
-    public function apply(Builder $builder, Model $model)
+    public function apply(Builder $builder, Model $model): void
     {
-        $builder->where('device_account_id','=',session('account.id'));
-        $builder->whereHas('device_site', function ($query) {
-            $query->where('device_sites.ds_account_id','=',session('account.id'));
+        $accountId = app(AccountContext::class)->get();
+
+        $builder->where('device_account_id', '=', $accountId);
+        $builder->whereHas('device_site', function ($query) use ($accountId) {
+            $query->where('device_sites.ds_account_id', '=', $accountId);
         });
     }
-
 }

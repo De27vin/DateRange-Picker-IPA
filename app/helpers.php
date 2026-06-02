@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cookie;
 
 if (!function_exists('isNumberInBetween')) {
     function isNumberInBetween($number, $lowerBound, $upperBound): bool
@@ -19,10 +18,7 @@ if (!function_exists('isNumberBetween')) {
 
 if (!function_exists('logoutUser')) {
     function logoutUser() {
-        Cookie::queue(Cookie::forget('ucp_account'));
-        Auth::logout();
-        session()->invalidate();
-        session()->regenerateToken();
+        app(\App\Services\UserContextService::class)->logoutActiveUser();
         return redirect('/');
     }
 }
@@ -30,22 +26,6 @@ if (!function_exists('logoutUser')) {
 if (!function_exists('toBoolean')) {
     function toBoolean(String $string) {
         return filter_var($string,FILTER_VALIDATE_BOOLEAN,FILTER_NULL_ON_FAILURE);
-    }
-}
-
-if (!function_exists('countryDisplayName')) {
-    function countryDisplayName(?string $countryIso, string $locale = 'en'): string
-    {
-        $countryIso = strtoupper((string) $countryIso);
-        if ($countryIso === '') {
-            return '';
-        }
-
-        if (function_exists('locale_get_display_region')) {
-            return locale_get_display_region('-'.$countryIso, $locale) ?: $countryIso;
-        }
-
-        return $countryIso;
     }
 }
 
@@ -70,7 +50,7 @@ if(!function_exists('toUserTimezone')){
 
             return $new_str->format($format);
         } else {
-            Auth::logout();
+            app(\App\Services\UserContextService::class)->logoutActiveUser();
         }
     }
 }

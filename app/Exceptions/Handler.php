@@ -2,15 +2,11 @@
 
 namespace App\Exceptions;
 
+use App\Services\UserContextService;
 use App\Services\AccountUpdateService;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Str;
-use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 use App\Exceptions\UcpException;
@@ -19,7 +15,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Response;
-use Illuminate\Validation\ValidationException;
 
 class Handler extends ExceptionHandler
 {
@@ -46,14 +41,6 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $exception)
     {
-        if ($exception instanceof ValidationException) {
-            return parent::render($request, $exception);
-        }
-
-        if ($this->isApiRequest($request)) {
-            return $this->renderApiException($request, $exception);
-        }
-
         if ($exception instanceof HttpException) {
             Log::error('Symfony Kernel HTTP Exception:', [
                 'url' => $request->fullUrl(),
@@ -75,10 +62,7 @@ class Handler extends ExceptionHandler
             case str_contains($message, 'CSRF token mismatch'):
             case str_contains($message, 'Unauthenticated'):
             case str_contains($message, 'Authentication user provider [custom_user_provider] is not defined'):
-                Cookie::queue(Cookie::forget('ucp_account'));
-                Auth::logout();
-                session()->invalidate();
-                session()->regenerateToken();
+                app(UserContextService::class)->logoutActiveUser();
                 return redirect('/');
 
             case str_contains($message, 'Undefined array key'):
@@ -88,37 +72,6 @@ class Handler extends ExceptionHandler
             default:
                 return $this->defaultAction($request, $exception);
         }
-    }
-
-    private function isApiRequest(Request $request): bool
-    {
-        return $request->is('api/*') || $request->expectsJson();
-    }
-
-    private function renderApiException(Request $request, Throwable $exception): JsonResponse
-    {
-        if ($exception instanceof ValidationException) {
-            return parent::render($request, $exception);
-        }
-
-        $requestId = $request->attributes->get('request_id') ?: $request->header('X-Request-Id');
-
-        if ($exception instanceof HttpExceptionInterface) {
-            $status = $exception->getStatusCode();
-            $message = SymfonyResponse::$statusTexts[$status] ?? 'HTTP error';
-
-            return response()->json([
-                'message' => $message,
-                'request_id' => $requestId,
-            ], $status);
-        }
-
-        $this->logApiException($request, $exception, 500);
-
-        return response()->json([
-            'message' => 'Internal server error',
-            'request_id' => $requestId,
-        ], 500);
     }
 
 
@@ -137,7 +90,7 @@ class Handler extends ExceptionHandler
         \Log::error($exception, ['Synchro error caught']);
 
         try {
-            foreach (Auth::user()->accounts as $account) {
+            foreach (app(UserContextService::class)->getUserAccounts() as $account) {
                 (new AccountUpdateService($account))->synchronizeAccountJsonSchema();
             }
         } catch (\Throwable $e) {
@@ -152,8 +105,6 @@ class Handler extends ExceptionHandler
 
     private function defaultAction($request, $exception)
     {
-        $this->logApiException($request, $exception, 500);
-
         Log::error($exception, ['Default error handler action performed']);
 
         // Don't redirect if it's an API or non-HTML request
@@ -181,19 +132,6 @@ class Handler extends ExceptionHandler
         return response()->view('errors.ucp-error', [
             'message' => $this->toString($exception),
         ], 500);
-    }
-
-    private function logApiException(Request $request, Throwable $exception, int $status): void
-    {
-        $requestId = $request->attributes->get('request_id') ?: $request->header('X-Request-Id');
-        Log::channel('ipa')->error('api.exception', [
-            'event' => 'api.exception',
-            'request_id' => $requestId,
-            'path' => $request->getPathInfo(),
-            'exception_class' => get_class($exception),
-            'message' => $exception->getMessage(),
-            'status' => $status,
-        ]);
     }
 
 

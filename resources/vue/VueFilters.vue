@@ -11,14 +11,14 @@
                   @click="toggleSearchTab(tab)"
                   type="submit" class="text-white text-sm" style="background-color: #8fabdd;"
               >
-                {{ tab }}
+                {{ trans(tab) }}
               </button>
 
               <button v-else
                   @click="toggleSearchTab(tab)"
                   type="submit" class="bg-white text-gray-900 text-sm"
               >
-                {{ tab }}
+                {{ trans(tab) }}
               </button>
             </div>
 
@@ -29,7 +29,7 @@
 
           <div class="flex items-center mx-5 pl-12" style="width: 54%;">
             <button type="submit" class="bg-gray-400 text-gray-200 hover:text-white text-sm hover:bg-gray-600 text-center" style="background-color: #8fabdd;" @click="showFilters = !showFilters">
-              Filters
+              {{ trans('Filters') }}
             </button>
 
             <div class="w-full flex items-center justify-center relative ml-5 mr-6">
@@ -48,25 +48,29 @@
                 <button @click="showExportMenu = !showExportMenu" class="absolute inline-flex items-center justify-center p-2 text-gray-400 hover:text-gray-500">
                    <span class="tt">
                       <i class="f7-icons icon icon-sm tts cursor-pointer" style="color: white; background-color: #8faadc;">{{ 'square_arrow_down' }}</i>
-                      <span class="ttt elip ttt-tl bg-white border border-slate-300 text-dark shadow-md text-sm" style="width: max-content; zoom: 1.2; text-transform: none; color: #334155;">{{ 'Exports' }}</span>
+                      <span class="ttt elip ttt-tl bg-white border border-slate-300 text-dark shadow-md text-sm" style="width: max-content; zoom: 1.2; text-transform: none; color: #334155;">{{ trans('Exports') }}</span>
                   </span>
                 </button>
 
                 <div v-if="showExportMenu"
-                     class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
+                     class="absolute right-0 mt-2 w-72 rounded-xl shadow-lg border border-gray-200 bg-white overflow-hidden z-50"
                      @click.away="showExportMenu = false">
-                  <div class="py-1">
+                    <a v-if="isEquipment && canImport"
+                       href="#"
+                       class="block w-full text-left px-5 py-3.5 text-small text-gray-700 hover:bg-gray-100 transition-colors p-2 m-1"
+                       @click.prevent="dispatchExport('toggle-import')">
+                      {{ trans('Import devices') }} ...
+                    </a>
                     <a href="#"
-                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                       class="block w-full text-left px-5 py-3.5 text-small text-gray-700 hover:bg-gray-100 border-t border-gray-100 transition-colors p-2 m-1"
                        @click.prevent="dispatchExport('toggle-export')">
                       {{ trans('Export current list') }} ...
                     </a>
                     <a href="#"
-                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                       class="block w-full text-left px-5 py-3.5 text-small text-gray-700 hover:bg-gray-100 border-t border-gray-100 transition-colors p-2 m-1"
                        @click.prevent="dispatchExport('toggle-export-comments')">
                       {{ trans('Export comments of listed devices') }} ...
                     </a>
-                  </div>
                 </div>
               </span>
             </div>
@@ -205,6 +209,10 @@ export default {
       type: String,
       default: 'tag'
     },
+    canImport: {
+      type: Boolean,
+      default: false
+    },
   },
 
   components: {
@@ -243,6 +251,9 @@ export default {
     // Helper flag – allows us łatwo odróżnić dwa tryby bez rozrzucania magicznych stringów
     isDashboard() {
       return this.filtersId === 'Dashboard'
+    },
+    isEquipment() {
+      return this.filtersId === 'Equipment'
     },
     sortedVisibleAlerts() {
       if (!this.groupedAlertsCounts.visible) return {};

@@ -1,8 +1,27 @@
 <?php
 
 return [
-    'version' => '2.1-10',
+    'version' => '2.1-26',
     'active_labels' => true,
+
+    'notifications' => [
+        'invite_subject' => env('INVITE_EMAIL_SUBJECT', 'Invite'),
+    ],
+
+    'import' => [
+        'allowed_roles' => array_filter(array_map('trim', explode(',', env('IMPORT_ALLOWED_ROLES', 'site')))),
+    ],
+
+    'charts' => [
+        'use_dummy_data' => filter_var(env('CHARTS_USE_DUMMY_DATA', false), FILTER_VALIDATE_BOOLEAN),
+    ],
+
+    // TODO: temporary solution for liftcare subtenants - remove after implementing granular permissions system
+    'subtenant' => [
+        'custom_field_name' => env('SUBTENANT_CUSTOM_FIELD_NAME', 'customer'),
+        'accounts' => array_filter(array_map('trim', explode(',', env('SUBTENANT_ACCOUNTS', 'liftcare')))),
+    ],
+
     'versions' => [
         '0-0-0' => '',
         '0-0-1' => 'updateProfile_2023_10_05'
@@ -102,4 +121,5 @@ return [
         ],
     ]
 ];
+
 

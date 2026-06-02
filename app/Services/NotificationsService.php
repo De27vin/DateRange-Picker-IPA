@@ -59,8 +59,6 @@ class NotificationsService
             $messages = [$messages];
         }
 
-        $context = is_callable($context) ? $context() : $context;
-
         foreach ($messages as $message) {
             $contextualMessage = $context ? "{$context}: {$message}" : $message;
             $this->notifications[$type][] = $contextualMessage;
@@ -74,8 +72,6 @@ class NotificationsService
         if (!is_array($messages)) {
             $messages = [$messages];
         }
-
-        $context = is_callable($context) ? $context() : $context;
 
         foreach (array_reverse($messages) as $message) {
             $contextualMessage = $context ? "{$context}: {$message}" : $message;

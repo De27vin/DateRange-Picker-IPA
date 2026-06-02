@@ -49,7 +49,6 @@ class Kernel extends HttpKernel
 
         'api' => [
             \Illuminate\Http\Middleware\HandleCors::class,
-            \App\Http\Middleware\RequestContextLoggingMiddleware::class,
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
@@ -78,5 +77,6 @@ class Kernel extends HttpKernel
         'setTimezone' => \App\Http\Middleware\SetTimezoneMiddleware::class,
         'synchronizeProfile' => \App\Http\Middleware\SynchronizeJsonProfile::class,
         'apiRequest' => \App\Http\Middleware\ApiRequestMiddleware::class,
+        'internalApiToken' => \App\Http\Middleware\InternalApiToken::class,
     ];
 }

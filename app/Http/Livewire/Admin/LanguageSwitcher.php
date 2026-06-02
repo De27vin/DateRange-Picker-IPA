@@ -27,7 +27,8 @@ class LanguageSwitcher extends UcpComponent
         if(session('languages') != null){
             $this->languages = session('languages');
         } else {
-            $this->languages    = Language::where('language_enabled', '=', true)->get()->pluck('language_enabled','language_code')->all();
+            $enabledCodes = app(\App\Services\LanguageService::class)->getEnabledLanguages();
+            $this->languages = array_fill_keys($enabledCodes, true);
         }
     }
 }

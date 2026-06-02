@@ -2,6 +2,22 @@
 
 return [
 
+    'agent_server' => env('AGENT_SERVER', 'ucp-agent'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | freeswitch
+    |--------------------------------------------------------------------------
+    |
+    | This value is the name of your application. This value is used when the
+    | framework needs to place the application's name in a notification or
+    | any other location as required by the application or its packages.
+    |
+    */
+
+    'fs_socket_port' => env('FS_SOCKET_PORT', 8021),
+    'fs_socket_password' => env('FS_SOCKET_PASSWORD'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Name
@@ -194,7 +210,7 @@ return [
          */
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
-        // App\Providers\BroadcastServiceProvider::class,
+        App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\CustomPasswordResetServiceProvider::class,
@@ -260,9 +276,6 @@ return [
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ],
 
-    'allowed_hosts' => [
-    '127.0.0.1',
-    'localhost',
-    ],
+    'internal_api_token' => env('INTERNAL_API_TOKEN'),
 
 ];

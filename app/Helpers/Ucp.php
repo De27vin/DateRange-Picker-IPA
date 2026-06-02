@@ -149,7 +149,7 @@ class Ucp
         }
 
         if(Auth::user() == null){
-            Auth::logout();
+            app(\App\Services\UserContextService::class)->logoutActiveUser();
         }
         $userTimezone = (Auth::user()->timezone != null ? Auth::user()->timezone : 'Europe/Zurich');
         if(!is_object($str)){

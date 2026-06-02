@@ -255,10 +255,20 @@ class CreateSite extends Component
             if ($this->copyNumberToCli) {
                 foreach (['sip', 'sim', 'pbx', 'pstn'] as $numType) {
                     if (!empty($$numType)) {
+                        $numberValue = is_string($$numType) ? $$numType : $$numType->number_value;
                         $currentPlainSettings = $this->settingsService->getPlainSiteSettings($deviceSite);
-                        $updateSiteSetting = $currentPlainSettings['call.alarm.route1.cli.number'];
-                        $updateSiteSetting['value'] = is_string($$numType) ? $$numType : $$numType->number_value;
-                        $this->settingsService->updateDeviceSiteSettings($deviceSite, collect([$updateSiteSetting]));
+
+                        $updateSettings = [];
+
+                        $route1Setting = $currentPlainSettings['call.alarm.route1.cli.number'];
+                        $route1Setting['value'] = $numberValue;
+                        $updateSettings[] = $route1Setting;
+
+                        $outboundSetting = $currentPlainSettings['call.outbound.trunk.cli.number'];
+                        $outboundSetting['value'] = $numberValue;
+                        $updateSettings[] = $outboundSetting;
+
+                        $this->settingsService->updateDeviceSiteSettings($deviceSite, collect($updateSettings));
                         break;
                     }
                 }

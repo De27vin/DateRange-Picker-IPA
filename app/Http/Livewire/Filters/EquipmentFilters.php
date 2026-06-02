@@ -9,6 +9,9 @@ use App\Models\DeviceLabelOld;
 use App\Traits\TranslationsTrait;
 use App\Traits\SearchFiltersTrait;
 
+/**
+ * @deprecated
+ */
 class EquipmentFilters extends Component
 {
     use SearchFiltersTrait;

@@ -41,6 +41,7 @@ class Invite extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
+            ->subject(config('ucp.notifications.invite_subject'))
             ->greeting(trans('Hello').',')
             ->line(trans('A user with your data has been created in the UCP - Universal Convergence App of Serv24 GmbH'))
             ->line(trans('Accept the invitation by clicking on the button below'))

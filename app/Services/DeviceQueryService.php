@@ -9,6 +9,7 @@ use App\Traits\DeviceFilterTrait;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
+/** @deprecated  */
 class DeviceQueryService
 {
     use DeviceFormTrait;

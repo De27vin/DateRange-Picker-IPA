@@ -49,37 +49,17 @@
         </div>
 
         <div class="flex justify-end mt-4">
-            <div x-data="{ showFormat: false }" class="relative z-10">
-                <x-button.primary
-                    x-on:click="showFormat = true"
-                    class="ml-4"
-                >
+            <div x-data="exportHandler(@js(['type' => 'comments', 'componentId' => $exportComponentId, 'storeUrl' => route('exports.store'), 'progressLabel' => __('Preparing export…')]))"
+                 x-init="init()"
+                 class="relative z-10"
+            >
+                <x-button.primary x-on:click="showFormat = true" class="ml-4">
                     @lang('export')
                 </x-button.primary>
+                <x-export.format-dropdown wire-method="doExportComments" />
 
-                <!-- Format Selection Dropdown -->
-                <div
-                    x-show="showFormat"
-                    x-on:click.away="showFormat = false"
-                    class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100"
-                >
-                    <div class="py-1">
-                        <button
-                            wire:click="$set('exportFormat', 'csv')"
-                            x-on:click="showFormat = false; $wire.doExportComments()"
-                            class="w-full text-left px-4 py-2 text-sm text-gray-700"
-                        >
-                            CSV
-                        </button>
-                        <button
-                            wire:click="$set('exportFormat', 'xlsx')"
-                            x-on:click="showFormat = false; $wire.doExportComments()"
-                            class="w-full text-left px-4 py-2 text-sm text-gray-700"
-                        >
-                            Excel (XLSX)
-                        </button>
-                    </div>
-                </div>
+                <x-export.progress-bar />
+
             </div>
 
             <x-button.secondary class="ml-4" x-on:click="$dispatch('dropdown-select', { element: '' })">

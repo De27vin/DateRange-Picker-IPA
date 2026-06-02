@@ -133,6 +133,13 @@ class Session extends Model
 		return $this->hasMany(Session::class, 'session_ref_id');
 	}
 
+    public function agentSessions()
+    {
+        return $this->hasMany(Session::class, 'session_ref_id')->whereHas('session_type', function ($query) {
+            $query->where('st_type', 'AGENT');
+        });
+    }
+
 	public function sets()
 	{
 		return $this->hasMany(Set::class, 'set_session_id');
@@ -199,6 +206,11 @@ class Session extends Model
     {
         $sessionTypeIds = SessionType::where('st_type', 'TRIGGER')->pluck('st_id');
         return $query->whereIntegerInRaw('session_st_id', $sessionTypeIds);
+    }
+
+    public function scopeNotEnded($query)
+    {
+        return $query->whereNull('session_end');
     }
 
     public function getWarnings($deviceId)

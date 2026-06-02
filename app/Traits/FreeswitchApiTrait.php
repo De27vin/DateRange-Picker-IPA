@@ -1,7 +1,7 @@
 <?php
 namespace App\Traits;
 
-use FreeSwitch\FreeSwitchEventListener;
+use App\Overrides\FreeSwitch\FreeSwitchEventListener;
 use App\Models\Host;
 
 trait FreeswitchApiTrait
@@ -15,10 +15,10 @@ trait FreeswitchApiTrait
     public $socket;
     public $errors = [];
 
-    public function fsMake($cmd = '', $format = false, $all = false, $host = null)
+    public function fsMake($cmd = '', $format = false, $all = false, $host = null, bool $addHost = true)
     {
-        $this->fs_port     = env('FS_SOCKET_PORT','8021');
-        $this->fs_password = env('FS_SOCKET_PASSWORD');
+        $this->fs_port     = config('app.fs_socket_port');
+        $this->fs_password = config('app.fs_socket_password');
         $this->fs_command  = $cmd;
         $this->fs_format   = $format;
         $this->response    = null;
@@ -33,13 +33,19 @@ trait FreeswitchApiTrait
                     }
                 }
             } elseif($host != null) {
-                $this->fs_host = $host . '.serv24.com';
+                if ($addHost) {
+                    $this->fs_host = $host . '.serv24.com';
+                } else {
+                    $this->fs_host = $host;
+                }
+
                 if(false == ($this->response = $this->fsRun())){
                     return false;
                 }
             } else {
                 $choice = (rand(0,999) % $hosts->count());
                 if(false == ($host = $hosts->all()[$choice])){
+                    \Log::error('FS handler didnt find host', ['choice' => $choice]);
                     return false;
                 }
                 $this->fs_host = $host->host_fqdn;
@@ -110,15 +116,16 @@ trait FreeswitchApiTrait
         try {
             if(false == (@fsockopen($this->fs_host, $this->fs_port, $errno, $errdesc, 10))){
                 $this->errors[] = "Freeswitch API socket connection failed ".$errdesc." (".$errno.")";
-                \Log::error("Freeswitch API socket connection failed ".$errdesc." (".$errno.")", ['Caught']);
+                \Log::error("Freeswitch API socket connection failed ".$errdesc." (".$errno.")", [$this->fs_host, $this->fs_port, $errno, $errdesc]);
                 return false;
             }
 
             $result = fsockopen($this->fs_host, $this->fs_port, $errno, $errdesc, 10);
         } catch (\Throwable $e) {
             \Log::error($e, ['Caught']);
+            \Log::error("Freeswitch API socket connection failed ".$errdesc." (".$errno.")", [$this->fs_host, $this->fs_port, $errno, $errdesc]);
             $this->errors[] = "Freeswitch API socket connection failed ".$errdesc." (".$errno.")";
-            return false;  
+            return false;
         }
         return true;
     }

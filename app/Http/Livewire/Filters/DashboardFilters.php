@@ -13,6 +13,9 @@ use App\Traits\TranslationsTrait;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
+/**
+ * @deprecated
+ */
 class DashboardFilters extends Component
 {
     use WithPerPagePagination;

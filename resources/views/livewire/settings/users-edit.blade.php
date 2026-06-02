@@ -49,48 +49,72 @@
                         <legend class="sr-only">{{__('User Type')}}</legend>
                         <div class="space-y-4 md:flex md:items-center space-x-0 md:space-x-10 md:space-y-0 ">
                             <x-form.v2.radio-group>
-
-                                @if($authBasicRoles['site'])
-                                <x-form.v2.radio
-                                    :active="isNumberInBetween($roleState, 100, 111)"
-                                    :disabled="compare_binary_roles($editedBinaryRoles, $authBinaryRoles) > 0"
-                                    class="rounded-l-full"
-                                    name="basicRoles"
-                                    model="basicRoles.site"
-                                    id="site"
-                                    functionName="updateUserType"
-                                    label="{{ __('site') }}"
-                                />
-                                @endif
-                                <x-form.v2.radio
-                                    :active="isNumberInBetween($roleState, 10, 11)"
-                                    :disabled="isNumberInBetween($authBinaryRoles, 1, 1)"
-                                    :rl="isNumberInBetween($authBinaryRoles, 1, 11)"
-                                    class="mr-0.5 ml-0.5"
-                                    name="basicRoles"
-                                    model="basicRoles.admin"
-                                    id="admin"
-                                    functionName="updateUserType"
-                                    label="{{ __('admin') }}"
-                                />
-                                <x-form.v2.radio
-                                    :active="isNumberInBetween($roleState,1,1)"
-                                    :disabled="compare_binary_roles($editedBinaryRoles, $authBinaryRoles) > 0 || isNumberInBetween($authBinaryRoles,1,1)"
-                                    :class="'rounded-r-full'"
-                                    name="basicRoles"
-                                    model="basicRoles.user"
-                                    id="user"
-                                    functionName="updateUserType"
-                                    label="{{ __('user') }}"
-                                />
-                            </x-form.v2.radio-group>
+                                    @if($authBasicRoles['site'])
+                                    <x-form.v2.radio
+                                        :active="isNumberInBetween($roleState, 100, 111)"
+                                        :disabled="compare_binary_roles($editedBinaryRoles, $authBinaryRoles) > 0"
+                                        class="rounded-l-full"
+                                        name="basicRoles"
+                                        model="basicRoles.site"
+                                        id="site"
+                                        functionName="updateUserType"
+                                        label="{{ __('site') }}"
+                                    />
+                                    @endif
+                                    <x-form.v2.radio
+                                        :active="isNumberInBetween($roleState, 10, 11)"
+                                        :disabled="isNumberInBetween($authBinaryRoles, 1, 1)"
+                                        :rl="isNumberInBetween($authBinaryRoles, 1, 11)"
+                                        class="mr-0.5 ml-0.5"
+                                        name="basicRoles"
+                                        model="basicRoles.admin"
+                                        id="admin"
+                                        functionName="updateUserType"
+                                        label="{{ __('admin') }}"
+                                    />
+                                    <x-form.v2.radio
+                                        :active="isNumberInBetween($roleState,1,1)"
+                                        :disabled="compare_binary_roles($editedBinaryRoles, $authBinaryRoles) > 0 || isNumberInBetween($authBinaryRoles,1,1)"
+                                        :class="$this->isSubtenantAccount() ? 'rounded-none mr-0.5 ml-0.5' : 'rounded-r-full'"
+                                        name="basicRoles"
+                                        model="basicRoles.user"
+                                        id="user"
+                                        functionName="updateUserType"
+                                        label="{{ __('user') }}"
+                                    />
+                                    @if($this->isSubtenantAccount())
+                                        <x-form.v2.radio
+                                            :active="$this->isSubtenantUser()"
+                                            class="rounded-r-full"
+                                            name="basicRoles"
+                                            model="basicRoles.subtenant"
+                                            id="subtenant"
+                                            functionName="updateUserType"
+                                            label="Sub-tenant"
+                                        />
+                                    @endif
+                                </x-form.v2.radio-group>
                         </div>
                     </fieldset>
+
+                    @if($this->isSubtenantUser())
+                    <div class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded">
+                        <x-input.group for="subtenantTag" label="{{__('Sub-tenant Company Name')}}" id="subtenantTag" required="required" :error="$errors->first('subtenantTag')">
+                            <x-input.text wire:model="subtenantTag" class="w-full" required="required" name="subtenantTag" placeholder="{{__('Enter company name')}}" />
+                        </x-input.group>
+                        <p class="text-sm text-yellow-700 mt-1">@lang('This user will only have access to devices assigned to this company via mobile application.')</p>
+                    </div>
+                    @endif
                 </div>
                 <div class="px-0 md:px-4 py-4 lg:py-0">
                     <fieldset>
                         <label class="text-base font-bold">{{ __('Optional Permissions') }}</label>
-                        <p class="text-sm text-gray-500 h-24">{{__('Agents have access to callcenter features. User with mobile permission are allowed to use the parrot mobile app.')}}</p>
+                        <p class="text-sm text-gray-500 h-24">
+                            {{__('Agents have access to callcenter features. Mobile users can use the Parrot app. ManDown users can use the ManDown safety monitoring app.')}}
+                            @if($this->isSubtenantUser())
+                                <span class="block mt-2 text-orange-600">{{__('Note: Mobile role is required for Sub-tenant users.')}}</span>
+                            @endif
+                        </p>
                         <legend class="sr-only">{{ __('Optional Permissions') }}</legend>
                         <div class="space-y-4 md:flex md:items-center space-x-0 md:space-x-10 md:space-y-0">
                             <x-form.v2.checkbox-group>
@@ -112,8 +136,44 @@
                                         functionName="updateOptionalRole"
                                         label="{{ __('mobile') }}"
                                 />
+                                <x-form.v2.checkbox
+                                        name="optionalRoles"
+                                        :active="$optionalRoles['mandown'] ?? false"
+                                        :disabled="compare_binary_roles($editedBinaryRoles, $authBinaryRoles) > 0 || isNumberInBetween($authBinaryRoles,1,1)"
+                                        model="optionalRoles.mandown"
+                                        id="mandown"
+                                        functionName="updateOptionalRole"
+                                        label="{{ __('mandown') }}"
+                                />
                             </x-form.v2.checkbox-group>
                         </div>
+                        @php
+                            $userHadMandown = false;
+                            if(isset($editUser['roles'])) {
+                                foreach($editUser['roles'] as $role) {
+                                    if($role['role_type'] === 'mandown') {
+                                        $userHadMandown = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            $mandownChecked = isset($optionalRoles['mandown']) && $optionalRoles['mandown'] == 1;
+                            $isAddingMandown = $mandownChecked && !$userHadMandown;
+                        @endphp
+                        @if($isAddingMandown || ($mandownChecked && $errors->has('confirmPasswordForMandown')))
+                            <div class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded">
+                                <x-input.group for="confirmPasswordForMandown" label="{{__('Confirm Password')}}" id="confirmPasswordForMandown" required="required" :error="$errors->first('confirmPasswordForMandown')">
+                                    <x-input.text wire:model.defer="confirmPasswordForMandown" type="password" class="w-full" name="confirmPasswordForMandown" />
+                                </x-input.group>
+                                @if(!$errors->has('confirmPasswordForMandown'))
+                                    @if($isAddingMandown)
+                                        <p class="text-sm text-yellow-700 mt-1">{{__('Password required to create SIP endpoint for ManDown app.')}}</p>
+                                    @else
+                                        <p class="text-sm text-yellow-700 mt-1">{{__('Password required to update SIP endpoint (email changed or endpoint recreation needed).')}}</p>
+                                    @endif
+                                @endif
+                            </div>
+                        @endif
                     </fieldset>
                 </div>
                 <div class="">

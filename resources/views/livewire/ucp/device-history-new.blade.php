@@ -8,7 +8,8 @@
                 :contextOptions="$contextOptions"
                 :historyFilter="$historyFilter"
                 :severityFilter="$severityFilter"
-                :dateFilter="$dateFilter" />
+                :dateFilter="$dateFilter"
+                :component-id="$exportComponentId" />
     </div>
 
     <div>

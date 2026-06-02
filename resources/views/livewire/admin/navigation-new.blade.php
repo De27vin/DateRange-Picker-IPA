@@ -1,9 +1,9 @@
 <header class="mt-0">
     <!-- START :: Customer Logo & Brand Color -->
     <div class="bg-header w-full">
-        <div class="mx-auto w-full px-4 py-4 font-medium">
+        <div class="mx-auto w-full px-8 pt-4 font-medium">
             <!-- <img class="items-center h-8" src="/assets/themes/system/images/logo.png" /> -->
-            <img class="items-center h-10" src="/assets/themes/{{ session()->get('account.slug', 'system') }}/images/logo.png" />
+            <img class="items-center" style="height: 2.85rem;" src="/assets/themes/{{ session()->get('account.slug', 'system') }}/images/logo.png" />
         </div>
         <!-- END :: Customer Logo & Brand Color -->
     </div>
@@ -13,7 +13,7 @@
                 <div x-cloak x-data="{ mobileOpen: false }" class=" relative h-full w-full flex items-center rounded-none ">
 
                     <!-- START :: Desktop Navigation Button -->
-                    <div class="hidden lg:flex flex-grow py-3 justify-between rounded-none mx-4">
+                    <div class="hidden lg:flex flex-grow py-3 justify-between rounded-none mx-2">
                         @if(\Auth::user())
                             <ul class="flex w-full items-center h-10 z-50">
                                 @if( $activeAccount != null )
@@ -27,13 +27,11 @@
                                             <span>@lang('Equipment')</span>
                                         </a>
                                     </li>
-
                                     <li class="block relative">
                                         <a href="/charts" @if(request()->routeIs('charts')) style="background-color: #8fabdd; color: white;" @endif class="flex items-center h-10 px-4 rounded-full cursor-pointer no-underline hover:no-underline transition-colors duration-100 mx-1 hover:bg-color-new hover:text-white">
                                             <span>@lang('Charts')</span>
                                         </a>
                                     </li>
-
 {{--                                    <li class="block relative" x-data="{showChildren:false}" x-on:click.away="showChildren=false">--}}
 {{--                                        <a href="#" @if(request()->routeIs('equipment') || request()->routeIs('devices-site-create')) style="background-color: #8fabdd; color: white;" @endif class="flex items-center h-10 pl-4 pr-2 rounded-full cursor-pointer no-underline hover:no-underline transition-colors duration-100 mx-1 hover:bg-color-new hover:text-white" x-on:click.prevent="showChildren=!showChildren">--}}
 {{--                                            <span>@lang('Equipment')</span>--}}
@@ -113,7 +111,7 @@
 
                             <ul class="flex w-full items-center justify-end h-10 z-50">
                                 @if(Auth::user() && session('account.id') != null)
-                                    <livewire:admin.alarm-notification></livewire:admin.alarm-notification>
+                                    <x-alarm-notifications />
                                 @endif
 {{--                                <li class="block relative" x-data="{showChildren:false}" x-on:click.away="showChildren=false">--}}
 {{--                                    <a href="#" class="flex items-center h-10 pl-4 pr-2 rounded-full cursor-pointer no-underline hover:no-underline transition-colors duration-100 mx-1 hover:bg-color-new hover:text-white" x-on:click.prevent="showChildren=!showChildren">--}}
@@ -180,9 +178,11 @@
                     </div>
 
                     <!-- END :: Desktop Navigation Button -->
-                    <div class=" flex flex-grow justify-end lg:hidden">
+
+                    {{-- Mobile alarm notifications --}}
+                    <div class="flex flex-grow justify-end lg:hidden">
                         @if(Auth::user() && session('account.id') != null)
-                            <livewire:admin.alarm-notification></livewire:admin.alarm-notification>
+                            <x-alarm-notifications />
                         @endif
                     </div>
 
@@ -226,16 +226,14 @@
                                             @lang('Equipment')
                                         </a>
 {{--                                        <a href="/devices-site-create" @if(request()->routeIs('devices-site-create')) style="background-color: #8fabdd; color: white;" @endif class="px-4 py-2 flex w-full items-start hover:bg-color-new hover:text-white no-underline hover:no-underline transition-colors duration-100 cursor-pointer" role="menuitem">--}}
-{{--                                            @lang('Create Site')--}}
-{{--                                        </a>--}}
-                                    </div>
-
                                     <div class="mx-4">
                                         <a href="/charts" @if(request()->routeIs('charts')) style="background-color: #8fabdd; color: white;" @endif class="px-4 py-2 flex w-full items-start hover:bg-color-new hover:text-white no-underline hover:no-underline transition-colors duration-100 cursor-pointer" role="menuitem">
                                             @lang('Charts')
                                         </a>
                                     </div>
-                                    
+{{--                                            @lang('Create Site')--}}
+{{--                                        </a>--}}
+                                    </div>
                                     <div class="pt-8 px-4 opacity-60 relative">
                                         <div class="-mt-4 relative flex justify-start">
                                             <span class="">@lang('Settings')</span>

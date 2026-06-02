@@ -16,7 +16,8 @@ abstract class TestCase extends BaseTestCase
         Config::set('database.default', 'sqlite');
         Config::set('database.connections.sqlite.database', ':memory:');
         Config::set('database.connections.sqlite.foreign_key_constraints', true);
-        Config::set('app.allowed_hosts', ['localhost', '127.0.0.1']);
+        Config::set('app.url', 'http://localhost');
+        Config::set('app.allowed_hosts', ['localhost', '127.0.0.1', 'ucp.serv24.com']);
         Config::set('cache.default', 'array');
         Config::set('cache.limiter', 'array');
         Config::set('session.driver', 'array');

@@ -646,6 +646,12 @@
               <i @click.prevent.stop class="f7-icons icon icon-sm tts cursor-default" :style="{ 'background-color': colors.default }">bubble_left</i>
               <span @click.prevent.stop class="ttt elip ttt-br bg-white border border-slate-300 text-dark shadow-md text-sm" style="width: max-content; zoom: 1.2;">{{ device.comment }}</span>
             </span>
+
+            <!--callcenter alarming indicator-->
+            <span class="icon-wrapper tt" v-if="shouldShowCallcenterAlarmIndicator(device) && !device.isActiveAlarm">
+              <i @click.prevent.stop class="f7-icons icon icon-sm tts cursor-default" :style="{ 'background-color': colors.alarm }">bell</i>
+              <span @click.prevent.stop class="ttt elip ttt-br bg-white border border-slate-300 text-dark shadow-md text-sm" style="width: max-content; zoom: 1.2;">{{ trans('Alarm Call') }}</span>
+            </span>
           </div>
 
           <div class="gr-6" style="width: 150%">
@@ -738,9 +744,37 @@
           <div class="gr-1 flex flex-col items-start gap-2 mr-4" style="width: 20%">
             <div class="flex justify-end" v-if="!device.edited">
 
-              <span class="icon-wrapper tt" v-if="device.actionButtons.carcall && !actionsForbidden.includes('carcall')" @click.prevent.stop="makeFsCall('carcall', device)">
+              <span class="icon-wrapper tt callcenter-phone-wrapper"
+                    v-if="shouldShowAlarmPhoneButton(device)"
+                    @click.prevent.stop="isAlarmPhoneClickable(device) && handleAlarmPhoneClick(device)">
+                <i class="f7-icons icon default icon-sm tts"
+                   :class="isAlarmPhoneClickable(device) ? 'cursor-pointer' : 'cursor-not-allowed'"
+                   :style="getAlarmPhoneButtonStyle(device)">phone
+                </i>
+                <span class="ttt elip ttt-tl bg-white border border-slate-300 text-dark shadow-md text-sm"
+                      style="width: max-content; zoom: 1.2;">{{ trans('Alarm Call') }}</span>
+
+                <transition name="fade">
+                  <div class="callcenter-classification-dropdown" v-if="showClassificationDropdown" @click.stop>
+                    <button type="button"
+                            v-for="classification in classificationOptions"
+                            :key="classification.key"
+                            class="callcenter-classification-option"
+                            :style="{ borderLeftColor: classification.color }"
+                            @click.prevent="classifyAlarmCall(classification)">
+                      <span class="option-icon" :style="{ color: classification.color }">
+                        <i class="f7-icons">{{ classification.icon }}</i>
+                      </span>
+                      <span class="option-label">{{ classification.label }}</span>
+                      <span class="option-shortcut">{{ classification.fkey }}</span>
+                    </button>
+                  </div>
+                </transition>
+              </span>
+
+              <span class="icon-wrapper tt" v-else-if="shouldShowCarCallButton(device) && device.actionButtons.carcall && !actionsForbidden.includes('carcall')" @click.prevent.stop="makeFsCall('carcall', device)">
                 <i class="f7-icons icon default icon-sm tts cursor-pointer"
-                   :style="{'background-color': device.actionButtons.carcall === 'progress' ? 'greenyellow' : '#8faadc', 'color': device.actionButtons.carcall === 'progress' ? 'black' : 'white'}">phone
+                   :style="getCarCallButtonStyle(device)">phone
                 </i>
                 <span class="ttt elip ttt-tl bg-white border border-slate-300 text-dark shadow-md text-sm"
                       style="width: max-content; zoom: 1.2;">{{ trans('Carcall') }}</span>
@@ -773,6 +807,14 @@
                 </i>
                 <span class="ttt elip ttt-tl bg-white border border-slate-300 text-dark shadow-md text-sm"
                       style="width: max-content; zoom: 1.2;">{{ trans('Set') }}</span>
+              </span>
+
+              <span class="icon-wrapper tt" v-if="device.actionButtons.mute && !actionsForbidden.includes('mute')" @click.prevent.stop="makeFsCall('mute', device)">
+                <i class="f7-icons icon default icon-sm tts cursor-pointer"
+                   :style="{'background-color': device.actionButtons.mute === 'progress' ? 'greenyellow' : '#8faadc', 'color': device.actionButtons.mute === 'progress' ? 'black' : 'white'}">bell_slash
+                </i>
+                <span class="ttt elip ttt-tl bg-white border border-slate-300 text-dark shadow-md text-sm"
+                      style="width: max-content; zoom: 1.2;">{{ trans('Mute alert') }}</span>
               </span>
 
               <span class="icon-wrapper tt" v-if="!actionsForbidden.includes('openModal')" @click.prevent.stop="openDeviceCustomFields(device)" :style="{ 'cursor': 'pointer' }">
@@ -1381,8 +1423,13 @@
   import SimpleSearchableDropdown from "./third-party/simple-searchable-dropdown/SimpleSearchableDropdown.vue";
   import LabelsSelector from "./atoms/dropdowns/LabelsSelector.vue";
   import LabelsMixin from "./mixins/LabelsMixin";
+  import CallcenterModeMixin from "./mixins/CallcenterModeMixin";
+  import SettingsMixin from "./mixins/SettingsMixin";
 
   const DEVICE_TYPE_ORDER = ['GATEWAY', 'TELEALARM', 'INTERCOM'];
+  // Keep in sync with app/Http/Controllers/Api/EquipmentController.php
+  const REVIVAL_RESTRICTED_DEVICE_MODULES = ['GW-NAYAR-GSR'];
+  const REVIVAL_RESTRICTION_EXCEPTION_PROTOCOLS = ['PROT-LEI-NANO', 'PROT-MICROKEY'];
 
   export default {
 
@@ -1394,7 +1441,7 @@
       LabelsSelector,
     },
 
-    mixins: [NotificationsMixin, LabelsMixin],
+    mixins: [NotificationsMixin, LabelsMixin, CallcenterModeMixin, SettingsMixin],
 
     props: {
       siteId: {
@@ -1405,6 +1452,11 @@
         type: Number,
           required: false,
           default: null
+      },
+      callcenterMode: {
+        type: Boolean,
+        required: false,
+        default: false
       },
       actionsForbidden: {
         type: Array,
@@ -1459,6 +1511,8 @@
         accountId: null,
         settings: [],
         actionInProgress: false,
+        carCallTimeouts: {},
+        carCallStatusListener: null,
         countries: [],
         required: {},
         assignableGateways: [],
@@ -1566,6 +1620,7 @@
           let accountId = document.querySelector("meta[name='account-id']")?.getAttribute('content')
           if (!isEmpty(accountId)) {
             this.accountId = Number(accountId)
+            this.subscribeToCarCallStatus();
           } else {
             throw new Error('Account id is empty')
           }
@@ -1680,66 +1735,31 @@
 
       unpackSettingsData(site) {
         site.devices.forEach(device => {
-          device.alarmNumber = this.settings['device.alarm1.number']?.device_settings?.[device.device_id] ?? ''
-          device.periodicalNumber = this.settings['device.periodical1.number']?.device_settings?.[device.device_id] ?? ''
+          device.alarmNumber = this.getSettingValue('device.alarm1.number', { device }, { to: 'device' })
+          device.periodicalNumber = this.getSettingValue('device.periodical1.number', { device }, { to: 'device' })
         })
-        site.alarmNumber = this.settings['device.alarm1.number']?.ds_settings?.[site.ds_id] ??
-                      this.settings['device.alarm1.number']?.label_settings?.[site.ds_id] ??
-                      this.settings['device.alarm1.number']?.acc_mod_settings?.[this.accountId]?.[site.ds_protocol_id] ??
-                      this.settings['device.alarm1.number']?.mod_settings?.[site.ds_protocol_id] ??
-                      this.settings['device.alarm1.number']?.acc_settings?.[this.accountId] ??
-                      this.settings['device.alarm1.number']?.settings ?? ''
-
-        site.alarmNumberLevel = this.settings['device.alarm1.number']?.ds_settings?.[site.ds_id] ? this.trans('Site settings') :
-                      this.settings['device.alarm1.number']?.label_settings?.[site.ds_id] ? (this.trans('Label settings') + ` (${this.settings['device.alarm1.number']?.label_sources?.[site.ds_id] || 'Label'})`) :
-                      this.settings['device.alarm1.number']?.acc_mod_settings?.[this.accountId]?.[site.ds_protocol_id] ? this.trans('Account module settings') :
-                      this.settings['device.alarm1.number']?.mod_settings?.[site.ds_protocol_id] ? this.trans('Module settings') :
-                      this.settings['device.alarm1.number']?.acc_settings?.[this.accountId] ? this.trans('Account settings') :
-                      this.settings['device.alarm1.number']?.settings ? this.trans('Root settings') : ''
-
-        site.periodicalNumber = this.settings['device.periodical1.number']?.ds_settings?.[site.ds_id] ??
-                      this.settings['device.periodical1.number']?.label_settings?.[site.ds_id] ??
-                      this.settings['device.periodical1.number']?.acc_mod_settings?.[this.accountId]?.[site.ds_protocol_id] ??
-                      this.settings['device.periodical1.number']?.mod_settings?.[site.ds_protocol_id] ??
-                      this.settings['device.periodical1.number']?.acc_settings?.[this.accountId] ??
-                      this.settings['device.periodical1.number']?.settings ?? ''
-
-        site.periodicalNumberLevel = this.settings['device.periodical1.number']?.ds_settings?.[site.ds_id] ? this.trans('Site settings') :
-                      this.settings['device.periodical1.number']?.label_settings?.[site.ds_id] ? (this.trans('Label settings') + ` (${this.settings['device.periodical1.number']?.label_sources?.[site.ds_id] || 'Label'})`) :
-                      this.settings['device.periodical1.number']?.acc_mod_settings?.[this.accountId]?.[site.ds_protocol_id] ? this.trans('Account module settings') :
-                      this.settings['device.periodical1.number']?.mod_settings?.[site.ds_protocol_id] ? this.trans('Module settings') :
-                      this.settings['device.periodical1.number']?.acc_settings?.[this.accountId] ? this.trans('Account settings') :
-                      this.settings['device.periodical1.number']?.settings ? this.trans('Root settings') : ''
-
-        site.cliNumber = this.settings['call.alarm.route1.cli.number']?.ds_settings?.[site.ds_id] ??
-                      this.settings['call.alarm.route1.cli.number']?.label_settings?.[site.ds_id] ??
-                      this.settings['call.alarm.route1.cli.number']?.acc_mod_settings?.[this.accountId]?.[site.ds_protocol_id] ??
-                      this.settings['call.alarm.route1.cli.number']?.mod_settings?.[site.ds_protocol_id] ??
-                      this.settings['call.alarm.route1.cli.number']?.acc_settings?.[this.accountId] ??
-                      this.settings['call.alarm.route1.cli.number']?.settings ?? ''
-
-        site.cliNumberLevel = this.settings['call.alarm.route1.cli.number']?.ds_settings?.[site.ds_id] ? this.trans('Site settings') :
-                      this.settings['call.alarm.route1.cli.number']?.label_settings?.[site.ds_id] ? (this.trans('Label settings') + ` (${this.settings['call.alarm.route1.cli.number']?.label_sources?.[site.ds_id] || 'Label'})`) :
-                      this.settings['call.alarm.route1.cli.number']?.acc_mod_settings?.[this.accountId]?.[site.ds_protocol_id] ? this.trans('Account module settings') :
-                      this.settings['call.alarm.route1.cli.number']?.mod_settings?.[site.ds_protocol_id] ? this.trans('Module settings') :
-                      this.settings['call.alarm.route1.cli.number']?.acc_settings?.[this.accountId] ? this.trans('Account settings') :
-                      this.settings['call.alarm.route1.cli.number']?.settings ? this.trans('Root settings') : ''
+        site.alarmNumber = this.getSettingValue('device.alarm1.number', { site })
+        site.alarmNumberLevel = this.getSettingLevel('device.alarm1.number', { site })
+        site.periodicalNumber = this.getSettingValue('device.periodical1.number', { site })
+        site.periodicalNumberLevel = this.getSettingLevel('device.periodical1.number', { site })
+        site.cliNumber = this.getSettingValue('call.alarm.route1.cli.number', { site })
+        site.cliNumberLevel = this.getSettingLevel('call.alarm.route1.cli.number', { site })
       },
 
       unpackDevicesData(site) {
         site.devices = this.sortDevicesByTypeAndEquipment(site.devices);
         site.devices.forEach(device => {
-          this.unpackDeviceData(device)
+          this.unpackDeviceData(device, site)
         })
       },
 
-      unpackDeviceData(device) {
+      unpackDeviceData(device, site) {
         this.unpackAlertsData(device)
         this.unpackExpectedChecks(device)
         this.unpackGatewayData(device)
         this.unpackDeviceCustomFields(device)
         this.unpackOtherDeviceData(device)
-        this.unpackActionButtons(device)
+        this.unpackActionButtons(device, site)
         device.errors = {}
       },
 
@@ -1864,12 +1884,18 @@
         device.deviceTypeIcon = deviceTypeIcons[device.deviceType] || 'gear_alt';
       },
 
-      unpackActionButtons(device) {
+      unpackActionButtons(device, site) {
+        const isRestrictedModule = REVIVAL_RESTRICTED_DEVICE_MODULES.includes(device.module?.module_name);
+        const siteProtocolName = site?.module?.module_name;
+        const isExceptionProtocol = REVIVAL_RESTRICTION_EXCEPTION_PROTOCOLS.includes(siteProtocolName);
+        const shouldHideRevival = site && isRestrictedModule && !isExceptionProtocol;
+
         device.actionButtons = {
           carcall: this.userHasPhone && device.module?.funktions?.some(obj => obj.function_call === '_carcall'),
-          revival: device.module?.funktions?.some(obj => obj.function_call === '_revival'),
+          revival: !shouldHideRevival && device.module?.funktions?.some(obj => obj.function_call === '_revival'),
           set: device.module?.funktions?.some(obj => obj.function_call === '_set'),
-          trigger: device.module?.funktions?.some(obj => obj.function_call === '_trigger')
+          trigger: device.module?.funktions?.some(obj => obj.function_call === '_trigger'),
+          mute: this.getSettingValue('call.alarm.mute.enable', { device, site }) === '1',
         }
       },
 
@@ -2192,7 +2218,9 @@
 
               let newDevice = response.data.device
               device.cloned['device_'+field] = newDevice['device_'+field]
-              this.unpackDeviceData(newDevice)
+
+              this.unpackDeviceData(newDevice, this.site)
+
               Object.assign(device, newDevice);
 
               window.dispatchEvent(new CustomEvent('notify', {detail: [this.trans('Reject succeeded'), 'success'] } ));
@@ -2216,7 +2244,9 @@
 
               let newDevice = response.data.device
               device.cloned['device_'+field] = newDevice['device_'+field]
-              this.unpackDeviceData(newDevice)
+
+              this.unpackDeviceData(newDevice, this.site)
+
               Object.assign(device, newDevice);
 
               window.dispatchEvent(new CustomEvent('notify', {detail: [this.trans('Confirm succeeded'), 'success'] } ));
@@ -2496,8 +2526,27 @@
       },
 
       makeFsCall(action, device) {
+        if (action === 'carcall' && device.actionButtons.carcall !== true) {
+          return;
+        }
+
         this.actionInProgress = true
+        if (action === 'carcall') {
+          this.clearCarCallTimeout(device.device_id)
+        }
         device.actionButtons[action] = 'progress'
+
+        // For carcall, start 20-second timeout
+        if (action === 'carcall') {
+          const timeoutId = setTimeout(() => {
+            if (device.actionButtons.carcall === 'progress') {
+              this.$set(device.actionButtons, 'carcall', true);
+            }
+            this.actionInProgress = false;
+            delete this.carCallTimeouts[String(device.device_id)];
+          }, 30000);
+          this.carCallTimeouts[String(device.device_id)] = timeoutId;
+        }
 
         window.dispatchEvent(new CustomEvent('loading', { detail: { action: 'equipment', loading: true }}));
         axios.post('/equipment/fsCall', { action: action, deviceId: device.device_id })
@@ -2506,16 +2555,87 @@
               window.dispatchEvent(new CustomEvent('notify', {detail: [this.capitalize(action)+' '+this.trans('action succeeded'), 'success']} ));
             } else {
               window.dispatchEvent(new CustomEvent('notifyerror', {detail: {message: this.capitalize(action)+' '+this.trans('action failed') }} ));
+              if (action === 'carcall') {
+                this.clearCarCallTimeout(device.device_id);
+                this.$set(device.actionButtons, 'carcall', true);
+              }
             }
           })
           .catch(error => {
             window.dispatchEvent(new CustomEvent('notifyerror', {detail: {message: this.capitalize(action)+' '+this.trans('action failed') }} ));
+            if (action === 'carcall') {
+              this.clearCarCallTimeout(device.device_id);
+              this.$set(device.actionButtons, 'carcall', true);
+            }
           })
           .finally(() => {
             window.dispatchEvent(new CustomEvent('loading', { detail: { action: 'equipment', loading: false }} ));
             this.actionInProgress = false
-            device.actionButtons[action] = true
+            // For carcall, don't reset - wait for START/END events or timeout
+            if (action !== 'carcall') {
+              device.actionButtons[action] = true
+            }
         })
+      },
+
+      clearCarCallTimeout(deviceId) {
+        const key = String(deviceId);
+        const timeoutId = this.carCallTimeouts[key];
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          delete this.carCallTimeouts[key];
+        }
+      },
+
+      handleCarCallStatusEvent(event) {
+        console.log('handling CarCallStatus event')
+        const detail = event?.detail;
+        if (!detail) {
+          return;
+        }
+
+        const { accountId: eventAccountId, deviceId, status } = detail;
+        if (!this.accountId || Number(eventAccountId) !== Number(this.accountId)) {
+          console.log('accounts doesnt match - returning')
+          return;
+        }
+
+        const deviceKey = String(deviceId);
+        const device = this.site?.devices?.find(dev => String(dev.device_id) === deviceKey);
+        if (!device || !device.actionButtons?.carcall) {
+          console.log('device or device carcall not found - returning')
+          return;
+        }
+
+        this.clearCarCallTimeout(deviceKey);
+
+        if (status === 'start') {
+          this.$set(device.actionButtons, 'carcall', 'active');
+        } else if (status === 'end') {
+          this.$set(device.actionButtons, 'carcall', true);
+        }
+
+        this.actionInProgress = false;
+      },
+
+      getCarCallButtonStyle(device) {
+        const state = device.actionButtons?.carcall;
+        if (state === 'progress') {
+          return { 'background-color': 'greenyellow', 'color': 'black' };
+        }
+        if (state === 'active') {
+          return { 'background-color': '#e53935', 'color': 'white' };
+        }
+        return { 'background-color': '#8faadc', 'color': 'white' };
+      },
+
+      subscribeToCarCallStatus() {
+        if (!this.accountId) {
+          console.log('unable to subscribe to carcall channel - no accountId!')
+          return;
+        }
+
+        // Listen for carcall status changes (WebSocket auto-initialized in realtime.js)
       },
 
       toggleDeviceState(device) {
@@ -2658,6 +2778,15 @@
     },
 
     created() {
+      console.log('VueEquipmentSite created() hook called', {
+        siteId: this.siteId,
+        deviceModeId: this.deviceModeId,
+        callcenterMode: this.callcenterMode
+      });
+
+      this.carCallStatusListener = (event) => this.handleCarCallStatusEvent(event);
+      document.addEventListener('carcall-status-changed', this.carCallStatusListener);
+
       this.initialFetch(this.siteId)
 
       const self = this;
@@ -2681,6 +2810,26 @@
         }
       });
 
+    },
+
+    mounted() {
+      console.log('VueEquipmentSite mounted() hook called', {
+        siteId: this.siteId,
+        deviceModeId: this.deviceModeId,
+        callcenterMode: this.callcenterMode,
+        site: this.site
+      });
+    },
+
+    beforeDestroy() {
+      console.log('VueEquipmentSite beforeDestroy() hook called');
+
+      if (this.carCallStatusListener) {
+        document.removeEventListener('carcall-status-changed', this.carCallStatusListener);
+      }
+      Object.values(this.carCallTimeouts || {}).forEach(timeoutId => clearTimeout(timeoutId));
+      this.carCallTimeouts = {};
+      this.carCallStatusListener = null;
     }
   }
 </script>
@@ -2743,6 +2892,80 @@
 
   .icon-sm {
     font-size: 1.1rem;
+  }
+
+  .callcenter-phone-wrapper {
+    position: relative;
+  }
+
+  .callcenter-classification-dropdown {
+    position: absolute;
+    top: 110%;
+    right: 0;
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 0.25rem 0;
+    z-index: 20;
+    min-width: 11rem;
+  }
+
+  .callcenter-classification-option {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-left: 3px solid transparent;
+    border-bottom: 1px solid #f3f4f6;
+    padding: 0.5rem 0.75rem;
+    gap: 0.65rem;
+    cursor: pointer;
+    color: #374151;
+    font-size: 0.875rem;
+    text-align: left;
+    transition: background-color 0.15s ease;
+  }
+
+  .callcenter-classification-option:last-child {
+    border-bottom: none;
+  }
+
+  .callcenter-classification-option:hover {
+    background-color: #f9fafb;
+  }
+
+  .callcenter-classification-option .option-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .callcenter-classification-option .option-label {
+    flex: 1;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  .callcenter-classification-option .option-shortcut {
+    font-weight: 600;
+    color: #9ca3af;
+    font-size: 0.75rem;
+    letter-spacing: 0.025em;
+  }
+
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: opacity 0.15s ease;
+  }
+
+  .fade-enter,
+  .fade-leave-to {
+    opacity: 0;
   }
 
   .icon-md {

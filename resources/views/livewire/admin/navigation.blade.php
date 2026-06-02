@@ -1,3 +1,4 @@
+{{-- @deprecated Use navigation-new.blade.php instead --}}
 <header class="mt-0 mb-4">
     <!-- START :: Customer Logo & Brand Color -->
     <div class="bg-header w-full">
@@ -11,6 +12,13 @@
         <div class="max-w-7xl mx-auto w-full px-4 font-medium">
             <div class="relative flex h-16 justify-between w-full items-center">
                 <div x-data="{ mobileOpen: false }" class=" relative h-full w-full flex items-center rounded-none ">
+
+                    {{-- Alarm notification - single component handles both desktop and mobile views --}}
+                    @if(Auth::user() && session('account.id') != null)
+                        <div class="absolute right-0 lg:right-auto lg:relative lg:order-last z-50">
+                            <livewire:admin.alarm-notification />
+                        </div>
+                    @endif
 
                     <!-- START :: Desktop Navigation Button -->
                     <div class="hidden lg:flex flex-grow py-3 justify-between rounded-none">
@@ -98,9 +106,6 @@
                             </ul>
 
                             <ul class="flex w-full items-center justify-end h-10 z-50">
-                                @if(Auth::user() && session('account.id') != null)
-                                    <livewire:admin.alarm-notification></livewire:admin.alarm-notification>
-                                @endif
                                 <li class="block relative" x-data="{showChildren:false}" x-on:click.away="showChildren=false">
                                     <a href="#" class="flex items-center h-10 pl-4 pr-2 rounded-full cursor-pointer no-underline hover:no-underline transition-colors duration-100 mx-1 hover:bg-blue-500 hover:text-white" x-on:click.prevent="showChildren=!showChildren">
                                         <span>@lang('Languages')</span>
@@ -159,11 +164,6 @@
                         @endif
                     </div>
                     <!-- END :: Desktop Navigation Button -->
-                    <div class=" flex flex-grow justify-end lg:hidden">
-                        @if(Auth::user() && session('account.id') != null)
-                            <livewire:admin.alarm-notification></livewire:admin.alarm-notification>
-                        @endif
-                    </div>
 
                     <!-- START :: Mobile Navigation Button -->
                     <div class=" flex justify-end lg:hidden relative z-50" id="mobile-menu">

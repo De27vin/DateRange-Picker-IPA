@@ -16,3 +16,12 @@ use Illuminate\Support\Facades\Broadcast;
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
+
+// -------------------------------------------------------------------------
+// Unified Realtime Channel (New Architecture)
+// -------------------------------------------------------------------------
+
+Broadcast::channel('realtime.account.{accountId}', function ($user, $accountId) {
+    $channelService = new \App\Services\ReverbChannelService();
+    return $channelService->userCanAccessAccount($user, $accountId);
+});

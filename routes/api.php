@@ -1,16 +1,15 @@
 <?php
 
+use Illuminate\Http\Request;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\SetupAccountDataForSession;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use Illuminate\Http\Request;
-use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\BasfController;
 use App\Http\Controllers\ChartsSettingsController;
 use App\Http\Controllers\DashboardWidgetsController;
 use App\Http\Controllers\TimeSeriesController;
-
+use Illuminate\Session\Middleware\StartSession;
+use App\Http\Controllers\BasfController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -22,13 +21,14 @@ use App\Http\Controllers\TimeSeriesController;
 |
 */
 
-// Route::middleware('auth:basf')->get('/basf', \App\Http\Livewire\Ucp\ActiveAlarmDevices::class)->name('basf');
-// Route::middleware('auth:api')->post('/basf', 'App\Http\Controllers\BasfController@index');
+// Alarm notification routes
+Route::get('/alarm-notifications/current', [\App\Http\Controllers\Api\AlarmBroadcastController::class, 'getCurrentAlarms'])
+    ->name('api.alarm-notifications.current')
+    ->middleware('web');
 
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::post('/realtime/broadcast', [\App\Http\Controllers\Api\RealtimeBroadcastController::class, 'broadcast'])
+    ->name('api.realtime.broadcast')
+    ->middleware('internalApiToken');
 
 Route::middleware([
     EncryptCookies::class,

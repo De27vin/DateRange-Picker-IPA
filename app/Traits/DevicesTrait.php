@@ -11,6 +11,7 @@ use App\Models\Account;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
+/** @deprecated  */
 trait DevicesTrait
 {
 
@@ -113,8 +114,8 @@ trait DevicesTrait
         if(count($alerts) == 0){
             return (new Collection);
         }
-        $accountId = session('account.id');
-        $this->account = Account::where('account_id','=',$accountId)->first();
+
+        $this->account = app(\App\Services\UserContextService::class)->getCurrentAccount();
         if($this->account == null){
             abort(500, 'Unauthenticated.');
         }

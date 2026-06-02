@@ -164,12 +164,14 @@ class FieldsTranslations extends Component
     ////////////////////////// ALERT TYPES //////////////////////////
     public function prepareAlertTranslationData()
     {
-        $cacheKeyAlert = __CLASS__ . __METHOD__ . '_alert_' . $this->locale;
+        $accountId = session('account.id');
+
+        $cacheKeyAlert = __CLASS__ . __METHOD__ . '_alert_' . $accountId . '_' . $this->locale;
         $this->alertTranslations = GroupCache::rememberForever('profile_data', $cacheKeyAlert, function() {
             return $this->getTranslations(['alert' => '']);
         });
 
-        $cacheKeyAlertLabels = __CLASS__ . __METHOD__ . '_alertLabels_' . $this->locale;
+        $cacheKeyAlertLabels = __CLASS__ . __METHOD__ . '_alertLabels_' . $accountId . '_' . $this->locale;
         $this->alertLabelsTranslations = GroupCache::rememberForever('profile_data', $cacheKeyAlertLabels, function() {
             return $this->getAlertTranslations($this->locale);
         });

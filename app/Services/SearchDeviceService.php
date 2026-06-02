@@ -32,8 +32,8 @@ class SearchDeviceService
         $query = DeviceSite::query()
             ->with([
                 'devices.module.module_type', 'devices.gateway', 'comments',
-                'devices.custom_fields', 'devices.module.funktions', 
-                'module', 'module.module_type', 'numbers', 'address', 
+                'devices.custom_fields', 'devices.module.funktions',
+                'module', 'module.module_type', 'numbers', 'address',
                 'address.location', 'custom_fields', 'labels'
             ]);
 
@@ -155,8 +155,13 @@ class SearchDeviceService
         // Build query with comprehensive eager loading
         $query = $baseQuery ?? Device::query();
         $query->with([
-            'module.module_type', 'device_site', 'device_site.address', 
-            'device_site.address.location', 'device_site.numbers', 'custom_fields'
+            'module.module_type',
+            'device_site',
+            'device_site.address',
+            'device_site.address.location',
+            'device_site.numbers',
+            'device_site.custom_fields',
+            'custom_fields',
         ]);
 
         // Apply alert filters with gateway expansion logic

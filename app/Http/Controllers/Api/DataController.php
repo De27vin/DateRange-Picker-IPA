@@ -120,7 +120,8 @@ class DataController extends BaseController
             if (is_dir($langPath)) {
                 foreach (File::allFiles($langPath) as $file) {
                     $phpTranslations = File::getRequire($file->getRealPath());
-                    $translations = array_merge($translations, $this->flattenArray($phpTranslations));
+                    // ensure JSON keys keep precedence (matches behaviour of __())
+                    $translations = array_merge($this->flattenArray($phpTranslations), $translations);
                 }
             }
 

@@ -1,3 +1,4 @@
+{{-- @deprecated --}}
 @props(['filters', 'alertsCountGrouped', 'alertTranslations'])
 
 <div class="grid grid-flow-col alert-grids gap-x-4 w-full pb-12" >

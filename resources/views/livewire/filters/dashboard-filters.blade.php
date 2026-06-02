@@ -1,3 +1,4 @@
+{{-- @deprecated --}}
 <div>
     <x-search.filters-new
             :searchTabs="$searchTabs"

@@ -23,6 +23,9 @@
                         {{ __('Set Password') }}
                     </x-button>
                     <input type="hidden" name="token" id="token" value="{{$token}}"/>
+                    @if(isset($tag))
+                        <input type="hidden" name="tag" id="tag" value="{{$tag}}"/>
+                    @endif
                 </div>
             </div>
         </form>

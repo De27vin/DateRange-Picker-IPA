@@ -11,6 +11,7 @@ use App\Traits\TranslationsTrait;
 use App\Traits\ValidationTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Http\Livewire\DataTable\WithSorting;
@@ -41,6 +42,8 @@ class GatewaysList extends Component
         'assigned'  => false,
         'unassigned'=> false,
     ];
+    public $exportFormat = 'csv';
+    public string $exportComponentId;
 
     // Gateway editing properties
     public $editedGatewayIndex = null;
@@ -64,11 +67,45 @@ class GatewaysList extends Component
         parent::__construct($id);
     }
 
+    public function exportGateways($format = null, $delivery = 'browser')
+    {
+        if ($format) {
+            $this->exportFormat = $format;
+        }
+
+        $activeTab = array_search(true, $this->tabs, true);
+        if ($activeTab === false) {
+            $activeTab = 'enabled';
+        }
+
+        $downloadId = (string) Str::uuid();
+
+        $params = [
+            'tab'       => $activeTab,
+            'search'    => $this->filters['search'] ?? '',
+            'accountId' => $this->accountId,
+        ];
+
+        $this->dispatchBrowserEvent('start-export', [
+            'type'    => 'gateways',
+            'component_id' => $this->exportComponentId,
+            'request' => [
+                'type'        => 'gateways',
+                'format'      => $this->exportFormat,
+                'delivery'    => $delivery,
+                'params'      => $params,
+                'download_id' => $downloadId,
+                'component_id' => $this->exportComponentId,
+            ],
+        ]);
+    }
+
     public function mount()
     {
         $this->accountId = session('account.id');
         $this->isAdmin   = Auth::user()->isAdmin;
         $this->isSite    = Auth::user()->isSite;
+        $this->exportComponentId = (string) Str::uuid();
 
         $query = request('search');
         if ($query) {

@@ -17,13 +17,56 @@ window.Pikaday = require("pikaday");
  * allows your team to easily build robust real-time web applications.
  */
 
-// import Echo from 'laravel-echo';
+window.Pusher = require('pusher-js');
 
-// window.Pusher = require('pusher-js');
+import Echo from 'laravel-echo';
 
-// window.Echo = new Echo({
-//     broadcaster: 'pusher',
-//     key: process.env.MIX_PUSHER_APP_KEY,
-//     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
-//     forceTLS: true
-// });
+function initializeEcho() {
+    const reverbHost = document.querySelector('meta[name="reverb-host"]')?.getAttribute('content');
+    const reverbPort = document.querySelector('meta[name="reverb-port"]')?.getAttribute('content');
+    const reverbKey = document.querySelector('meta[name="reverb-key"]')?.getAttribute('content');
+
+    if (!reverbHost || !reverbPort || !reverbKey) {
+        console.error('Missing Reverb configuration in meta tags: host, port, or key');
+        return false;
+    }
+
+    try {
+        window.Echo = new Echo({
+            broadcaster: 'reverb',
+            key: reverbKey,
+            wsHost: reverbHost,
+            wsPort: parseInt(reverbPort),
+            wssPort: parseInt(reverbPort),
+            forceTLS: window.location.protocol === 'https:',
+            enabledTransports: ['ws', 'wss'],
+        });
+
+        console.log('Laravel Echo initialized with Reverb', {
+            host: reverbHost,
+            port: reverbPort,
+            secure: window.location.protocol === 'https:'
+        });
+
+        // Listen to connection state changes
+        window.Echo.connector.pusher.connection.bind('state_change', (states) => {
+            if (states.current === 'connected') {
+                console.log('Connected to WebSocket server');
+            } else if (states.current === 'disconnected') {
+                console.warn('Disconnected from WebSocket server');
+            } else if (states.current === 'connecting') {
+                console.log('Connecting to WebSocket server...');
+            }
+        });
+
+        return true;
+    } catch (error) {
+        console.error('Failed to initialize Laravel Echo:', error);
+        return false;
+    }
+}
+
+// Initialize Echo immediately when DOM is ready, before Alpine starts
+document.addEventListener('DOMContentLoaded', function() {
+    initializeEcho();
+});

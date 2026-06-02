@@ -9,23 +9,27 @@ class ProfileAccessService
 {
     private array $profileData = [];
 
+    public function __construct(
+        private readonly UserContextService $userContext
+    ) {}
+
     public function getProfileData()
     {
         if (!empty($this->profileData)) {
             return $this->profileData;
         }
 
-        $updatedAccount = Account::query()->where('account_id', session('account.id'))->first();
-        $profile = $updatedAccount->account_translation;
+        $account = $this->userContext->getCurrentAccount();
+        $this->profileData = $account->account_translation;
 
-        return $profile;
+        return $this->profileData;
     }
 
     public function saveProfileData($profile)
     {
-        $updatedAccount = Account::query()->where('account_id','=',session('account.id'))->first();
-        $updatedAccount->account_translation = $profile;
-        $updatedAccount->save();
+        $account = $this->userContext->getCurrentAccount();
+        $account->account_translation = $profile;
+        $account->save();
 
         $this->profileData = $profile;
     }

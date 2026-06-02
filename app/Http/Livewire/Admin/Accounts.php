@@ -1,7 +1,8 @@
 <?php
 namespace App\Http\Livewire\Admin;
 
-use Illuminate\Support\Facades\Cookie;
+use App\Services\UserContextService;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Illuminate\Support\Facades\Redirect;
@@ -13,6 +14,12 @@ class Accounts extends Component
     use AccountsTrait;
 
     public $profile;
+
+    public function __construct($id = null)
+    {
+        parent::__construct($id);
+        $this->userContext = app(UserContextService::class);
+    }
 
 //    public function __construct()
 //    {
@@ -29,6 +36,10 @@ class Accounts extends Component
 
     public function mount()
     {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
         $accounts = $this->getUserAccounts();
         foreach ($accounts as $account) {
             $this->accounts[$account->account_id]['name'] = $account->account_name;
@@ -45,8 +56,26 @@ class Accounts extends Component
 
     public function setAccount($id)
     {
-        $this->setAccountSessionData($id);
-        Cookie::queue('ucp_account', $id, 1000000);
+        $oldAccountId = session('account.id');
+
+        $account = $this->userContext->switchAccount($id);
+        $this->profile = $account->account_translation;
+        $this->clearFilterSessionData();
+        \Log::info('Account switched', ['user_id' => \Auth::id(), 'old_account' => $oldAccountId, 'new_account' => $id]);
+
         return redirect()->intended('dashboard');
+    }
+
+    /* todo: move to some search filters oriented service that takes the logic form SearchFiltersTrait.php */
+    private function clearFilterSessionData()
+    {
+        foreach (session()->all() as $key => $value) {
+            if (str_starts_with($key, 'deviceSearchFilter')) {
+                session()->forget($key);
+            }
+        }
+
+        session()->forget('historyFilter');
+        session()->forget('severityFilter');
     }
 }

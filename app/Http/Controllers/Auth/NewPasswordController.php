@@ -61,6 +61,16 @@ class NewPasswordController extends Controller
                     'user_lastpw' =>time(),
                 ])->save();
 
+                // Update SignalWire SIP endpoint if user has mandown role
+                if ($user->hasMandownRole()) {
+                    $signalWireService = new \App\Services\SignalWireService();
+                    if (!$signalWireService->updateSipEndpoint($user, $request->password)) {
+                        \Log::error('Failed to update SIP endpoint password after password reset', [
+                            'user_id' => $user->user_id
+                        ]);
+                    }
+                }
+
                 event(new PasswordReset($user));
             }
         );

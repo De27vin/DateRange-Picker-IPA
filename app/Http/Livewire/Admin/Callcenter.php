@@ -47,11 +47,11 @@ class Callcenter extends Component
 
         $device = Device::with('device_alerts')->findOrFail($this->deviceId);
 
-        $voiceAlert = $device->device_alerts->first(fn($da) => $da->alert_type->at_type ===  'VOICE');
-        if (empty($voiceAlert)) {
-            $this->notify('error', __('You cannot enter this page'));
-            abort(404);
-        }
+        $voiceAlert = $device->device_alerts->first(fn($da) => $da->alert_type->at_type ===  'ALARM');
+//        if (empty($voiceAlert)) {
+//            $this->notify('error', __('You cannot enter this page'));
+//            abort(404);
+//        }
 
         if (empty(Auth::user()->isAgent) || empty($device)) {
             $this->showAlarmEditForm = false;
@@ -160,7 +160,6 @@ class Callcenter extends Component
 
     public function resetAlarmEditForm()
     {
-        session(['alarm'   => ['deviceId' => null, 'show' => false]]); // this is rather to delete
         $this->showAlarmEditForm = false;
         $this->emit('updateDataForAlarmEditForm'); // this is rather to delete
     }

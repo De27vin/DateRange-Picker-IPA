@@ -175,7 +175,6 @@ class AmwinClassification extends Component
 
     public function resetAlarmEditForm()
     {
-        session(['alarm'   => ['deviceId' => null, 'show' => false]]); // this is rather to delete
         $this->showAlarmEditForm = false;
         $this->emit('updateDataForAlarmEditForm'); // this is rather to delete
     }

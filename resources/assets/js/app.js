@@ -1,5 +1,6 @@
 require('./bootstrap');
 require('./globalUtils');
+require('./realtime');
 // require('../../../vendor/bastinald/laravel-livewire-loader/resources/js/loader');
 // require('livewire-sortable')
 
@@ -11,9 +12,12 @@ import 'livewire-sortable'
 window.Sortable = require('sortablejs').default
 const notification = document.querySelector('div.notify')
 
+require('./export-handler')
+
 if (notification) {
     setTimeout(() => {
         notification.remove()
     }, notify.timeout )
 }
+
 Alpine.start();

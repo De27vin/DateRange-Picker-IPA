@@ -72,8 +72,7 @@ class CreateDevice extends Component
         $this->fieldTranslations = $this->getFieldTranslations($this->locale);
 //        $this->labelOptions = $this->getLabelOptions(); // HIDE LABELS
         $this->countries = $this->getCountryList();
-        // todo: can be checking first if site have already gateway and if so then removing it from options
-        $this->moduleTypeOptions = ModuleType::deviceTypes()->get()->pluck('mt_type', 'mt_id');
+        $this->moduleTypeOptions = $this->getFilteredModuleTypeOptions();
     }
 
     public function render()
@@ -373,6 +372,54 @@ class CreateDevice extends Component
     {
         unset($this->labels[$id]);
         unset($this->deviceFields['labels'][$id]);
+    }
+
+    private function getFilteredModuleTypeOptions()
+    {
+        $allModuleTypes = ModuleType::deviceTypes()->get();
+        $existingDeviceTypes = $this->deviceSite->devices->pluck('module.module_type.mt_type');
+        $protocolSupportsMultiple = boolval($this->deviceSite->module->module_flags & ModuleFlags::MODULE_FLAG_MULTI_SUPPORT->value);
+
+        $filteredOptions = [];
+
+        foreach ($allModuleTypes as $moduleType) {
+            $shouldInclude = true;
+
+            $supportedModulesForType = $this->deviceSite->module->supported_modules
+                ->where('module_mt_id', $moduleType->mt_id);
+
+            if ($supportedModulesForType->isEmpty()) {
+                $shouldInclude = false;
+            }
+
+            if ($shouldInclude) {
+                foreach (['TELEALARM', 'INTERCOM', 'GATEWAY'] as $deviceModuleType) {
+                    if ($moduleType->mt_type !== $deviceModuleType) continue;
+
+                    if (($deviceModuleType === 'GATEWAY' || !$protocolSupportsMultiple) && $existingDeviceTypes->contains($deviceModuleType)) {
+                        $shouldInclude = false;
+                        break;
+                    }
+                }
+            }
+
+            if ($shouldInclude) {
+                $alreadyHaveDeviceType = $existingDeviceTypes->contains($moduleType->mt_type);
+                if ($alreadyHaveDeviceType) {
+                    $deviceTypeModule = $this->deviceSite->devices->where('module.module_type.mt_type', $moduleType->mt_type)->first()->module;
+                    $moduleSupportsMultiple = boolval($deviceTypeModule->module_flags & ModuleFlags::MODULE_FLAG_MULTI_SUPPORT->value);
+                    if (!$moduleSupportsMultiple) {
+                        $shouldInclude = false;
+                    }
+                }
+            }
+
+            if ($shouldInclude) {
+                $filteredOptions[$moduleType->mt_id] = $moduleType->mt_type;
+            }
+        }
+
+        return $filteredOptions;
     }
 
     // CUSTOM VALIDATIONS

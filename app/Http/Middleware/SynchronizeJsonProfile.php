@@ -14,7 +14,7 @@ class SynchronizeJsonProfile
     public function handle(Request $request, Closure $next)
     {
         if (auth()->check() && $request->route()->getName() === 'accounts') {
-            foreach (Auth::user()->accounts as $account) {
+            foreach (app(\App\Services\UserContextService::class)->getUserAccounts() as $account) {
                 (new AccountUpdateService($account))->synchronizeAccountJsonSchema();
             }
         }

@@ -753,8 +753,9 @@
             <div class="flex justify-end" v-if="!device.edited">
 
               <span class="icon-wrapper tt" v-if="device.actionButtons.carcall" @click.prevent.stop="makeFsCall('carcall', device)">
-                <i class="f7-icons icon default icon-sm tts cursor-pointer"
-                   :style="{'background-color': device.actionButtons.carcall === 'progress' ? 'greenyellow' : '#8faadc', 'color': device.actionButtons.carcall === 'progress' ? 'black' : 'white'}">phone
+                <i class="f7-icons icon default icon-sm tts"
+                   :class="device.actionButtons.carcall === true ? 'cursor-pointer' : 'cursor-not-allowed'"
+                   :style="getCarCallButtonStyle(device)">phone
                 </i>
                 <span class="ttt elip ttt-tl bg-white border border-slate-300 text-dark shadow-md text-sm"
                       style="width: max-content; zoom: 1.2;">{{ trans('Carcall') }}</span>
@@ -782,6 +783,14 @@
                 </i>
                 <span class="ttt elip ttt-tl bg-white border border-slate-300 text-dark shadow-md text-sm"
                       style="width: max-content; zoom: 1.2;">{{ trans('Set') }}</span>
+              </span>
+
+              <span class="icon-wrapper tt" v-if="device.actionButtons.mute" @click.prevent.stop="makeFsCall('mute', device)">
+                <i class="f7-icons icon default icon-sm tts cursor-pointer"
+                   :style="{'background-color': device.actionButtons.mute === 'progress' ? 'greenyellow' : '#8faadc', 'color': device.actionButtons.mute === 'progress' ? 'black' : 'white'}">bell_slash
+                </i>
+                <span class="ttt elip ttt-tl bg-white border border-slate-300 text-dark shadow-md text-sm"
+                      style="width: max-content; zoom: 1.2;">{{ trans('Mute alert') }}</span>
               </span>
 
               <span class="icon-wrapper tt" v-if="!actionsForbidden.includes('openModal')" @click.prevent.stop="openDeviceCustomFields(device)" :style="{ 'cursor': 'pointer' }">
@@ -1394,8 +1403,12 @@ import NotificationsMixin from "./mixins/NotificationsMixin";
 import SimpleSearchableDropdown from "./third-party/simple-searchable-dropdown/SimpleSearchableDropdown.vue";
 import LabelsSelector from "./atoms/dropdowns/LabelsSelector.vue";
 import LabelsMixin from "./mixins/LabelsMixin";
+import SettingsMixin from "./mixins/SettingsMixin";
 
 const DEVICE_TYPE_ORDER = ['GATEWAY', 'TELEALARM', 'INTERCOM'];
+// Keep in sync with app/Http/Controllers/Api/EquipmentController.php
+const REVIVAL_RESTRICTED_DEVICE_MODULES = ['GW-NAYAR-GSR'];
+const REVIVAL_RESTRICTION_EXCEPTION_PROTOCOLS = ['PROT-LEI-NANO', 'PROT-MICROKEY'];
 
 export default {
 
@@ -1407,7 +1420,7 @@ export default {
     LabelsSelector,
   },
 
-  mixins: [NotificationsMixin, LabelsMixin],
+  mixins: [NotificationsMixin, LabelsMixin, SettingsMixin],
 
   directives: {
     'click-outside': {
@@ -1458,6 +1471,8 @@ export default {
       accountId: null,
       settings: [],
       actionInProgress: false,
+      carCallTimeouts: {},
+      carCallStatusListener: null,
       countries: [],
       required: {},
       assignableGateways: [],
@@ -1562,11 +1577,14 @@ export default {
 
     async initialFetch(siteId) {
       try {
+        console.log('[VueEquipmentList] Starting config fetch at', Date.now());
+
         this.userHasPhone = document.querySelector("meta[name='has-phone']")?.getAttribute('content')
         this.activeLabels = document.querySelector("meta[name='active-labels']")?.getAttribute('content')
         let accountId = document.querySelector("meta[name='account-id']")?.getAttribute('content')
         if (!isEmpty(accountId)) {
           this.accountId = Number(accountId)
+          this.subscribeToCarCallStatus();
         } else {
           throw new Error('Account id is empty')
         }
@@ -1581,6 +1599,8 @@ export default {
           axios.get('/data/assignableGateways'),
           axios.get('/data/assignableSipNumbers'),
         ]);
+
+        console.log('[VueEquipmentList] Config fetch completed at', Date.now());
 
         this.equipmentFieldsConfig = customFieldsConfigRes.data.filter(config => config.equipment)
         this.customFieldsConfig = customFieldsConfigRes.data
@@ -1717,66 +1737,31 @@ export default {
 
     unpackSettingsData(site) {
       site.devices.forEach(device => {
-        device.alarmNumber = this.settings['device.alarm1.number']?.device_settings?.[device.device_id] ?? ''
-        device.periodicalNumber = this.settings['device.periodical1.number']?.device_settings?.[device.device_id] ?? ''
+        device.alarmNumber = this.getSettingValue('device.alarm1.number', { device }, { to: 'device' })
+        device.periodicalNumber = this.getSettingValue('device.periodical1.number', { device }, { to: 'device' })
       })
-      site.alarmNumber = this.settings['device.alarm1.number']?.ds_settings?.[site.ds_id] ??
-                    this.settings['device.alarm1.number']?.label_settings?.[site.ds_id] ??
-                    this.settings['device.alarm1.number']?.acc_mod_settings?.[this.accountId]?.[site.ds_protocol_id] ??
-                    this.settings['device.alarm1.number']?.mod_settings?.[site.ds_protocol_id] ??
-                    this.settings['device.alarm1.number']?.acc_settings?.[this.accountId] ??
-                    this.settings['device.alarm1.number']?.settings ?? ''
-
-      site.alarmNumberLevel = this.settings['device.alarm1.number']?.ds_settings?.[site.ds_id] ? this.trans('Site settings') :
-                    this.settings['device.alarm1.number']?.label_settings?.[site.ds_id] ? (this.trans('Label settings') + ` (${this.settings['device.alarm1.number']?.label_sources?.[site.ds_id] || 'Label'})`) :
-                    this.settings['device.alarm1.number']?.acc_mod_settings?.[this.accountId]?.[site.ds_protocol_id] ? this.trans('Account module settings') :
-                    this.settings['device.alarm1.number']?.mod_settings?.[site.ds_protocol_id] ? this.trans('Module settings') :
-                    this.settings['device.alarm1.number']?.acc_settings?.[this.accountId] ? this.trans('Account settings') :
-                    this.settings['device.alarm1.number']?.settings ? this.trans('Root settings') : ''
-
-      site.periodicalNumber = this.settings['device.periodical1.number']?.ds_settings?.[site.ds_id] ??
-                    this.settings['device.periodical1.number']?.label_settings?.[site.ds_id] ??
-                    this.settings['device.periodical1.number']?.acc_mod_settings?.[this.accountId]?.[site.ds_protocol_id] ??
-                    this.settings['device.periodical1.number']?.mod_settings?.[site.ds_protocol_id] ??
-                    this.settings['device.periodical1.number']?.acc_settings?.[this.accountId] ??
-                    this.settings['device.periodical1.number']?.settings ?? ''
-
-      site.periodicalNumberLevel = this.settings['device.periodical1.number']?.ds_settings?.[site.ds_id] ? this.trans('Site settings') :
-                    this.settings['device.periodical1.number']?.label_settings?.[site.ds_id] ? (this.trans('Label settings') + ` (${this.settings['device.periodical1.number']?.label_sources?.[site.ds_id] || 'Label'})`) :
-                    this.settings['device.periodical1.number']?.acc_mod_settings?.[this.accountId]?.[site.ds_protocol_id] ? this.trans('Account module settings') :
-                    this.settings['device.periodical1.number']?.mod_settings?.[site.ds_protocol_id] ? this.trans('Module settings') :
-                    this.settings['device.periodical1.number']?.acc_settings?.[this.accountId] ? this.trans('Account settings') :
-                    this.settings['device.periodical1.number']?.settings ? this.trans('Root settings') : ''
-
-      site.cliNumber = this.settings['call.alarm.route1.cli.number']?.ds_settings?.[site.ds_id] ??
-                    this.settings['call.alarm.route1.cli.number']?.label_settings?.[site.ds_id] ??
-                    this.settings['call.alarm.route1.cli.number']?.acc_mod_settings?.[this.accountId]?.[site.ds_protocol_id] ??
-                    this.settings['call.alarm.route1.cli.number']?.mod_settings?.[site.ds_protocol_id] ??
-                    this.settings['call.alarm.route1.cli.number']?.acc_settings?.[this.accountId] ??
-                    this.settings['call.alarm.route1.cli.number']?.settings ?? ''
-
-      site.cliNumberLevel = this.settings['call.alarm.route1.cli.number']?.ds_settings?.[site.ds_id] ? this.trans('Site settings') :
-                    this.settings['call.alarm.route1.cli.number']?.label_settings?.[site.ds_id] ? (this.trans('Label settings') + ` (${this.settings['call.alarm.route1.cli.number']?.label_sources?.[site.ds_id] || 'Label'})`) :
-                    this.settings['call.alarm.route1.cli.number']?.acc_mod_settings?.[this.accountId]?.[site.ds_protocol_id] ? this.trans('Account module settings') :
-                    this.settings['call.alarm.route1.cli.number']?.mod_settings?.[site.ds_protocol_id] ? this.trans('Module settings') :
-                    this.settings['call.alarm.route1.cli.number']?.acc_settings?.[this.accountId] ? this.trans('Account settings') :
-                    this.settings['call.alarm.route1.cli.number']?.settings ? this.trans('Root settings') : ''
+      site.alarmNumber = this.getSettingValue('device.alarm1.number', { site })
+      site.alarmNumberLevel = this.getSettingLevel('device.alarm1.number', { site })
+      site.periodicalNumber = this.getSettingValue('device.periodical1.number', { site })
+      site.periodicalNumberLevel = this.getSettingLevel('device.periodical1.number', { site })
+      site.cliNumber = this.getSettingValue('call.alarm.route1.cli.number', { site })
+      site.cliNumberLevel = this.getSettingLevel('call.alarm.route1.cli.number', { site })
     },
 
     unpackDevicesData(site) {
       site.devices = this.sortDevicesByTypeAndEquipment(site.devices);
       site.devices.forEach(device => {
-        this.unpackDeviceData(device)
+        this.unpackDeviceData(device, site)
       })
     },
 
-    unpackDeviceData(device) {
+    unpackDeviceData(device, site) {
       this.unpackAlertsData(device)
       this.unpackExpectedChecks(device)
       this.unpackGatewayData(device)
       this.unpackDeviceCustomFields(device)
       this.unpackOtherDeviceData(device)
-      this.unpackActionButtons(device)
+      this.unpackActionButtons(device, site)
       device.errors = {}
     },
 
@@ -1951,12 +1936,18 @@ export default {
       }
     },
 
-    unpackActionButtons(device) {
+    unpackActionButtons(device, site) {
+      const isRestrictedModule = REVIVAL_RESTRICTED_DEVICE_MODULES.includes(device.module?.module_name);
+      const siteProtocolName = site?.module?.module_name;
+      const isExceptionProtocol = REVIVAL_RESTRICTION_EXCEPTION_PROTOCOLS.includes(siteProtocolName);
+      const shouldHideRevival = site && isRestrictedModule && !isExceptionProtocol;
+
       device.actionButtons = {
         carcall: this.userHasPhone && device.module?.funktions?.some(obj => obj.function_call === '_carcall'),
-        revival: device.module?.funktions?.some(obj => obj.function_call === '_revival'),
+        revival: !shouldHideRevival && device.module?.funktions?.some(obj => obj.function_call === '_revival'),
         set: device.module?.funktions?.some(obj => obj.function_call === '_set'),
-        trigger: device.module?.funktions?.some(obj => obj.function_call === '_trigger')
+        trigger: device.module?.funktions?.some(obj => obj.function_call === '_trigger'),
+        mute: this.getSettingValue('call.alarm.mute.enable', { device, site }) === '1',
       }
     },
 
@@ -2272,7 +2263,10 @@ export default {
 
             let newDevice = response.data.device
             device.cloned['device_'+field] = newDevice['device_'+field]
-            this.unpackDeviceData(newDevice)
+
+            const parentSite = this.sites.find(s => s.ds_id === device.device_ds_id) || null
+            this.unpackDeviceData(newDevice, parentSite)
+
             Object.assign(device, newDevice);
 
             window.dispatchEvent(new CustomEvent('notify', {detail: [this.trans('Reject succeeded'), 'success'] } ))
@@ -2296,7 +2290,10 @@ export default {
 
             let newDevice = response.data.device
             device.cloned['device_'+field] = newDevice['device_'+field]
-            this.unpackDeviceData(newDevice)
+
+            const parentSite = this.sites.find(s => s.ds_id === device.device_ds_id) || null
+            this.unpackDeviceData(newDevice, parentSite)
+
             Object.assign(device, newDevice)
 
             window.dispatchEvent(new CustomEvent('notify', {detail: [this.trans('Confirm succeeded'), 'success'] } ))
@@ -2582,8 +2579,26 @@ export default {
     },
 
     makeFsCall(action, device) {
+      if (action === 'carcall' && device.actionButtons.carcall !== true) {
+        return;
+      }
+
       this.actionInProgress = true
+      if (action === 'carcall') {
+        this.clearCarCallTimeout(device.device_id)
+      }
       device.actionButtons[action] = 'progress'
+
+      if (action === 'carcall') {
+        const timeoutId = setTimeout(() => {
+          if (device.actionButtons.carcall === 'progress') {
+            this.$set(device.actionButtons, 'carcall', true);
+          }
+          this.actionInProgress = false;
+          delete this.carCallTimeouts[String(device.device_id)];
+        }, 30000);
+        this.carCallTimeouts[String(device.device_id)] = timeoutId;
+      }
 
       window.dispatchEvent(new CustomEvent('loading', { detail: { action: 'equipment', loading: true }}));
       axios.post('/equipment/fsCall', { action: action, deviceId: device.device_id })
@@ -2592,16 +2607,102 @@ export default {
             window.dispatchEvent(new CustomEvent('notify', {detail: [this.capitalize(action)+' '+this.trans('action succeeded'), 'success']} ));
           } else {
             window.dispatchEvent(new CustomEvent('notifyerror', {detail: {message: this.capitalize(action)+' '+this.trans('action failed') }} ));
+            if (action === 'carcall') {
+              this.clearCarCallTimeout(device.device_id);
+              this.$set(device.actionButtons, 'carcall', true);
+            }
           }
         })
         .catch(error => {
           window.dispatchEvent(new CustomEvent('notifyerror', {detail: {message: this.capitalize(action)+' '+this.trans('action failed') }} ));
+          if (action === 'carcall') {
+            this.clearCarCallTimeout(device.device_id);
+            this.$set(device.actionButtons, 'carcall', true);
+          }
         })
         .finally(() => {
           window.dispatchEvent(new CustomEvent('loading', { detail: { action: 'equipment', loading: false }} ));
           this.actionInProgress = false
-          device.actionButtons[action] = true
+          if (action !== 'carcall') {
+            device.actionButtons[action] = true
+          }
       })
+    },
+
+    clearCarCallTimeout(deviceId) {
+      const key = String(deviceId);
+      const timeoutId = this.carCallTimeouts[key];
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        delete this.carCallTimeouts[key];
+      }
+    },
+
+    handleCarCallStatusEvent(event) {
+      console.log('handling CarCallStatus event')
+      const detail = event?.detail;
+      if (!detail) {
+        return;
+      }
+
+      const { accountId: eventAccountId, deviceId, status } = detail;
+      if (!this.accountId || Number(eventAccountId) !== Number(this.accountId)) {
+        console.log('accounts doesnt match - returning')
+        return;
+      }
+
+      const deviceKey = String(deviceId);
+      let targetDevice = null;
+
+      if (Array.isArray(this.sites)) {
+        this.sites.some(site => {
+          if (!Array.isArray(site.devices)) {
+            console.log('site.devices in not an Array!')
+            return false;
+          }
+          const device = site.devices.find(dev => String(dev.device_id) === deviceKey);
+          if (device) {
+            targetDevice = device;
+            return true;
+          }
+          return false;
+        });
+      }
+
+      if (!targetDevice || !targetDevice.actionButtons?.carcall) {
+        console.log('Returning from handleCarCallStatusEvent!')
+        return;
+      }
+
+      this.clearCarCallTimeout(deviceKey);
+
+      if (status === 'start') {
+        this.$set(targetDevice.actionButtons, 'carcall', 'active');
+      } else if (status === 'end') {
+        this.$set(targetDevice.actionButtons, 'carcall', true);
+      }
+
+      this.actionInProgress = false;
+    },
+
+    getCarCallButtonStyle(device) {
+      const state = device.actionButtons?.carcall;
+      if (state === 'progress') {
+        return { 'background-color': 'greenyellow', 'color': 'black' };
+      }
+      if (state === 'active') {
+        return { 'background-color': '#e53935', 'color': 'white' };
+      }
+      return { 'background-color': '#8faadc', 'color': 'white' };
+    },
+
+    subscribeToCarCallStatus() {
+      if (!this.accountId) {
+        console.log('unable to subscribe to carcall channel - no accountId!')
+        return;
+      }
+
+      // Listen for carcall status changes (WebSocket auto-initialized in realtime.js)
     },
 
     toggleDeviceState(device) {
@@ -2748,8 +2849,6 @@ export default {
         searchTabs: event.detail.searchTabs,
       });
 
-      console.log('LISTA RECEIVED EVENT - at ' + Date.now() + ' | next state:' + nextState)
-
       if (nextState === this.lastFiltersState) {
         return;
       }
@@ -2796,6 +2895,9 @@ export default {
   },
 
   created() {
+    this.carCallStatusListener = (event) => this.handleCarCallStatusEvent(event);
+    document.addEventListener('carcall-status-changed', this.carCallStatusListener);
+
     this.loading = true;
     // window.addEventListener('updatedFilters', this.updatedFilters); // livewire
     window.addEventListener('filtersChanged', this.handleFiltersChanged); // vue
@@ -2830,6 +2932,15 @@ export default {
     })
 
   },
+
+  beforeDestroy() {
+    if (this.carCallStatusListener) {
+      document.removeEventListener('carcall-status-changed', this.carCallStatusListener);
+    }
+    Object.values(this.carCallTimeouts || {}).forEach(timeoutId => clearTimeout(timeoutId));
+    this.carCallTimeouts = {};
+    this.carCallStatusListener = null;
+  }
 
 }
 </script>

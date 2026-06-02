@@ -149,6 +149,7 @@ class ErrorDigestService
     public function updateLastNotificationTime(): void
     {
         file_put_contents($this->trackingFilePath, Carbon::now()->timestamp);
+        chmod($this->trackingFilePath, 0600);
     }
 
     public function sendErrorDigest(): bool

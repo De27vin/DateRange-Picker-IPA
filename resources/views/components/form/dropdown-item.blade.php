@@ -10,8 +10,8 @@
         {{ $slot }}
     </button>
 @elseif($type === 'link')
-    <a 
-        {{ $attributes->merge(['href' => '#', 'class' => "whitespace-nowrap block w-full bg-white hover:bg-color-new-600 hover:text-white block px-4 py-2" ]) }}
+    <a
+        {{ $attributes->merge(['href' => '#', 'class' => "whitespace-nowrap block w-full bg-white hover:bg-color-new-600 hover:text-white block px-4 py-2 text-sm font-medium" ]) }}
         role="menuitem" 
         tabindex="-1" 
         x-state:off="Not Active" 

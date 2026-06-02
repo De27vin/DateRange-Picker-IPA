@@ -3,7 +3,6 @@
 namespace App\Http\Livewire\Ucp;
 
 use App\Exceptions\UcpException;
-use App\Exports\HistoryExport;
 use App\Helpers\Ucp;
 use App\Http\Livewire\DataTable\WithBulkActions;
 use App\Http\Livewire\DataTable\WithCachedRows;
@@ -30,7 +29,7 @@ use App\Models\Account;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
-use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Str;
 
 class DeviceHistoryNew extends UcpComponent
 {
@@ -77,6 +76,7 @@ class DeviceHistoryNew extends UcpComponent
     public $pendingSetRevivalSessions = [];
 
     public $exportFormat = 'csv';
+    public string $exportComponentId;
 
 
     // classification monitoring
@@ -193,6 +193,8 @@ class DeviceHistoryNew extends UcpComponent
         if ($this->monitorClassification) {
             $this->initializeClassificationMonitoring();
         }
+
+        $this->exportComponentId = (string) Str::uuid();
     }
 
     public function render()
@@ -235,17 +237,7 @@ class DeviceHistoryNew extends UcpComponent
         $this->severityFilter = $this->updateSeverityFilter($severity);
         $this->historyCache = null;
         Cache::forget($this->getHistoryCacheKey());
-        //
-        // THIS historyHeaders are not in active use
-//        $this->updateHistoryHeaderData();
     }
-
-    // deprecated
-//    public function setHistoryFilter($activeFilter)
-//    {
-//        $this->historyFilter = $this->updateHistoryFilter($activeFilter);
-//        $this->updateHistoryHeaderData();
-//    }
 
     private function initializeClassificationMonitoring()
     {
@@ -287,16 +279,14 @@ class DeviceHistoryNew extends UcpComponent
 
         $this->historyFilter = $this->updateHistoryFilter($activeFilter, $this->historyFilter[$activeFilter]);
         $this->historyCache = null;
-        Cache::forget($this->getHistoryCacheKey());
-        // THIS historyHeaders are not in active use
-//        $this->updateHistoryHeaderData();
+        Cache::forget($this->getHistoryCacheKey());;
     }
 
     public function getHistoryProperty()
     {
         /** @var LengthAwarePaginator $pagination */
         $pagination = $this->applyPagination($this->getSessionsQuery());
-        $account = Account::findOrFail(session('account.id'));
+        $account = app(\App\Services\UserContextService::class)->getCurrentAccount();
 
         foreach ($pagination->items() as $session) {
             if (!empty($session->session_host)) {
@@ -325,20 +315,6 @@ class DeviceHistoryNew extends UcpComponent
             $this->perPage
         );
     }
-
-    // MOVED FROM DEVICE DETAILS - COMPLETED
-//    public function toggleHistoryVisibility($sessionId)
-//    {
-//        $this->historyVisibility[$sessionId] = !$this->historyVisibility[$sessionId];
-//        $openedSessions = array_filter($this->historyVisibility);
-//        if (array_key_exists($sessionId, $openedSessions)) {
-//            $this->updateSessionDetails($openedSessions);
-//        }
-//        // WHY THIS IS NEEDED - MAKE EVENT IF NEEDED
-////        $this->updateDeviceStats();
-//
-//        $this->skipHistoryUpdate = true;
-//    }
 
     public function updateHistory()
     {
@@ -473,6 +449,7 @@ class DeviceHistoryNew extends UcpComponent
         $query = Session::with([
             'session_type',
             'session_direction',
+            'session.session_direction',
             'comments',
         ]);
 
@@ -495,9 +472,6 @@ class DeviceHistoryNew extends UcpComponent
         $query
             ->whereBetween('session_start', [$startDate, $endDate])
             ->with('events', 'events.event_type')
-//            ->when($this->exportActive, function($query) {
-//                return $query->with('events', 'events.event_type');
-//            })
             ->when(!empty(array_filter($this->historyFilter)), function($query) {
 
                 $filterTypesMap = [
@@ -515,7 +489,7 @@ class DeviceHistoryNew extends UcpComponent
                     $types = array_merge($types, $array);
                 }
 
-                return $query->with('alerts', 'sets', 'comments')->types($types);
+                return $query->with('alerts', 'sets')->types($types);
             })
 //            ->when($this->historyFilter['calls'], function($query) {
 //                return $query->calls();
@@ -550,13 +524,6 @@ class DeviceHistoryNew extends UcpComponent
         return $query;
     }
 
-    // THIS historyHeaders are not in active use - in another component
-//    public function updateHistoryHeaderData()
-//    {
-//        $historyHeaders = $this->getSessionsQuery()->orderByDesc('session_start');
-//        $this->historyHeaders = $historyHeaders->take($this->currentSessionsAmount)->get();
-//        $this->hasMorePages = ( $this->currentSessionsAmount < $historyHeaders->count());
-//    }
 
     public function updateSessionDetails($sessions = [])
     {
@@ -572,44 +539,8 @@ class DeviceHistoryNew extends UcpComponent
             }
             $this->historyVisibility = $newVisibility;
         }
-
-//        $openedSessionsDetails = [];
-//        $openedSession = array_filter($this->historyVisibility);
-//        foreach ($openedSession as $sessionId => $value) {
-//            $openedSessionsDetails[$sessionId] = $this->sessionHistoryService->getSessionDetail(
-//                $sessionId,
-//                ['start_date' => $this->getStartDate($this->dateFilter['dateFromValue'] ?? null), 'end_date' => $this->getEndDate($this->dateFilter['dateToValue'] ?? null)]
-//            );
-//        }
-//
-//        $this->openedSessionsDetails = $openedSessionsDetails;
     }
 
-
-    // todo: to remove - this is given by SessionHistoryService
-//    public function getSessionDetail($sessionId)
-//    {
-//        $this->historyFilter = $this->getHistoryFilter();
-//        $startDate = $this->getStartDate($this->dateFilter['dateFromValue'] ?? null);
-//        $endDate = $this->getEndDate($this->dateFilter['dateToValue'] ?? null);
-//
-//
-//        // here somethign seems wrong - why not to retrieve session by ID?
-//
-//        if( $this->historyFilter['calls'] ){
-//            return Session::with('session_type', 'alerts', 'sets', 'events')->where('session_id', '=', $sessionId)->calls()->whereBetween('session_start',[$startDate, $endDate])->orderByDesc('session_id')->first();
-//        } elseif( $this->historyFilter['carcalls'] ){
-//            return Session::with('session_type', 'alerts', 'sets', 'events')->where('session_id', '=', $sessionId)->carcalls()->whereBetween('session_start',[$startDate, $endDate])->orderByDesc('session_id')->first();
-//        } elseif( $this->historyFilter['periodicals'] ){
-//            return Session::with('session_type', 'alerts', 'sets', 'events')->where('session_id', '=', $sessionId)->alerts()->whereBetween('session_start',[$startDate, $endDate])->orderByDesc('session_id')->first();
-//        } elseif( $this->historyFilter['sets'] ){
-//            return Session::with('session_type', 'alerts', 'sets', 'sets.setting', 'events')->where('session_id', '=', $sessionId)->sets()->whereBetween('session_start',[$startDate, $endDate])->orderByDesc('session_id')->first();
-//        } elseif( $this->historyFilter['revivals'] ){
-//            return Session::with('session_type', 'alerts', 'sets', 'sets.setting', 'events')->where('session_id', '=', $sessionId)->revivals()->whereBetween('session_start',[$startDate, $endDate])->orderByDesc('session_id')->first();
-//        } else {
-//            return Session::with('session_type', 'alerts', 'sets', 'events')->where('session_id', '=', $sessionId)->whereBetween('session_start',[$startDate, $endDate])->orderByDesc('session_id')->first();
-//        }
-//    }
 
     public function getHealthStates($session)
     {
@@ -620,27 +551,6 @@ class DeviceHistoryNew extends UcpComponent
             'pending' => false
         ];
 
-         // TO REMOVE after some time
-//        foreach($session->sets as $setSession){
-//            if(!$setSession->set_success){
-//                $healthState['error'] = true;
-//                $healthState['success'] = false;
-//            }
-//        }
-
-        // TO REMOVE after some time
-//        foreach($session->alerts as $alertSession){
-//            if($alertSession->alert_active && $alertSession->alert_type != null && $alertSession->alert_type->at_type != 'VOICE'){
-//                if($alertSession->alert_type->alert_severity->as_type == 'WARNING'){
-//                    $healthState['warning'] = true;
-//                    $healthState['success'] = false;
-//                } elseif($alertSession->alert_type->alert_severity->as_type == 'ERROR') {
-//                    $healthState['error'] = true;
-//                    $healthState['success'] = false;
-//                }
-//            }
-//        }
-
         if($session->session_warnings > 0){
             $healthState['warning'] = true;
             $healthState['success'] = false;
@@ -649,11 +559,6 @@ class DeviceHistoryNew extends UcpComponent
             $healthState['error'] = true;
             $healthState['success'] = false;
         }
-        // TO REMOVE after some time
-//        if(!$session->session_complete){
-//            $healthState['error'] = true;
-//            $healthState['success'] = false;
-//        }
         if(!$session->session_complete && $session->session_end == 'pending'){
             $healthState['pending'] = true;
             $healthState['success'] = false;
@@ -771,6 +676,7 @@ class DeviceHistoryNew extends UcpComponent
         Cache::forget($this->getHistoryCacheKey());
     }
 
+    /** @deprecated */
     private function getCsvHeader()
     {
         return [
@@ -785,200 +691,53 @@ class DeviceHistoryNew extends UcpComponent
         ];
     }
 
-//    public function exportHistory()
-//    {
-//        try {
-//            ini_set('max_execution_time', 600);
-//            ini_set('memory_limit', '512M');
-//
-//            $translations = session('translations');
-//            $translations['device'] = $translations[$this->locale]['device']['setting'];
-//            $this->deviceTranslations = Arr::dot($translations);
-//            $this->alertTranslations = $this->getAlertTranslations($this->locale);
-//
-//            $progressFile = storage_path('framework/cache/export_history_' . auth()->id() . '.txt');
-//            file_put_contents($progressFile, '0');
-//
-//            return response()->streamDownload(function () use ($progressFile) {
-//                $file = fopen('php://output', 'w+');
-//                $header = $this->getCsvHeader();
-//                fputcsv($file, $header);
-//
-//                $historyData = $this->getSessionsQuery()->get();
-//                $total = count($historyData);
-//                $processed = 0;
-//
-//                foreach ($historyData as $history) {
-//                    $rows = $this->generateCsvRow($history);
-//                    foreach($rows as $oneLine){
-//                        fputcsv($file, $oneLine);
-//                    }
-//
-//                    $processed++;
-//                    $progress = round(($processed / $total) * 100);
-//                    file_put_contents($progressFile, $progress);
-//                }
-//
-//                file_put_contents($progressFile, '100');
-//                fclose($file);
-//
-//                // Clean up after small delay to ensure last progress is read
-//                register_shutdown_function(function() use ($progressFile) {
-//                    sleep(2);
-//                    if (file_exists($progressFile)) {
-//                        unlink($progressFile);
-//                    }
-//                });
-//
-//            }, 'session-history-'. ($this->device?->device_equipment ?: $this->device?->device_id ?: $this->deviceSite?->ds_name ?: $this->deviceSite?->ds_id ?: '') .'.csv');
-//        } catch (\Exception $e) {
-//            $progressFile = storage_path('framework/cache/export_history_' . auth()->id() . '.txt');
-//            if (file_exists($progressFile)) {
-//                unlink($progressFile);
-//            }
-//            throw $e;
-//        }
-//    }
-
-    public function exportHistory()
+    public function exportHistory($format = null, $delivery = 'browser')
     {
-        try {
-            ini_set('max_execution_time', 600);
-            ini_set('memory_limit', '512M');
-
-            $translations = session('translations');
-            $translations['device'] = $translations[$this->locale]['device']['setting'];
-            $this->deviceTranslations = Arr::dot($translations);
-            $this->alertTranslations = $this->getAlertTranslations($this->locale);
-
-            $progressFile = storage_path('framework/cache/export_history_' . auth()->id() . '.txt');
-            file_put_contents($progressFile, '0');
-
-            $header = $this->getCsvHeader();
-            $rows = $this->generateExportRows($progressFile);
-
-            file_put_contents($progressFile, '100');
-
-            // Clean up after delay
-            register_shutdown_function(function() use ($progressFile) {
-                sleep(2);
-                if (file_exists($progressFile)) {
-                    unlink($progressFile);
-                }
-            });
-
-            $fileName = 'session-history-'. ($this->device?->device_equipment ?: $this->device?->device_id ?: $this->deviceSite?->ds_name ?: $this->deviceSite?->ds_id ?: '');
-
-            return $this->exportFormat === 'xlsx'
-                ? $this->downloadExcel($rows, $header, $fileName)
-                : $this->downloadCsv($rows, $header, $fileName);
-
-        } catch (\Exception $e) {
-            $progressFile = storage_path('framework/cache/export_history_' . auth()->id() . '.txt');
-            if (file_exists($progressFile)) {
-                unlink($progressFile);
-            }
-            throw $e;
-        }
-    }
-
-    private function generateExportRows($progressFile)
-    {
-        $rows = [];
-        $historyData = $this->getSessionsQuery()->get();
-        $total = count($historyData);
-        $processed = 0;
-
-        foreach ($historyData as $history) {
-            $rows = array_merge($rows, $this->generateCsvRow($history));
-
-            $processed++;
-            $progress = round(($processed / $total) * 100);
-            file_put_contents($progressFile, $progress);
+        if ($format) {
+            $this->exportFormat = $format;
         }
 
-        return $rows;
-    }
+        $downloadId = (string) Str::uuid();
 
-    private function downloadExcel($rows, $header, $fileName)
-    {
-        return Excel::download(
-            new HistoryExport($rows, $header),
-            $fileName . '.xlsx'
-        );
-    }
+        $locale = $this->locale ?? session('locale', 'en');
 
-    private function downloadCsv($rows, $header, $fileName)
-    {
-        return response()->streamDownload(function() use ($rows, $header) {
-            $file = fopen('php://output', 'w+');
-            fputcsv($file, $header);
+        $translations = session('translations') ?? [];
+        if (!empty($translations[$locale]['device']['setting'])) {
+            $translations['device'] = $translations[$locale]['device']['setting'];
+        }
 
-            foreach($rows as $row) {
-                fputcsv($file, $row);
-            }
-
-            fclose($file);
-        }, $fileName . '.csv');
-    }
-
-    private function generateCsvRow($history)
-    {
-        $rows = [];
-        $session = $history->toArray();
-        $common = [
-            $session['session_id'],
-            $session['session_uuid'],
-            $session['session_ref_id'],
-            $session['session_type']['st_type'],
+        $params = [
+            'locale'          => $locale,
+            'context'         => $this->context,
+            'device_id'       => $this->device?->device_id,
+            'device_site_id'  => $this->deviceSite?->ds_id,
+            'site_device_ids' => $this->siteDevicesIds,
+            'history_filter'  => $this->historyFilter,
+            'severity_filter' => $this->severityFilter,
+            'date_filter'     => $this->dateFilter,
+            'translations'    => Arr::dot($translations),
+            'alert_translations' => $this->getAlertTranslations($locale),
+            'accountId'       => session('account.id'),
         ];
 
-        if(array_key_exists('alerts',$session) && count($session['alerts']) > 0){
-            foreach ($session['alerts'] as $alert) {
-                $row = $common;
-                array_push(
-                    $row,
-                    $this->alertTranslations[$alert['alert_type']['at_type']] ?? $alert['alert_type']['at_type'], // alert_type
-                    $alert['alert_value'], // event_value
-                    $alert['alert_type']['alert_severity']['as_type'], // alert_severity
-                    toUserDateTime($alert['alert_timestamp']) // alert_timestamp
-                );
-                $rows[] = $row;
-            }
-        }
-        if(array_key_exists('sets',$session) && count($session['sets']) > 0){
-            foreach ($session['sets'] as $set) {
-                $row = $common;
-                array_push(
-                    $row,
-                    data_get($this->deviceTranslations, $set['setting']['setting_key'], $set['setting']['setting_key']), // set_type
-                    $set['set_value'], // event_value
-                    ($set['set_success'] ? 'SUCCESS' : 'ERROR'), // set_severity
-                    toUserDateTime($set['set_timestamp']) // set_timestamp
-                );
-                $rows[] = $row;
-            }
-        }
-
-        if(array_key_exists('events',$session) && count($session['events']) > 0){
-            foreach ($session['events'] as $event) {
-                $row = $common;
-                array_push(
-                    $row,
-                    data_get($this->deviceTranslations, $event['event_type']['et_type'], $event['event_type']['et_type']), // event_type
-                    $event['event_value'], // event_value
-                    $event['event_severity']['es_type'], // event_severity
-                    toUserDateTime($event['event_timestamp']) // event_timestamp
-                );
-                $rows[] = $row;
-            }
-        }
-        return $rows;
+        $this->dispatchBrowserEvent('start-export', [
+            'type'    => 'history',
+            'component_id' => $this->exportComponentId,
+            'request' => [
+                'type'        => 'history',
+                'format'      => $this->exportFormat,
+                'delivery'    => $delivery,
+                'params'      => $params,
+                'download_id' => $downloadId,
+                'component_id' => $this->exportComponentId,
+            ],
+        ]);
     }
+
 
     public function downloadRecord(string $recordFile)
     {
-        $accountSlug = Account::findOrFail(session('account.id'))?->account_slug;
+        $accountSlug = app(\App\Services\UserContextService::class)->getCurrentAccount()?->account_slug;
         $parts = explode('/', $recordFile);
 
         $pathAccountSlug = $parts[3] ?? null;

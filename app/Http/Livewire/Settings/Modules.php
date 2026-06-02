@@ -82,7 +82,7 @@ class Modules extends Component
     public function initData()
     {
         $this->locale       = session('locale', 'en');
-        $this->languages    = Language::where('language_enabled', '=', true)->get()->pluck('language_code')->all();
+        $this->languages    = app(\App\Services\LanguageService::class)->getEnabledLanguages();
         $this->translations = null;
         $this->fieldTranslations = $this->getFieldTranslations($this->locale);
         $this->option       = -1;

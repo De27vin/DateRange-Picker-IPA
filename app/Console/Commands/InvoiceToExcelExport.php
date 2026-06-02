@@ -9,6 +9,7 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use InvalidArgumentException;
 use Maatwebsite\Excel\Facades\Excel;
@@ -19,7 +20,8 @@ class InvoiceToExcelExport extends Command
 {
     protected $signature = 'invoice:export-excel
                             {--account= : Account name to export invoice for. If not specified all existing accounts will be taken to export}
-                            {--month= : Month to take for export in a format YYYY-MM. If not specified last finished calendar month will be taken to export}';
+                            {--month= : Month to take for export in a format YYYY-MM. If not specified last finished calendar month will be taken to export}
+                            {--sms-counting-mode=half : SMS counting mode: "half" (count FLOOR(n/2) MESSAGE events, minimum 1 if any SMS present - assumes each outbound SMS generates one inbound reply), "all" (count all MESSAGE events), "commands-only" (count only outbound commands via regex pattern - BETA)}';
 
     protected $description = 'Command exports invoices from db to excel and sends email';
 
@@ -43,7 +45,25 @@ class InvoiceToExcelExport extends Command
     public function __construct()
     {
         parent::__construct();
-        ini_set('memory_limit', '1G');
+        ini_set('memory_limit', '2G');
+    }
+
+    protected function logInfo(string $message, array $context = []): void
+    {
+        $this->info($message);
+        Log::info($message, $context);
+    }
+
+    protected function logWarn(string $message, array $context = []): void
+    {
+        $this->warn($message);
+        Log::warning($message, $context);
+    }
+
+    protected function logError(string $message, array $context = []): void
+    {
+        $this->error($message);
+        Log::error($message, $context);
     }
 
     /**
@@ -51,16 +71,16 @@ class InvoiceToExcelExport extends Command
      */
     public function handle()
     {
-        $this->info('Setting invoice generation context');
+        $this->logInfo('Setting invoice generation context');
         $this->setInvoiceContext();
         $this->setDirectoryContext();
-        $this->info('Importing invoice data from database');
+        $this->logInfo('Importing invoice data from database');
         $this->importInvoicesFromDB();
-        $this->info('Saving invoice data into xml files');
+        $this->logInfo('Saving invoice data into xml files');
         $this->exportInvoicesToExcel();
-        $this->info('Sending generated invoice files to email');
+        $this->logInfo('Sending generated invoice files to email');
         $this->sendInvoicesToEmail();
-        $this->info('Finished task');
+        $this->logInfo('Finished task');
     }
 
     protected function setInvoiceContext(): void
@@ -84,11 +104,11 @@ class InvoiceToExcelExport extends Command
             $invoiceData = $this->convertToArray($invoiceData);
 
             if (empty($invoiceData)) {
-                $this->warn("No data for account {$account}. Omitting invoice generation for this client.");
+                $this->logWarn("No data for account {$account}. Omitting invoice generation for this client.");
                 continue;
             }
             if (! $this->validateHeaders($invoiceData)) {
-                $this->warn("Headers are invalid for account: {$account}. Omitting invoice generation for this client.");
+                $this->logWarn("Headers are invalid for account: {$account}. Omitting invoice generation for this client.");
                 continue;
             }
 
@@ -107,8 +127,9 @@ class InvoiceToExcelExport extends Command
 
 //            $recipient = env('SEND_INVOICES_EMAIL');
             $recipients = ['accounts@serv24.com', 'alejandro.monje@serv24.com', 'jacek.dziurdzikowski@serv24.com'];
+//            $recipients = ['jacek.dziurdzikowski@serv24.com'];
 //            $this->info("Attempting to send email to: " . $recipients);
-            $this->info("Attempting to send email to: " . implode(', ', $recipients));
+            $this->logInfo("Attempting to send email to: " . implode(', ', $recipients));
 
             foreach ($recipients as $recipient) {
                 Mail::to($recipient)->send(new SendInvoices($this->month, $attachments));
@@ -118,15 +139,34 @@ class InvoiceToExcelExport extends Command
 //                throw new RuntimeException('Failed to send emails: ' . implode(', ', Mail::failures()));
 //            }
 
-            $this->info('Emails sent successfully');
-        } catch (\Exception $e) {
-            $this->error('Failed to send emails: ' . $e->getMessage());
+            $this->logInfo('Emails sent successfully');
+        } catch (\Throwable $e) {
+            $this->logError('Failed to send emails: ' . $e->getMessage(), ['exception' => $e]);
             throw $e;
         }
     }
+
+    protected function getAnsweredSqlByMode(string $mode): string
+    {
+        switch ($mode) {
+            case 'commands-only':
+                return "GREATEST(SUM(CASE WHEN sp_type = 'SMS' AND et_type = 'MESSAGE' AND (event_value REGEXP '^[0-9]+,' OR event_value LIKE 'PIN:%') THEN 1 ELSE 0 END), MAX(CASE WHEN et_type = 'ANSWER' THEN 1 ELSE 0 END))";
+            case 'all':
+                return "GREATEST(SUM(CASE WHEN sp_type = 'SMS' AND et_type = 'MESSAGE' THEN 1 ELSE 0 END), MAX(CASE WHEN et_type = 'ANSWER' THEN 1 ELSE 0 END))";
+            case 'half':
+            default:
+                $smsSum = "SUM(CASE WHEN sp_type = 'SMS' AND et_type = 'MESSAGE' THEN 1 ELSE 0 END)";
+                return "GREATEST(GREATEST(FLOOR({$smsSum} / 2), SIGN({$smsSum})), MAX(CASE WHEN et_type = 'ANSWER' THEN 1 ELSE 0 END))";
+        }
+    }
+
     protected function makeInvoiceQueryForAccount(string $account): Builder
     {
         $table = 'sessions';
+
+        // Get SMS counting mode from command option
+        $smsCountingMode = $this->option('sms-counting-mode') ?? 'half';
+        $answeredSql = $this->getAnsweredSqlByMode($smsCountingMode);
 
         $select = "MAX(CASE WHEN et_type = 'ANSWER' THEN event_value ELSE session_start END) as `start`,
            MAX(CASE WHEN et_type = 'END' THEN event_value ELSE session_end END) as `end`,
@@ -135,7 +175,7 @@ class InvoiceToExcelExport extends Command
            st_type as `type`,
            session_id as `session`,
            sp_type as `path`,
-           MAX(CASE WHEN et_type = 'ANSWER' OR sp_type = 'SMS' THEN 1 ELSE 0 END) as `answered`";
+           {$answeredSql} as `answered`";
 
         $joins = [
             ['session_paths', 'session_sp_id', '=', 'sp_id'],
@@ -145,7 +185,7 @@ class InvoiceToExcelExport extends Command
             ['events', 'event_session_id', '=', 'session_id'],
             ['event_types', [
                 ['event_et_id', '=', 'et_id'],
-                ['et_type', 'IN', ['ANUMBER','BNUMBER','ANSWER']],
+                ['et_type', 'IN', ['ANUMBER','BNUMBER','ANSWER','MESSAGE']],
             ]],
         ];
 
@@ -197,11 +237,11 @@ class InvoiceToExcelExport extends Command
     {
         $account = $this->option('account');
         if ($account) {
-            $account = DB::table('accounts')->where('account_name', $account)->pluck('account_slug')->toArray();
-            if (count($account) !== 1) {
+            $accounts = DB::table('accounts')->where('account_name', $account)->pluck('account_slug')->toArray();
+            if (count($accounts) !== 1) {
                 throw new InvalidArgumentException("Account: {$account} not found");
             }
-            $this->accounts = [$account];
+            $this->accounts = $accounts;
         } else {
             $this->accounts = DB::table('accounts')->pluck('account_slug')->toArray();
         }
@@ -228,7 +268,7 @@ class InvoiceToExcelExport extends Command
     {
         $this->invoiceDirectory = env('SEND_INVOICES_DIR') . $this->month . DIRECTORY_SEPARATOR;
         if (!is_dir($this->invoiceDirectory)) {
-            if (!mkdir($this->invoiceDirectory, 0754, true) && !is_dir($this->invoiceDirectory)) {
+            if (!mkdir($this->invoiceDirectory, 0700, true) && !is_dir($this->invoiceDirectory)) {
                 throw new RuntimeException("Cannot create invoices directory: {$this->invoiceDirectory}");
             }
         }

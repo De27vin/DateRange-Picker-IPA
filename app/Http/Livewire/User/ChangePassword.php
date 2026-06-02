@@ -64,6 +64,19 @@ class ChangePassword extends Component
         $user->save();
 
         $this->notify('success', __('Password changed'));
+
+        if ($user->hasMandownRole()) {
+            $signalWireService = new \App\Services\SignalWireService();
+            if (!$signalWireService->updateSipEndpoint($user, $this->newPassword)) {
+                \Log::error('Failed to update SIP endpoint password after user password change', [
+                    'user_id' => $user->user_id
+                ]);
+                $this->notify('warning', __('SIP endpoint password update failed'));
+            } else {
+                $this->notify('success', __('SIP endpoint credentials updated'));
+            }
+        }
+
         return Redirect::to('/user-profile');
     }
 }

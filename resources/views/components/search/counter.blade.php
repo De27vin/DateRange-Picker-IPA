@@ -1,3 +1,4 @@
+{{-- @deprecated --}}
 @props(['icon' => 'building'])
 
 <div x-data="counterComponent()" x-init="initialize()">

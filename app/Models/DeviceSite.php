@@ -80,10 +80,10 @@ class DeviceSite extends Model implements Searchable
         });
     }
 
-   public function scopeForAccount($query)
-   {
-       return $query->where('ds_account_id', '=', session('account.id'));
-   }
+    public function scopeForAccount($query)
+    {
+        return $query->where('ds_account_id', '=', app(\App\Services\AccountContext::class)->get());
+    }
 
     public function scopeWithAnyLabels($query, array $labelsId)
     {

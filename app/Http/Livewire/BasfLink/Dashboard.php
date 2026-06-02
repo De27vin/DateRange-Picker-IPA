@@ -10,10 +10,9 @@ use App\Models\User;
 use App\Services\CustomFieldsService;
 use App\Services\DeviceAlertsService;
 use App\Services\SearchDeviceService;
+use App\Services\UserContextService;
 use App\Traits\SearchFiltersTrait;
 use App\Traits\TranslationsTrait;
-use App\Traits\AccountsTrait;
-use App\Traits\DevicesTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -23,8 +22,6 @@ class Dashboard extends Component
     use WithPerPagePagination;
     use SearchFiltersTrait;
     use TranslationsTrait;
-    use AccountsTrait;
-    use DevicesTrait;
 
     public $export;
     public $alerts;
@@ -52,12 +49,14 @@ class Dashboard extends Component
     private SearchDeviceService $searchService;
     private DeviceAlertsService $alertsService;
     private CustomFieldsService $customService;
+    private UserContextService $userContext;
 
     public function __construct($id = null) {
         parent::__construct($id);
         $this->alertsService = new DeviceAlertsService();
         $this->searchService = new SearchDeviceService();
         $this->customService = new CustomFieldsService();
+        $this->userContext = app(UserContextService::class);
     }
 
     public function mount()
@@ -89,7 +88,7 @@ class Dashboard extends Component
             abort(404);
         }
         Auth::login($extLinkTechUser);
-        $this->setAccountSessionData($extLinkAccount->account_id);
+        $this->userContext->switchAccount($extLinkAccount->account_id);
 
         $agent = Auth::user()->isAgent;
         $mobile = Auth::user()->isMobile;

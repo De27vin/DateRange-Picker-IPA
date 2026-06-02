@@ -42,7 +42,7 @@ trait DeviceFormTrait
     {
         // PORTING TO TEST - NEW VERSION
         $this->locale = session('locale');
-        $this->languages = Language::where('language_enabled',1)->pluck('language_code')->toArray();
+        $this->languages = app(\App\Services\LanguageService::class)->getEnabledLanguages();
         $this->countries = $this->getCountryList();
         $this->modules = Module::all()->pluck('module_name', 'module_id')->toArray();
         if( Auth::user()->is_user || Auth::user()->is_admin || Auth::user()->is_site ){
@@ -125,7 +125,7 @@ trait DeviceFormTrait
         $countries = \App\Models\Country::all();
         $locale = session('locale', 'en');
         foreach ($countries as $key => $country) {
-            $countryList[$country->country_id] = \countryDisplayName($country->country_iso, $locale);
+            $countryList[$country->country_id] = locale_get_display_region('-'.$country->country_iso,$locale);
         }
         $countryList = $this->arraySortUTF($countryList);
         return $countryList;

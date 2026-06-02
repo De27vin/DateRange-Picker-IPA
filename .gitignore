@@ -1,6 +1,7 @@
-﻿/node_modules
+/node_modules
 /vendor
 /vendor/**
+/.composer-cache
 /public/hot
 /public/storage/framework/sessions/*
 
@@ -11,6 +12,7 @@
 /storage/framework/sessions/*
 /storage/framework/testing/*
 /storage/framework/views/*
+/storage/debugbar/*
 
 /bootstrap/cache/*
 !bootstrap/cache/.gitignore
@@ -34,4 +36,5 @@ Thumbs.db
 
 /.vscode/*
 !/.vscode/extensions.json
+/.svn
 storage/logs/*.log

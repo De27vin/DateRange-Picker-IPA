@@ -19,7 +19,9 @@
                     </x-form.button>
                 @endif
 
-                <div x-data="{ showFormat: false }" class="relative">
+                <div x-data="exportHandler(@js(['type' => 'gateways', 'componentId' => $exportComponentId, 'storeUrl' => route('exports.store'), 'progressLabel' => __('Preparing export…')]))"
+                     x-init="init()"
+                     class="relative">
                     <x-form.button
                         type="button"
                         @click="showFormat = !showFormat"
@@ -27,29 +29,9 @@
                         @lang('Export')
                     </x-form.button>
 
-                    <!-- Format Selection Dropdown -->
-                    <div
-                        x-show="showFormat"
-                        @click.away="showFormat = false"
-                        x-cloak
-                        class="absolute z-50 right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100"
-                        style="min-width: 120px;"
-                    >
-                        <div class="py-1">
-                            <a href="{{ route('export-gateways', ['tab' => array_search(true, $tabs), 'search' => $filters['search'], 'format' => 'csv']) }}"
-                               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                               @click="showFormat = false"
-                            >
-                                CSV
-                            </a>
-                            <a href="{{ route('export-gateways', ['tab' => array_search(true, $tabs), 'search' => $filters['search'], 'format' => 'xlsx']) }}"
-                               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                               @click="showFormat = false"
-                            >
-                                Excel (XLSX)
-                            </a>
-                        </div>
-                    </div>
+                    <x-export.format-dropdown wire-method="exportGateways" />
+
+                    <x-export.progress-bar />
                 </div>
             </span>
         </div>

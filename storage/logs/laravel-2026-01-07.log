@@ -1,7 +1,0 @@
-[2026-01-07 08:09:37] production.ERROR: Maximum execution time of 60 seconds exceeded {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Maximum execution time of 60 seconds exceeded at C:\\Users\\devin\\Documents\\SynologyDrive\\Privat\\Serv24\\Laravel-VueJS\\Kopie-UCP-web-UI\\src\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php:12)
-[stacktrace]
-#0 {main}
-"} 
-[2026-01-07 08:09:37] production.ERROR: Symfony\Component\ErrorHandler\Error\FatalError: Maximum execution time of 60 seconds exceeded in C:\Users\devin\Documents\SynologyDrive\Privat\Serv24\Laravel-VueJS\Kopie-UCP-web-UI\src\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php:12
-Stack trace:
-#0 {main} ["Default error handler action performed"] 

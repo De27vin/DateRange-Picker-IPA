@@ -25,20 +25,27 @@ trait TranslationsTrait
         if (!empty($this->profileData)) {
             return $this->profileData;
         }
-        $accountId = session('account.id');
-        $cacheKey = __CLASS__ . __METHOD__ . $accountId;
-        $this->profileData = GroupCache::rememberForever('profile_data', $cacheKey, function() use ($accountId) {
-            return Account::query()->where('account_id', '=', $accountId)->first()?->account_translation;
+
+        $cacheKey = __CLASS__ . __METHOD__ . app(\App\Services\AccountContext::class)->get();
+        $this->profileData = GroupCache::rememberForever('profile_data', $cacheKey, function() {
+            return app(\App\Services\ProfileAccessService::class)->getProfileData();
         });
+
         return $this->profileData;
+    }
+
+    /**
+     * Pre-seed profile data for contexts where no HTTP session is available (e.g. queue workers).
+     * Calling this before getProfileData() bypasses the session-dependent lookup entirely.
+     */
+    public function initProfileData(array $data): void
+    {
+        $this->profileData = $data;
     }
 
     public function saveProfileData($profile)
     {
-        $accountId = session('account.id');
-        $updatedAccount = Account::query()->where('account_id', '=', $accountId)->first();
-        $updatedAccount->account_translation = $profile;
-        $updatedAccount->save();
+        app(\App\Services\ProfileAccessService::class)->saveProfileData($profile);
 
         $this->profileData = $profile;
         GroupCache::forgetGroup('profile_data');
@@ -80,17 +87,26 @@ trait TranslationsTrait
 
     public function getAlertTypeDisplayStates()
     {
-        return $this->getProfileData()['config']['alert']['display'] ?? [];
+        if (!empty($this->profileData)) {
+            return $this->profileData['config']['alert']['display'] ?? [];
+        }
+        return app(\App\Services\ProfileAccessService::class)->getAlertTypeDisplayStates();
     }
 
     public function getAlertCriticalityStates()
     {
-        return $this->getProfileData()['config']['alert']['critical'] ?? [];
+        if (!empty($this->profileData)) {
+            return $this->profileData['config']['alert']['critical'] ?? [];
+        }
+        return app(\App\Services\ProfileAccessService::class)->getAlertCriticalityStates();
     }
 
     public function getAlertAlarmalityStates()
     {
-        return $this->getProfileData()['config']['alert']['alarm'] ?? [];
+        if (!empty($this->profileData)) {
+            return $this->profileData['config']['alert']['alarm'] ?? [];
+        }
+        return app(\App\Services\ProfileAccessService::class)->getAlertAlarmalityStates();
     }
 
     public function getModules()

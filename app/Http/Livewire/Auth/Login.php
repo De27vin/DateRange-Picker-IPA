@@ -1,14 +1,19 @@
 <?php
- 
 namespace App\Http\Livewire\Auth;
 
+use App\Services\UserContextService;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
-use App\Traits\AccountsTrait;
 
 class Login extends Component
 {
-    use AccountsTrait;
+    private UserContextService $userContext;
+
+    public function __construct($id = null)
+    {
+        parent::__construct($id);
+        $this->userContext = app(UserContextService::class);
+    }
 
     public $users, $email, $password, $name;
     public $remember_me = true;
@@ -41,10 +46,18 @@ class Login extends Component
 
         $rememberMe = (isset($this->remember_me));
         if (Auth::attempt(array('email' => $this->email, 'password' => $this->password),$rememberMe)) {
-            $accounts = Auth::user()->accounts;
+            $user = Auth::user();
+
+            // TODO: temporary solution for liftcare subtenants - remove after implementing granular permissions system
+            if ($user->isSubtenantUser()) {
+                Auth::logout();
+                session()->flash('error', __('Access to web application is restricted. Please use the mobile application.'));
+                return;
+            }
+
+            $accounts = $this->userContext->getUserAccounts();
             // session(['locale'       => Auth::user()->locale->language->language_code, 'en']);
 
-            $user = Auth::user();
             $user->updateLoginStats($_SERVER['REMOTE_ADDR']);
 
             if(Auth::user()->hasRole('site')) {
@@ -54,7 +67,7 @@ class Login extends Component
             } else {
                 // user is member of only one account. Therefore redirect to dashboard
                 $account = $accounts->first();
-                $this->setAccountSessionData($account->account_id);
+                $this->userContext->switchAccount($account->account_id);
                 return redirect()->intended('dashboard');
             }
         } else {

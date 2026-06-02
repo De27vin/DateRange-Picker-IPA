@@ -10,6 +10,11 @@
     <meta name="account-id" content="{{ session('account.id', '') }}">
     <meta name="active-labels" content="{{ config('ucp.active_labels') }}">
     <meta name="has-phone" content="{{ !empty(Auth::user()?->user_ext) }}">
+    
+    <!-- Reverb WebSocket Configuration -->
+    <meta name="reverb-host" content="{{ config('reverb.apps.apps.0.options.host') }}">
+    <meta name="reverb-port" content="{{ config('reverb.apps.apps.0.options.port') }}">
+    <meta name="reverb-key" content="{{ config('reverb.apps.apps.0.key') }}">
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 

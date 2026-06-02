@@ -2,15 +2,11 @@
 
 namespace App\View\Components\Page;
 
-use App\Models\Account;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\Component;
-use App\Traits\AccountsTrait;
 
 class Navigation extends Component
 {
-    use AccountsTrait;
-    
     public $locale;
     public $view;
     public $navigationState;

@@ -2,9 +2,9 @@
 
 namespace Tests;
 
-use App\Models\TimeseriesSnapshot;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 trait SeedsTimeseriesPoints
@@ -29,6 +29,7 @@ trait SeedsTimeseriesPoints
         $start = CarbonImmutable::parse($startUtc, 'UTC')->utc()->startOfHour();
         $end = CarbonImmutable::parse($endUtc, 'UTC')->utc()->startOfHour();
 
+        $rows = [];
         for ($ts = $start, $index = 0; $ts->lte($end); $ts = $ts->addHour(), $index++) {
             $snapshot = $this->baseSnapshot();
 
@@ -39,15 +40,20 @@ trait SeedsTimeseriesPoints
             $snapshot['alarms']['active_alarms'] = 100 - $snapshot['alarms']['inbound_calls'];
             $snapshot['service_level']['local_checks'] = 100 - $snapshot['service_level']['periodical_calls'];
 
-            TimeseriesSnapshot::query()->updateOrCreate(
-                [
+            $rows[] = [
                     'ts_account_id' => 1,
                     'ts_timestamp' => $ts->toDateTimeString(),
-                ],
-                [
-                    'ts_data' => $snapshot,
-                ]
-            );
+                    'ts_data' => json_encode($snapshot, JSON_THROW_ON_ERROR),
+            ];
+
+            if (count($rows) >= 1000) {
+                DB::table('timeseries')->upsert($rows, ['ts_account_id', 'ts_timestamp'], ['ts_data']);
+                $rows = [];
+            }
+        }
+
+        if ($rows !== []) {
+            DB::table('timeseries')->upsert($rows, ['ts_account_id', 'ts_timestamp'], ['ts_data']);
         }
     }
 

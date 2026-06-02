@@ -43,6 +43,10 @@ class EquipmentController extends BaseController
     use TranslationsTrait;
 //    use ValidationTraitNew;
 
+    // keep in sync with resources/vue/VueEquipmentList.vue and resources/vue/VueEquipmentSite.vue
+    private const REVIVAL_RESTRICTED_DEVICE_MODULES = ['GW-NAYAR-GSR'];
+    private const REVIVAL_RESTRICTION_EXCEPTION_PROTOCOLS = ['PROT-LEI-NANO', 'PROT-MICROKEY'];
+
     public function __construct(
         private readonly SitePersistenceService  $sitePersistenceService,
         private readonly SearchDeviceService     $searchService,
@@ -221,6 +225,8 @@ class EquipmentController extends BaseController
             'gateway',
             'custom_fields',
             'module.funktions',
+            'module.module_type',
+            'device_site.module',
         ]);
 
         GroupCache::forgetGroup('sites');
@@ -271,6 +277,8 @@ class EquipmentController extends BaseController
             'gateway',
             'custom_fields',
             'module.funktions',
+            'module.module_type',
+            'device_site.module',
         ]);
 
         GroupCache::forgetGroup('sites');
@@ -469,6 +477,8 @@ class EquipmentController extends BaseController
                 return $this->makeFsRevival($deviceId);
             case 'set':
                 return $this->makeFsSet($deviceId);
+            case 'mute':
+                return $this->makeFsMuteAlert($deviceId);
             default:
                 // code...
                 break;
@@ -507,14 +517,47 @@ class EquipmentController extends BaseController
         }
     }
 
+    private function makeFsMuteAlert($deviceId)
+    {
+        if ($result = $this->fsMake('ucp alert device ' . $deviceId . ' MUTE')) {
+            return 'success';
+        } else {
+            \Log::error('Failed Freeswitch ALERT MUTE');
+            return 'failure';
+        }
+    }
+
     private function makeFsRevival($deviceId)
     {
+        $device = Device::with(['module', 'device_site.module'])->findOrFail($deviceId);
+
+        if ($this->isRevivalBlockedForDevice($device)) {
+            \Log::warning('Revival blocked', [
+                'device_id' => $deviceId,
+                'device_module' => $device->module->module_name ?? 'unknown',
+                'site_protocol' => $device->device_site->module->module_name ?? 'unknown',
+            ]);
+            return 'failure';
+        }
+
         if($result = $this->fsMake('ucp revive device ' . $deviceId)) {
             return 'success';
         } else {
             \Log::error('Failed Freeswith REVIVAL');
             return 'failure';
         }
+    }
+
+    private function isRevivalBlockedForDevice(Device $device): bool
+    {
+        $deviceModuleName = $device->module->module_name ?? '';
+
+        if (!in_array($deviceModuleName, self::REVIVAL_RESTRICTED_DEVICE_MODULES)) {
+            return false;
+        }
+
+        $siteProtocolName = $device->device_site->module->module_name ?? '';
+        return !in_array($siteProtocolName, self::REVIVAL_RESTRICTION_EXCEPTION_PROTOCOLS);
     }
 
     private function makeFsDeleteSite($id)

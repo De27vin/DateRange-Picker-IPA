@@ -50,45 +50,61 @@
                                             id="site"
                                             functionName="updateUserType"
                                             label="Site" />
-                                    <x-form.v2.radio
-                                            :active="$basicRoles['admin']"
-                                            class="rounded-none mr-0.5 ml-0.5"
-                                            name="basicRoles"
-                                            model="basicRoles.admin"
-                                            id="admin"
-                                            functionName="updateUserType"
-                                            label="Admin" />
-                                @else
-                                    <x-form.v2.radio
-                                            :active="$basicRoles['admin']"
-                                            class="rounded-l-full mr-0.5"
-                                            name="basicRoles"
-                                            model="basicRoles.admin"
-                                            id="admin"
-                                            functionName="updateUserType"
-                                            label="Admin" />
                                 @endif
                                 <x-form.v2.radio
+                                        :active="$basicRoles['admin']"
+                                        :class="Auth::user()->is_site ? 'rounded-none mr-0.5 ml-0.5' : 'rounded-l-full mr-0.5'"
+                                        name="basicRoles"
+                                        model="basicRoles.admin"
+                                        id="admin"
+                                        functionName="updateUserType"
+                                        label="Admin" />
+                                <x-form.v2.radio
                                         :active="$basicRoles['user']"
-                                        class="rounded-r-full"
-                                        name="userTypes"
-                                        model="userTypes.user"
+                                        :class="$this->isSubtenantAccount() ? 'rounded-none mr-0.5 ml-0.5' : 'rounded-r-full'"
+                                        name="basicRoles"
+                                        model="basicRoles.user"
                                         id="user"
                                         functionName="updateUserType"
                                         label="User" />
+                                @if($this->isSubtenantAccount())
+                                    <x-form.v2.radio
+                                            :active="$this->isSubtenantUser()"
+                                            class="rounded-r-full"
+                                            name="basicRoles"
+                                            model="basicRoles.subtenant"
+                                            id="subtenant"
+                                            functionName="updateUserType"
+                                            label="Sub-tenant" />
+                                @endif
                             </x-form.v2.radio-group>
                         </div>
                     </fieldset>
+
+                    @if($this->isSubtenantUser())
+                    <div class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded">
+                        <x-input.group for="subtenantTag" label="{{__('Sub-tenant Company Name')}}" id="subtenantTag" required="required" :error="$errors->first('subtenantTag')">
+                            <x-input.text wire:model="subtenantTag" class="w-full" required="required" name="subtenantTag" placeholder="{{__('Enter company name')}}" />
+                        </x-input.group>
+                        <p class="text-sm text-yellow-700 mt-1">@lang('This user will only have access to devices assigned to this company via mobile application.')</p>
+                    </div>
+                    @endif
                 </div>
                 <div class="px-0 md:px-4 py-4 lg:py-0">
                     <fieldset>
                         <label class="text-base font-bold">{{ __('Optional Permissions') }}</label>
-                        <p class="text-sm text-gray-500 h-24">{{__('Agents have access to callcenter features. User with mobile permission are allowed to use the parrot mobile app.')}}</p>
+                        <p class="text-sm text-gray-500 h-24">
+                            {{__('Agents have access to callcenter features. Mobile users can use the Parrot app. ManDown users can use the ManDown safety monitoring app.')}}
+                            @if($this->isSubtenantUser())
+                                <span class="block mt-2 text-orange-600">{{__('Note: Mobile role is required for Sub-tenant users.')}}</span>
+                            @endif
+                        </p>
                         <legend class="sr-only">{{ __('Optional Permissions') }}</legend>
                         <div class="space-y-4 md:flex md:items-center space-x-0 md:space-x-10 md:space-y-0">
                             <x-form.v2.checkbox-group>
                                 <x-form.v2.checkbox name="optionalRoles" :active="$optionalRoles['agent'] ?? false" model="optionalRoles.agent" id="agent" functionName="updateOptionalRole" label="Agent" />
                                 <x-form.v2.checkbox name="optionalRoles" :active="$optionalRoles['mobile'] ?? false" model="optionalRoles.mobile" id="mobile" functionName="updateOptionalRole" label="Mobile" />
+                                <x-form.v2.checkbox name="optionalRoles" :active="$optionalRoles['mandown'] ?? false" model="optionalRoles.mandown" id="mandown" functionName="updateOptionalRole" label="Mandown" />
                             </x-form.v2.checkbox-group>
                         </div>
                     </fieldset>

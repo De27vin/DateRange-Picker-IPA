@@ -9,12 +9,12 @@
             <div class="items-center flex space-x-4 flex-wrap sm:col-span-2 md:col-span-2 lg:col-span-4">
                 @if($user['allowSite'])
                     <x-form.badge :size="'sm'" class="rounded-sm">{{ __('site') }}</x-form.badge>
+                @elseif($user['allowAdmin'])
+                    <x-form.badge :size="'sm'" class="rounded-sm">{{ __('admin') }}</x-form.badge>
+                @elseif($user['isSubtenant'])
+                    <x-form.badge :size="'sm'" class="rounded-sm">{{ __('sub-tenant') }}</x-form.badge>
                 @else
-                    @if($user['allowAdmin'])
-                        <x-form.badge :size="'sm'" class="rounded-sm">{{ __('admin') }}</x-form.badge>
-                    @else
-                        <x-form.badge :size="'sm'" class="rounded-sm">{{ __('user') }}</x-form.badge>
-                    @endif
+                    <x-form.badge :size="'sm'" class="rounded-sm">{{ __('user') }}</x-form.badge>
                 @endif
                 @foreach($user['optionalRoles'] as $role)
                     <x-form.badge :size="'sm'" class="rounded-sm">{{ __($role) }}</x-form.badge>

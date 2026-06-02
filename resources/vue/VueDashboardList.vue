@@ -399,7 +399,6 @@ export default {
         config = {...config, method: 'get', url: url};
       }
       
-      /*
       axios.request(config)
         .then(response => {
           window.dispatchEvent(new CustomEvent('total_count_updated', { detail: { total: response.data.total }} ));
@@ -426,42 +425,7 @@ export default {
             window.dispatchEvent(new CustomEvent('notifyerror', { detail: { message: this.trans('Error occurred on update') }}));
             this.loading = false
           }
-        }) */
-
-        // temporary while DB isn't set up
-        axios.request(config)
-        .then(response => {
-
-        const resData = response?.data?.data || [];
-        const total = response?.data?.total || 0;
-        const lastPage = response?.data?.last_page || 1;
-
-        window.dispatchEvent(new CustomEvent('total_count_updated', { detail: { total } }));
-
-        resData.forEach(device => {
-          if (this.unpackExtraData) this.unpackExtraData(device);
-        });
-
-        if (this.paginationData.current > 1) {
-          this.devices.push(...resData);
-        } else {
-          this.devices = resData;
-        }
-
-        this.paginationData.total = lastPage;
-        this.scrolledDownActive = true;
-        this.loading = false;
-      })
-      .catch(error => {
-        if (!axios.isCancel(error)) {
-          console.dir(error);
-          window.dispatchEvent(new CustomEvent('notifyerror', { detail: { message: this.trans('Error occurred on update') } }));
-          this.loading = false;
-        }
-      });
-
-
-
+        })
     },
 
     unpackExtraData(device) {
@@ -620,10 +584,20 @@ export default {
     },
 
     unpackCustomFieldsData(device) {
-      device.customFieldIcon = this.customFieldsConfig.find(config => true)?.icon || 'info'
-      device.customFieldName = this.customFieldsConfig.find(config => true)?.cfc_name || this.trans('Custom field')
-      device.customFieldValue = device.custom_fields.find(field => this.customFieldsConfig.map(config => config.cfc_id).includes(field.cfv_cfc_id))?.cfv_value || ''
-      
+      const dashboardConfig = this.customFieldsConfig?.find(config => true);
+      device.customFieldIcon = dashboardConfig?.icon || 'info';
+      device.customFieldName = dashboardConfig?.cfc_name || this.trans('Custom field');
+
+      if (dashboardConfig?.cfc_is_device) {
+        device.customFieldValue = device.custom_fields?.find(field =>
+          field.cfv_cfc_id === dashboardConfig.cfc_id
+        )?.cfv_value || '';
+      } else {
+        device.customFieldValue = device.device_site?.custom_fields?.find(field =>
+          field.cfv_cfc_id === dashboardConfig?.cfc_id
+        )?.cfv_value || '';
+      }
+
       this.unpackQrCodeData(device);
     },
 
@@ -728,8 +702,6 @@ export default {
         filters: event.detail.filters,
         searchTabs: event.detail.searchTabs,
       });
-
-      console.log('LISTA RECEIVED EVENT - at ' + Date.now() + ' | next state:' + nextState)
 
       if (nextState === this.lastFiltersState) {
         return;

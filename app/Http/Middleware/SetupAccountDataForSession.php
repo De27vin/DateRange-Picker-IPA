@@ -1,21 +1,25 @@
 <?php
 namespace App\Http\Middleware;
 
-use App\Services\AccountUpdateService;
-use App\Traits\AccountsTrait;
+use App\Services\UserContextService;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cookie;
 
 class SetupAccountDataForSession
 {
-    use AccountsTrait;
+    public function __construct(
+        private readonly UserContextService $userContext
+    ) {}
 
     public function handle(Request $request, Closure $next)
     {
-        if (auth()->check() && empty(session('account.id')) && !empty(Cookie::get('ucp_account'))) {
-            $this->setAccountSessionData(Cookie::get('ucp_account'));
+        if (auth()->check()) {
+            $this->userContext->syncAccountSessionFromCookie();
+            $this->userContext->syncAccountCookieFromSession();
+
+            if (!$this->userContext->ensureAccountContext()) {
+                return redirect('/logout')->with('error', 'No accounts assigned to your user');
+            }
         }
 
         return $next($request);

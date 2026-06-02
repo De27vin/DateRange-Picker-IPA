@@ -97,7 +97,7 @@ class DeviceGateway extends Model implements Searchable
 
     public function scopeForAccount($query)
     {
-        return $query->where('dg_account_id','=',session('account.id'));
+        return $query->where('dg_account_id', '=', app(\App\Services\AccountContext::class)->get());
     }
 
     public function scopeEnabled($query)

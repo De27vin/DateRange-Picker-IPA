@@ -11,11 +11,11 @@
 
             <div class="mt-2">
                 <div class="py-8 text-cool-gray-700">
-                    <p>{{ __('The primary number has changed. Would you like to update the CLI setting with the new number?') }}</p>
+                    <p>{{ __('The primary number has changed. Would you like to update the CLI settings with the new number?') }}</p>
                     <div class="mt-4">
                         <div class="flex items-center gap-2">
-                            <span>{{ __('Setting key') }}:</span>
-                            <span class="font-medium">call.alarm.route1.cli.number</span>
+                            <span>{{ __('Settings') }}:</span>
+                            <span class="font-medium">call.alarm.route1.cli.number & call.outbound.trunk.cli.number</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <span>{{ __('Current CLI') }}:</span>

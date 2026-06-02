@@ -88,8 +88,7 @@ class ValidateHostAndUriAgainstProxy
         if (!in_array($ip, $ipList)) {
             $ipList[] = $ip;
             file_put_contents($logFile, json_encode($ipList));
-
-            // Optional: Log more details for debugging
+            chmod($logFile, 0600);
             Log::channel('proxy')->info("Proxy attempt detected", [
                 'ip' => $ip,
                 'host' => $request->getHost(),

@@ -44,14 +44,15 @@ class InviteController extends Controller
         if($invitedUser = Invite::where('invite_token', '=', $request->token)->first()) {
             if($invitedUser->status == 'successful'){
                 // $this->notify(trans('This invitation already processed'));
-                Auth::logout();
+                app(\App\Services\UserContextService::class)->logoutActiveUser();
                 return redirect(route('login'));
             }
+            // TODO: temporary solution for liftcare subtenants - remove after implementing granular permissions system
             return view('users.create',[
-                'token' => $request->token
+                'token' => $request->token,
+                'tag' => $request->query('tag')
             ]);
         }
-
     }
 
     public function accept(Request $request)
@@ -69,6 +70,25 @@ class InviteController extends Controller
                 ->withErrors($validator)
                 ->withInput();
         }
+
+        // TODO: temporary solution for liftcare subtenants - remove after implementing granular permissions system
+        $urTag = null;
+        \Log::info('InviteController accept - checking for tag parameter', [
+            'has_tag' => $request->has('tag'),
+            'tag_value' => $request->query('tag') ? 'present' : 'missing'
+        ]);
+
+        if ($request->has('tag')) {
+            try {
+                $urTag = decrypt($request->tag);
+                \Log::info('Successfully decrypted ur_tag', ['urTag' => $urTag]);
+            } catch (\Throwable $e) {
+                \Log::error('Failed to decrypt ur_tag from invitation', ['error' => $e->getMessage()]);
+            }
+        } else {
+            \Log::info('No tag parameter in request');
+        }
+
         $defaultLocaleId = Language::where(['language_code' => session('locale', 'en'), 'language_enabled' => 1])->first()?->language_default_id ?? null;
         if($invitedUser = Invite::where('invite_token', '=', $request->token)->first()) {
             try {
@@ -104,20 +124,61 @@ class InviteController extends Controller
                 }
 
                 foreach($otherRoles as $role) {
-                    DB::table('users_roles')->insert([
+                    $roleData = [
                         'ur_user_id' => $user->user_id,
                         'ur_role_id' => $role->role_id,
                         'ur_account_id' => $account->account_id
-                    ]);
+                    ];
+
+                    if ($urTag) {
+                        $roleData['ur_tag'] = $urTag;
+                        \Log::info('Adding ur_tag to role data', ['role_type' => $role->role_type, 'urTag' => $urTag]);
+                    }
+
+                    \Log::info('Inserting role to users_roles', ['roleData' => $roleData, 'role_type' => $role->role_type]);
+
+                    try {
+                        DB::table('users_roles')->insert($roleData);
+                    } catch (\Throwable $e) {
+                        // Column ur_tag doesn't exist - try without it (backward compatibility)
+                        if ($urTag && isset($roleData['ur_tag'])) {
+                            unset($roleData['ur_tag']);
+                            DB::table('users_roles')->insert($roleData);
+                        } else {
+                            throw $e;
+                        }
+                    }
+                }
+
+                // Refresh user to get all roles
+                $user = $user->fresh();
+
+                // Create SignalWire SIP endpoint if user has mandown role
+                if ($user->hasMandownRole()) {
+                    $primaryEmail = $user->getPrimaryEmail();
+
+                    if (empty($primaryEmail)) {
+                        \Log::error('Cannot create SIP endpoint: user has no email address', [
+                            'user_id' => $user->user_id
+                        ]);
+                    } else {
+                        $signalWireService = new \App\Services\SignalWireService();
+                        if (!$signalWireService->createSipEndpoint($user, $request->password)) {
+                            \Log::error('Failed to create SIP endpoint for new user with mandown role', [
+                                'user_id' => $user->user_id
+                            ]);
+                        }
+                    }
                 }
 
                 $invitedUser->delete();
                 DB::commit();
             } catch(\Throwable $e){
                 DB::rollback();
+                \Log::error('Failed to accept invitation', ['error' => $e->getMessage()]);
             }
         }
-        Auth::logout();
+        app(\App\Services\UserContextService::class)->logoutActiveUser();
         return redirect(route('login'));
     }
 

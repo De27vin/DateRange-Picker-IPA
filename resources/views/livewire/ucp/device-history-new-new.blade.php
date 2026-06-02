@@ -7,7 +7,8 @@
                 :contextOptions="$contextOptions"
                 :historyFilter="$historyFilter"
                 :severityFilter="$severityFilter"
-                :dateFilter="$dateFilter" />
+                :dateFilter="$dateFilter"
+                :component-id="$exportComponentId" />
     </div>
 
 {{--    <button wire:click="updateLatestSessionHistoryVisibility">updateLatestSessionHistoryVisibility</button>--}}
@@ -40,7 +41,15 @@
                     $header = $comment ?: $classification ?: null;
                     $sessionType = strtoupper($historyItem->session_type->st_type);
                     $sessionDir = strtoupper($historyItem->session_direction->sd_type);
-                    $dontDisplay = (in_array($sessionType, ['AGENT', 'PARROT']) && $sessionDir === 'OUTBOUND');
+                    $relatedDir = null;
+
+                    // Hide logic
+                    // todo: optimize this approach
+                    if ($sessionDir === 'OUTBOUND' && ($historyItem->session_ref_id !== null) && ($historyItem->session?->session_direction !== null)) {
+                        $relatedDir = strtoupper($historyItem->session->session_direction->sd_type);
+                    }
+
+                    $dontDisplay = (in_array($sessionType, ['AGENT', 'PARROT']) && $sessionDir === 'OUTBOUND') || (!empty($relatedDir) && $relatedDir === 'INBOUND');
                 @endphp
                 @continue(!array_key_exists($historyItem->session_id, $historyVisibility) || empty($healthStates) || $dontDisplay)
                 <li x-data="sessionItem({{ $historyItem->session_id }})" x-init="init()" wire:key="session-{{ $historyItem->session_id }}" class="border-t border-l border-r border-gray-400">

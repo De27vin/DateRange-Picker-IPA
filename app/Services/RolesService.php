@@ -79,7 +79,7 @@ class RolesService
     public function getUserRoleStates(User $user)
     {
         $basicRoles = (new Role)->without('users_roles')->whereIn('role_type', ['site','admin','user'])->get()->pluck(0, 'role_type')->all();
-        $optionalRoles = (new Role)->without('users_roles')->whereIn('role_type', ['agent','mobile'])->get()->pluck(0, 'role_type')->all();
+        $optionalRoles = (new Role)->without('users_roles')->whereIn('role_type', ['agent','mobile','mandown'])->get()->pluck(0, 'role_type')->all();
         $roles = $user->roles()->get()->pluck('role_id','role_type')->toArray();
 
         foreach ($basicRoles as $type => $state) {
@@ -109,5 +109,20 @@ class RolesService
     public function compareBinaryRoles($binaryRoles1, $binaryRoles2)
     {
         return $this->normalizeBinaryRoles($binaryRoles1) <=> $this->normalizeBinaryRoles($binaryRoles2);
+    }
+
+    public function userHasAnyRole(User|Authenticatable $user, array $allowedRoles): bool
+    {
+        foreach ($allowedRoles as $role) {
+            if ($user->hasRole($role)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function canUserImport(User|Authenticatable $user): bool
+    {
+        return $this->userHasAnyRole($user, config('ucp.import.allowed_roles', ['site']));
     }
 }

@@ -45,10 +45,20 @@ class SitePersistenceService
         if ($updateCli) {
             foreach (['sip', 'sim', 'pbx', 'pstn'] as $numType) {
                 if (!empty($siteDTO->phoneNumbersDTO->$numType)) {
+                    $numberValue = $siteDTO->phoneNumbersDTO->$numType;
                     $currentPlainSettings = $this->settingsService->getPlainSiteSettings($siteModel);
-                    $updateSiteSetting = $currentPlainSettings['call.alarm.route1.cli.number'];
-                    $updateSiteSetting['value'] = $siteDTO->phoneNumbersDTO->$numType;
-                    $this->settingsService->updateDeviceSiteSettings($siteModel, collect([$updateSiteSetting]));
+
+                    $updateSettings = [];
+
+                    $route1Setting = $currentPlainSettings['call.alarm.route1.cli.number'];
+                    $route1Setting['value'] = $numberValue;
+                    $updateSettings[] = $route1Setting;
+
+                    $outboundSetting = $currentPlainSettings['call.outbound.trunk.cli.number'];
+                    $outboundSetting['value'] = $numberValue;
+                    $updateSettings[] = $outboundSetting;
+
+                    $this->settingsService->updateDeviceSiteSettings($siteModel, collect($updateSettings));
                     break;
                 }
             }

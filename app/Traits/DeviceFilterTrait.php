@@ -6,6 +6,7 @@ use App\Helpers\Ucp;
 use App\Models\DeviceAlert;
 use Illuminate\Support\Facades\Auth;
 
+/** @deprecated  */
 trait DeviceFilterTrait {
 
     public function getDateFilter()

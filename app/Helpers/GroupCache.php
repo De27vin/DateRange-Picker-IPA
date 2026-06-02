@@ -3,50 +3,49 @@
 namespace App\Helpers;
 
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class GroupCache
 {
+    /**
+     * Per-request cache of group versions to avoid repeated cache reads
+     */
+    protected static $versionCache = [];
+
     public static function remember(string $group, string $key, int $ttl, callable $callback)
     {
-        self::registerCacheKey($group, $key);
-        return Cache::remember($key, $ttl, $callback);
+        $prefixedKey = self::getPrefixedKey($group, $key);
+        return Cache::remember($prefixedKey, $ttl, $callback);
     }
 
     public static function rememberForever(string $group, string $key, callable $callback)
     {
-        self::registerCacheKey($group, $key);
-        return Cache::rememberForever($key, $callback);
-    }
-
-    public static function registerCacheKey(string $group, string $key): void
-    {
-        $registryKey = self::getRegistryKey($group);
-        $keys = Cache::get($registryKey, []);
-
-        if (!in_array($key, $keys, true)) {
-            $keys[] = $key;
-            Cache::forever($registryKey, $keys);
-        }
+        $prefixedKey = self::getPrefixedKey($group, $key);
+        // Use 7-day TTL instead of forever to prevent unbounded storage leak from orphaned entries
+        return Cache::remember($prefixedKey, 604800, $callback);
     }
 
     public static function forgetGroup(string $group): void
     {
-        $registryKey = self::getRegistryKey($group);
-        $keys = Cache::get($registryKey, []);
+        Cache::forget("group_version:{$group}");
+        unset(self::$versionCache[$group]);
+    }
 
-        foreach ($keys as $key) {
-            Cache::forget($key);
+    protected static function getPrefixedKey(string $group, string $key): string
+    {
+        // Memoize version per request to avoid repeated cache reads
+        if (!isset(self::$versionCache[$group])) {
+            self::$versionCache[$group] = Cache::remember(
+                "group_version:{$group}",
+                604800, // 7 days - same as rememberForever TTL
+                fn() => Str::uuid()->toString()
+            );
         }
 
-        Cache::forget($registryKey);
+        $version = self::$versionCache[$group];
+        return "group:{$group}:{$version}:{$key}";
     }
 
-    protected static function getRegistryKey(string $group): string
-    {
-        return "cache_registry:{$group}";
-    }
-
-    // potentially to use but not in use yet
     protected static function makeCacheKey(...$params): string
     {
         $serializedParams = array_map(function ($param) {
@@ -61,5 +60,4 @@ class GroupCache
 
         return md5(json_encode($serializedParams));
     }
-
 }

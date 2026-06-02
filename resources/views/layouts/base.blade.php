@@ -21,6 +21,7 @@
     <body class="bg-gray-200">
         <div class="bg-cover bg-center bg-no-repeat bg-fixed" style="background-image: url('/assets/images/bg-ucp.jpg');">
             <div id="app" class="min-h-screen flex flex-col justify-start">
+                {{-- this navigation is deprecated --}}
                 <livewire:admin.navigation />
                 {{ $slot }}
             </div>

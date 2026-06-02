@@ -93,7 +93,7 @@ class Labels extends Component
 
         $this->locale       = session('locale', 'en');
         $this->accountId    = session('account.id');
-        $this->languages    = Language::where('language_enabled', '=', true)->get()->pluck('language_code')->all();
+        $this->languages    = app(\App\Services\LanguageService::class)->getEnabledLanguages();
         $this->translations = $this->getTranslations(['settings' => 'device', 'initial' => '', 'call' => 'call']);
         $this->canWriteSettings = Auth::user()->is_admin;
 

@@ -19,17 +19,52 @@
 
         <!-- NEW VUE FILTERS (experimental) -->
         <div id="vue-equipment-filters">
-            <vue-equipment-filters></vue-equipment-filters>
+            <vue-equipment-filters :can-import="{{ Auth::user()->canImport() ? 'true' : 'false' }}"></vue-equipment-filters>
         </div>
         <script src="{{ mix('/vue/vue-equipment-filters.js') }}"></script>
 
-        <!-- Export Components (conditionally loaded) -->
-        <div x-data="{ showExport: false, showExportComments: false }"
-             x-on:toggle-export.window="showExport = true"
-             x-on:toggle-export-comments.window="showExportComments = true"
-             x-on:dropdown-select.window="if ($event.detail.element === '') { showExport = false; showExportComments = false }">
+        <!-- Export/Import Components (conditionally loaded) -->
+        <div x-data="{
+                 showImport: false,
+                 showExport: false,
+                 showExportComments: false,
 
-            <div x-cloak x-show="showExport" style="display:none" class="relative bg-white bg-opacity-20 w-full p-8 pt-4 my-4">
+                 openPanel(panel) {
+                     this.showImport = (panel === 'import');
+                     this.showExport = (panel === 'export');
+                     this.showExportComments = (panel === 'export-comments');
+                 },
+
+                 closeAll() {
+                     this.showImport = false;
+                     this.showExport = false;
+                     this.showExportComments = false;
+                 }
+             }"
+             x-on:toggle-import.window="openPanel('import')"
+             x-on:toggle-export.window="openPanel('export')"
+             x-on:toggle-export-comments.window="openPanel('export-comments')"
+             x-on:dropdown-select.window="if ($event.detail.element === '') { closeAll() }">
+
+            @if(Auth::user()->canImport())
+                <div x-cloak x-show="showImport" style="display:none; position: relative;" class="bg-white bg-opacity-20 w-full p-8 pt-4 my-4">
+                    <button @click="closeAll()" style="position: absolute; top: 0.5rem; right: 0.5rem;" class="text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                    <livewire:ucp.import-devices
+                            wire:key="import-devices-component"
+                    ></livewire:ucp.import-devices>
+                </div>
+            @endif
+
+            <div x-cloak x-show="showExport" style="display:none; position: relative;" class="bg-white bg-opacity-20 w-full p-8 pt-4 my-4">
+                <button @click="closeAll()" style="position: absolute; top: 0.5rem; right: 0.5rem;" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
                 <livewire:ucp.export-devices-new
                         :filtersId="'Equipment'"
                         :exportSites="true"
@@ -37,7 +72,12 @@
                 ></livewire:ucp.export-devices-new>
             </div>
 
-            <div x-cloak x-show="showExportComments" style="display:none" class="relative bg-white bg-opacity-20 w-full p-8 pt-4 my-4">
+            <div x-cloak x-show="showExportComments" style="display:none; position: relative;" class="bg-white bg-opacity-20 w-full p-8 pt-4 my-4">
+                <button @click="closeAll()" style="position: absolute; top: 0.5rem; right: 0.5rem;" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
                 <livewire:ucp.export-comments-new
                         :filtersId="'Equipment'"
                         :exportSites="true"

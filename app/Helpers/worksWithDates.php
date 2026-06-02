@@ -14,7 +14,8 @@ if (!function_exists('toUserDate')) {
         if ($user) {
             $timezone = $user->user_timezone;
         } else {
-            $timezone = Auth::user()->user_timezone;
+            $timezone = Auth::user()?->user_timezone
+                ?? throw new \RuntimeException('toUserDate() requires an authenticated user or an explicit $user argument.');
         }
  
         if (is_string($date)) {
@@ -35,7 +36,8 @@ if (!function_exists('toUserTime')) {
         if ($user) {
             $timezone = $user->user_timezone;
         } else {
-            $timezone = Auth::user()->user_timezone;
+            $timezone = Auth::user()?->user_timezone
+                ?? throw new \RuntimeException('toUserTime() requires an authenticated user or an explicit $user argument.');
         }
  
         if (is_string($date)) {
@@ -56,7 +58,8 @@ if (!function_exists('toUserDateTime')) {
         if ($user) {
             $timezone = $user->user_timezone;
         } else {
-            $timezone = Auth::user()->user_timezone;
+            $timezone = Auth::user()?->user_timezone
+                ?? throw new \RuntimeException('toUserDateTime() requires an authenticated user or an explicit $user argument.');
         }
  
         if (is_string($date)) {

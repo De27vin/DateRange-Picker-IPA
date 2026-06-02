@@ -1,4 +1,13 @@
 {{-- history-filter-ucp2.blade.php --}}
+@props([
+    'componentId'    => null,
+    'deviceSite'     => null,
+    'siteDevicesIds' => [],
+    'contextOptions' => [],
+    'historyFilter'  => [],
+    'severityFilter' => [],
+    'dateFilter'     => [],
+])
 <div class="info-container text-medium block py-2 text-sm hover:text-gray-900 has-children">
     <div class="flex w-full justify-between items-center ml-0">
         <span class="flex justify-start w-full text-base h-12 items-center">
@@ -36,7 +45,10 @@
 {{--            <div class="mx-2 bottom-underline-light uppercase text-xs">@lang('Actions')</div>--}}
 
             <div class="flex">
-                <div x-data="{ showFormat: false, polling: false, progress: 0 }" style="z-index: 10;">
+                <div x-data="exportHandler(@js(['type' => 'history', 'componentId' => $componentId, 'storeUrl' => route('exports.store'), 'progressLabel' => __('Downloading…')]))"
+                     x-init="init()"
+                     style="z-index: 10;"
+                     class="relative">
                     <x-button.white
                         class="ml-0 border border-slate-200"
                         x-on:click="showFormat = true"
@@ -44,92 +56,9 @@
                         @lang('Export History')
                     </x-button.white>
 
-                    <!-- Format Selection Dropdown -->
-                    <div
-                        x-cloak
-                        x-show="showFormat"
-                        x-on:click.away="showFormat = false"
-                        class="absolute mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100"
-                    >
-                        <div class="py-1">
-                            <button
-                                wire:click="$set('exportFormat', 'csv')"
-                                x-on:click="
-                                    showFormat = false;
-                                    polling = true;
-                                    Livewire.emitTo('ucp.device-history-new', 'exportHistory');
-                                    let checkProgress = setInterval(() => {
-                                        fetch('{{ route('exportHistoryProgress') }}')
-                                            .then(response => response.json())
-                                            .then(data => {
-                                                if (data.progress === null) {
-                                                    clearInterval(checkProgress);
-                                                    polling = false;
-                                                } else {
-                                                    progress = data.progress;
-                                                }
-                                            })
-                                            .catch(error => {
-                                                console.error('Error:', error);
-                                                clearInterval(checkProgress);
-                                                polling = false;
-                                            });
-                                    }, 500);
-                                "
-                                class="w-full text-left px-4 py-2 text-sm text-gray-700"
-                            >
-                                CSV
-                            </button>
-                            <button
-                                wire:click="$set('exportFormat', 'xlsx')"
-                                x-on:click="
-                                    showFormat = false;
-                                    polling = true;
-                                    Livewire.emitTo('ucp.device-history-new', 'exportHistory');
-                                    let checkProgress = setInterval(() => {
-                                        fetch('{{ route('exportHistoryProgress') }}')
-                                            .then(response => response.json())
-                                            .then(data => {
-                                                if (data.progress === null) {
-                                                    clearInterval(checkProgress);
-                                                    polling = false;
-                                                } else {
-                                                    progress = data.progress;
-                                                }
-                                            })
-                                            .catch(error => {
-                                                console.error('Error:', error);
-                                                clearInterval(checkProgress);
-                                                polling = false;
-                                            });
-                                    }, 500);
-                                "
-                                class="w-full text-left px-4 py-2 text-sm text-gray-700"
-                            >
-                                Excel (XLSX)
-                            </button>
-                        </div>
-                    </div>
+                    <x-export.format-dropdown wire-method="exportHistory" />
 
-                    <!-- Progress Bar (keep existing) -->
-                    <div x-show="polling" x-cloak>
-                        <div class="absolute bottom-4 right-4 w-48 bg-white rounded-lg shadow-lg p-4 border z-50">
-                            <div class="space-y-2">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm font-medium">{{ __('Downloading') }}...</span>
-                                    <template x-if="progress >= 100">
-                                        <span class="text-green-500">✓</span>
-                                    </template>
-                                </div>
-                                <div class="w-full bg-gray-200 rounded-full h-2.5">
-                                    <div class="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
-                                         :style="`width: ${progress}%`">
-                                    </div>
-                                </div>
-                                <span class="text-xs text-gray-500" x-text="`${progress}% complete`"></span>
-                            </div>
-                        </div>
-                    </div>
+                    <x-export.progress-bar />
                 </div>
 
                 <x-button.white class="ml-1 border border-slate-200" wire:click="resetFilters">

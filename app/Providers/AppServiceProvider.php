@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use App\Services\AccountContext;
+use App\Services\LanguageService;
 use App\Services\NotificationsService;
+use App\Services\UserContextService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as DBQueryBuilder;
 use Illuminate\Http\Request;
@@ -26,6 +29,9 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         // singletons (bind is default which is also singleton)
+        $this->app->singleton(AccountContext::class);
+        $this->app->singleton(LanguageService::class);
+        $this->app->singleton(UserContextService::class);
         $this->app->singleton(NotificationsService::class);
 
         if ($this->app->isLocal()) {
@@ -53,7 +59,7 @@ class AppServiceProvider extends ServiceProvider
         //if (in_array($currentHost, $allowedHosts)) {
         //    URL::forceRootUrl(request()->getSchemeAndHttpHost());
         //} else {
-        //    UR//L::forceRootUrl(config('app.url'));
+        //    URL::forceRootUrl(config('app.url'));
         //}
 
         /** * Paginate a standard Laravel Collection. * * @param int $perPage * @param int $total * @param int $page * @param string $pageName * @return array */

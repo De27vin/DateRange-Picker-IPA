@@ -2,17 +2,13 @@
 namespace App\Http\Livewire\Admin;
 
 use Livewire\Component;
-use App\Traits\DevicesTrait;
-use App\Traits\AccountsTrait;
 use Illuminate\Support\Facades\Auth;
 
 class AlarmNotification extends Component
 {
-    use DevicesTrait;
-    use AccountsTrait;
-
     public $alarmCalls;
 
+    protected $listeners = ['alarm-data-updated' => 'handleAlarmUpdate'];
 
     public function mount()
     {
@@ -23,6 +19,13 @@ class AlarmNotification extends Component
         }
     }
 
+    public function handleAlarmUpdate($data)
+    {
+        if (isset($data['accountId']) && $data['accountId'] == session('account.id')) {
+            $this->alarmCalls = $data['alarmCalls'] ?? [];
+        }
+    }
+
     public function render()
     {
         return view('livewire.admin.alarm-notification');
@@ -30,14 +33,8 @@ class AlarmNotification extends Component
 
     public function updateAlarmCalls()
     {
-        $this->alarmCalls = $this->getAlertDevices('all', ['VOICE']);
+//        $this->alarmCalls = $this->getAlertDevices('all', ['ALARM']);
+        $this->alarmCalls = [];
     }
-
-    // public function takeAlarmCall($id)
-    // {
-    //     session(['alarm'   => ['deviceId' => $id, 'show' => true]]);
-    //     // $this->emit('switch','admin.alarm');
-    //     // return redirect()->route('device-details',['deviceId' => $id]);
-    // }
 
 }

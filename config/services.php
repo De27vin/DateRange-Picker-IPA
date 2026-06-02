@@ -30,4 +30,11 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'signalwire' => [
+        'space' => env('SIGNALWIRE_SPACE', ''),
+        'project_id' => env('SIGNALWIRE_PROJECT_ID', ''),
+        'api_token' => env('SIGNALWIRE_API_TOKEN', ''),
+        'error_notification_emails' => env('SIGNALWIRE_ERROR_NOTIFICATION_EMAILS', ''),
+    ],
+
 ];

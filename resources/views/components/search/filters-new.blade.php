@@ -1,3 +1,4 @@
+{{-- @deprecated --}}
 @props([
     'searchTabs',
     'listCount',
@@ -54,7 +55,9 @@
                         @if($showMenu)
                             <div class="boxitemDropdown z-20">
                                 <x-form.actionmenu icon="square_arrow_down" :data="''">
-{{--                                    <x-form.dropdown-item x-on:click="$dispatch('dropdown-select', { element: 'toggleImport' });open=false">@lang('Import devices list') ...</x-form.dropdown-item>--}}
+                                    @if(Auth::user()->canImport())
+                                        <x-form.dropdown-item x-on:click="$dispatch('dropdown-select', { element: 'toggleImport' });open=false">@lang('Import devices') ...</x-form.dropdown-item>
+                                    @endif
                                     <x-form.dropdown-item x-on:click="$dispatch('dropdown-select', { element: 'toggleExport' });open=false">@lang('Export current list') ...</x-form.dropdown-item>
                                     <x-form.dropdown-item x-on:click="$dispatch('dropdown-select', { element: 'toggleExportComments' });open=false">@lang('Export comments of listed devices') ...</x-form.dropdown-item>
                                 </x-form.actionmenu>
@@ -78,9 +81,11 @@
 
     <div x-cloak @dropdown-select.window="selected == $event.detail.element ? selected = null : selected = $event.detail.element">
         <div class="">
-{{--            <div x-show="selected === 'toggleImport'" class="relative bg-white bg-opacity-20 w-full p-8 pt-4 my-4">--}}
-{{--                <livewire:ucp.import-devices-new></livewire:ucp.import-devices-new>--}}
-{{--            </div>--}}
+            @if(Auth::user()->canImport())
+                <div x-show="selected === 'toggleImport'" class="relative bg-white bg-opacity-20 w-full p-8 pt-4 my-4">
+                    <livewire:ucp.import-devices></livewire:ucp.import-devices>
+                </div>
+            @endif
 
             <div x-show="selected === 'toggleExport'" class="relative bg-white bg-opacity-20 w-full p-8 pt-4 my-4">
                 <livewire:ucp.export-devices-new
