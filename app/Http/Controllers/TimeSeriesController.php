@@ -18,7 +18,7 @@ class TimeSeriesController extends Controller
         $data = $result['data'];
 
         $requestId = $request->attributes->get('request_id') ?: $request->header('X-Request-Id');
-        Log::channel('ipa')->info('timeseries.request', [
+        Log::info('timeseries.request', [
             'event' => 'timeseries.request',
             'request_id' => $requestId,
             'chart' => $chart,

@@ -134,7 +134,7 @@ class TimeseriesRequest extends FormRequest
     {
         $requestId = $this->attributes->get('request_id') ?: $this->header('X-Request-Id');
 
-        Log::channel('ipa')->warning('timeseries.validation_failed', [
+        Log::warning('timeseries.validation_failed', [
             'event' => 'timeseries.validation_failed',
             'request_id' => $requestId,
             'path' => $this->getPathInfo(),

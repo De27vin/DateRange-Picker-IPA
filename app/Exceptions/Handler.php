@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Response;
+use Illuminate\Validation\ValidationException;
 
 class Handler extends ExceptionHandler
 {
@@ -41,6 +42,14 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $exception)
     {
+        if ($exception instanceof ValidationException) {
+            return parent::render($request, $exception);
+        }
+
+        if ($this->shouldReturnApiJson($request)) {
+            return $this->apiErrorResponse($request, $exception);
+        }
+
         if ($exception instanceof HttpException) {
             Log::error('Symfony Kernel HTTP Exception:', [
                 'url' => $request->fullUrl(),
@@ -132,6 +141,43 @@ class Handler extends ExceptionHandler
         return response()->view('errors.ucp-error', [
             'message' => $this->toString($exception),
         ], 500);
+    }
+
+    private function shouldReturnApiJson($request): bool
+    {
+        return $request->expectsJson() || $request->is('api/*') || !$request->acceptsHtml();
+    }
+
+    private function apiErrorResponse($request, Throwable $exception)
+    {
+        $status = $exception instanceof HttpException ? $exception->getStatusCode() : 500;
+        $message = $status >= 500
+            ? 'Internal server error'
+            : ($exception->getMessage() ?: 'Request failed');
+
+        $context = [
+            'event' => 'api.exception',
+            'request_id' => $this->requestId($request),
+            'status' => $status,
+            'url' => $request->fullUrl(),
+            'method' => $request->method(),
+        ];
+
+        if ($status >= 500) {
+            Log::error($exception, $context);
+        } else {
+            Log::warning($exception, $context);
+        }
+
+        return response()->json([
+            'message' => $message,
+            'request_id' => $this->requestId($request),
+        ], $status);
+    }
+
+    private function requestId($request): ?string
+    {
+        return $request->attributes->get('request_id') ?: $request->header('X-Request-Id');
     }
 
 
