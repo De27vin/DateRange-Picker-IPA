@@ -231,6 +231,15 @@ function gradientColor(index, total) {
   return `rgba(${r}, ${g}, ${b}, 1)`
 }
 
+function outlineLegendLabels(chartInstance) {
+  return Chart.defaults.global.legend.labels.generateLabels(chartInstance).map((item) => ({
+    ...item,
+    fillStyle: 'rgba(0, 0, 0, 0)',
+    strokeStyle: item.strokeStyle || item.fillStyle,
+    lineWidth: item.lineWidth || 2,
+  }))
+}
+
 export default {
   name: 'ChartsPage',
   components: { DatePicker },
@@ -488,6 +497,13 @@ export default {
           fontStyle: 'bold',
           color: '#beb4b6',
           padding: 10,
+        },
+        legend: {
+          labels: {
+            fontColor: '#beb4b6',
+            fontSize: 13,
+            generateLabels: outlineLegendLabels,
+          },
         },
         plugins: {
           legend: {
