@@ -8,7 +8,11 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardWidgetSettingsService
 {
+    public const SCOPE_DASHBOARD = 'dashboard';
+    public const SCOPE_CHARTS = 'charts';
+    public const SCOPES = [self::SCOPE_DASHBOARD, self::SCOPE_CHARTS];
     public const DATE_WIDGETS = ['equipment', 'overdues', 'alerts'];
+    public const CHARTS = ['equipment', 'alarms', 'alerts', 'serviceLevel'];
     public const RANGE_UNITS = ['days', 'weeks', 'months', 'years'];
     private const RANGE_UNIT_MAX = [
         'days' => 365,
@@ -29,90 +33,130 @@ class DashboardWidgetSettingsService
         ],
     ];
 
-    public function getAccountDefaults(): array
+    public const CHARTS_SYSTEM_DEFAULTS = [
+        'ranges' => [
+            'equipment' => ['amount' => 3, 'unit' => 'months'],
+            'alarms' => ['amount' => 3, 'unit' => 'months'],
+            'alerts' => ['amount' => 3, 'unit' => 'months'],
+            'serviceLevel' => ['amount' => 3, 'unit' => 'months'],
+        ],
+    ];
+
+    private const SETTINGS = [
+        self::SCOPE_DASHBOARD => [
+            'accountKey' => 'dashboard_widgets',
+            'userKey' => 'dashboard_widgets_users',
+            'rangeKeys' => self::DATE_WIDGETS,
+            'defaults' => self::SYSTEM_DEFAULTS,
+            'serviceThresholds' => true,
+        ],
+        self::SCOPE_CHARTS => [
+            'accountKey' => 'charts_page',
+            'userKey' => 'charts_page_users',
+            'rangeKeys' => self::CHARTS,
+            'defaults' => self::CHARTS_SYSTEM_DEFAULTS,
+            'serviceThresholds' => false,
+        ],
+    ];
+
+    public function getAccountDefaults(string $scope = self::SCOPE_DASHBOARD): array
     {
+        $config = $this->configFor($scope);
         $profile = $this->getProfileData();
-        $settings = is_array($profile['dashboard_widgets'] ?? null)
-            ? $profile['dashboard_widgets']
+        $settings = is_array($profile[$config['accountKey']] ?? null)
+            ? $profile[$config['accountKey']]
             : [];
 
-        return $this->sanitizeSettings($settings);
+        return $this->sanitizeSettings($settings, $scope);
     }
 
-    public function getEffectiveDefaults(): array
+    public function getEffectiveDefaults(string $scope = self::SCOPE_DASHBOARD): array
     {
-        $accountDefaults = $this->getAccountDefaults();
-        $userDefaults = $this->getUserDefaults();
+        $accountDefaults = $this->getAccountDefaults($scope);
+        $userDefaults = $this->getUserDefaults($scope);
 
-        return $this->sanitizeSettings(array_replace_recursive($accountDefaults, $userDefaults));
+        return $this->sanitizeSettings(array_replace_recursive($accountDefaults, $userDefaults), $scope);
     }
 
-    public function getUserDefaults(): array
+    public function getUserDefaults(string $scope = self::SCOPE_DASHBOARD): array
     {
+        $config = $this->configFor($scope);
         $profile = $this->getProfileData();
         $userId = $this->currentUserId();
-        $settings = $userId && is_array($profile['dashboard_widgets_users'][$userId] ?? null)
-            ? $profile['dashboard_widgets_users'][$userId]
+        $settings = $userId && is_array($profile[$config['userKey']][$userId] ?? null)
+            ? $profile[$config['userKey']][$userId]
             : [];
 
-        return $this->sanitizeSettings(array_replace_recursive($this->getAccountDefaults(), $settings));
+        return $this->sanitizeSettings(array_replace_recursive($this->getAccountDefaults($scope), $settings), $scope);
     }
 
-    public function saveAccountDefaults(array $settings): array
+    public function saveAccountDefaults(array $settings, string $scope = self::SCOPE_DASHBOARD): array
     {
+        $config = $this->configFor($scope);
         $profile = $this->getProfileData();
-        $profile['dashboard_widgets'] = $this->sanitizeSettings($settings);
-        $profile['dashboard_widgets_users'] = $this->replaceUserDefaults(
-            $profile['dashboard_widgets_users'] ?? [],
-            $profile['dashboard_widgets']
+        $profile[$config['accountKey']] = $this->sanitizeSettings($settings, $scope);
+        $profile[$config['userKey']] = $this->replaceUserDefaults(
+            $profile[$config['userKey']] ?? [],
+            $profile[$config['accountKey']]
         );
         $this->saveProfileData($profile);
 
-        return $profile['dashboard_widgets'];
+        return $profile[$config['accountKey']];
     }
 
-    public function saveUserDefaults(array $settings): array
+    public function saveUserDefaults(array $settings, string $scope = self::SCOPE_DASHBOARD): array
     {
+        $config = $this->configFor($scope);
         $profile = $this->getProfileData();
         $userId = $this->currentUserId();
         if (!$userId) {
-            return $this->getAccountDefaults();
+            return $this->getAccountDefaults($scope);
         }
 
-        $profile['dashboard_widgets_users'][$userId] = $this->sanitizeSettings($settings);
+        $profile[$config['userKey']][$userId] = $this->sanitizeSettings($settings, $scope);
         $this->saveProfileData($profile);
 
-        return $profile['dashboard_widgets_users'][$userId];
+        return $profile[$config['userKey']][$userId];
     }
 
-    public function resetUserDefaults(): array
+    public function resetUserDefaults(string $scope = self::SCOPE_DASHBOARD): array
     {
+        $config = $this->configFor($scope);
         $profile = $this->getProfileData();
         $userId = $this->currentUserId();
         if (!$userId) {
-            return $this->getAccountDefaults();
+            return $this->getAccountDefaults($scope);
         }
 
-        unset($profile['dashboard_widgets_users'][$userId]);
+        unset($profile[$config['userKey']][$userId]);
         $this->saveProfileData($profile);
 
-        return $this->getAccountDefaults();
+        return $this->getAccountDefaults($scope);
     }
 
-    public function sanitizeSettings(array $settings): array
+    public function sanitizeSettings(array $settings, string $scope = self::SCOPE_DASHBOARD): array
     {
+        $config = $this->configFor($scope);
+        $defaults = $config['defaults'];
         $ranges = [];
-        foreach (self::DATE_WIDGETS as $widget) {
-            $ranges[$widget] = $this->sanitizeRange(
-                $settings['ranges'][$widget] ?? null,
-                self::SYSTEM_DEFAULTS['ranges'][$widget]
+        foreach ($config['rangeKeys'] as $rangeKey) {
+            $ranges[$rangeKey] = $this->sanitizeRange(
+                $settings['ranges'][$rangeKey] ?? null,
+                $defaults['ranges'][$rangeKey]
             );
         }
 
-        return [
-            'ranges' => $ranges,
-            'serviceThresholds' => $this->sanitizeServiceThresholds($settings['serviceThresholds'] ?? []),
-        ];
+        $sanitized = ['ranges' => $ranges];
+        if ($config['serviceThresholds']) {
+            $sanitized['serviceThresholds'] = $this->sanitizeServiceThresholds($settings['serviceThresholds'] ?? []);
+        }
+
+        return $sanitized;
+    }
+
+    private function configFor(string $scope): array
+    {
+        return self::SETTINGS[$scope] ?? self::SETTINGS[self::SCOPE_DASHBOARD];
     }
 
     private function sanitizeRange(mixed $range, array $fallback): array

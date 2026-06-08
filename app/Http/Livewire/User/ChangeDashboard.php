@@ -8,24 +8,28 @@ use Livewire\Component;
 
 class ChangeDashboard extends Component
 {
-    public array $dashboardWidgetSettings = [];
+    public string $scope = DashboardWidgetSettingsService::SCOPE_DASHBOARD;
+    public array $settings = [];
 
-    private DashboardWidgetSettingsService $dashboardWidgetSettingsService;
+    private DashboardWidgetSettingsService $settingsService;
 
     public function __construct($id = null)
     {
         parent::__construct($id);
-        $this->dashboardWidgetSettingsService = new DashboardWidgetSettingsService();
+        $this->settingsService = new DashboardWidgetSettingsService();
     }
 
-    public function mount()
+    public function mount(string $scope = DashboardWidgetSettingsService::SCOPE_DASHBOARD)
     {
         if (!session('account.id') || !Auth::check()) {
             \Log::error('Required data not found in ChangeDashboard component');
             abort(500);
         }
 
-        $this->dashboardWidgetSettings = $this->dashboardWidgetSettingsService->getUserDefaults();
+        $this->scope = in_array($scope, DashboardWidgetSettingsService::SCOPES, true)
+            ? $scope
+            : DashboardWidgetSettingsService::SCOPE_DASHBOARD;
+        $this->settings = $this->settingsService->getUserDefaults($this->scope);
     }
 
     public function render()
@@ -35,18 +39,35 @@ class ChangeDashboard extends Component
 
     public function updateDashboardSettings()
     {
-        $this->dashboardWidgetSettings = $this->dashboardWidgetSettingsService->saveUserDefaults($this->dashboardWidgetSettings);
+        $this->settings = $this->settingsService->saveUserDefaults($this->settings, $this->scope);
         $this->notify('success', __('Dashboard defaults updated'));
+    }
+
+    public function updateChartsSettings()
+    {
+        $this->settings = $this->settingsService->saveUserDefaults($this->settings, $this->scope);
+        $this->notify('success', __('Charts defaults updated'));
     }
 
     public function resetDashboardSettings()
     {
-        $this->dashboardWidgetSettings = $this->dashboardWidgetSettingsService->resetUserDefaults();
+        $this->settings = $this->settingsService->resetUserDefaults($this->scope);
         $this->notify('success', __('Dashboard defaults reset'));
+    }
+
+    public function resetChartsSettings()
+    {
+        $this->settings = $this->settingsService->resetUserDefaults($this->scope);
+        $this->notify('success', __('Charts defaults reset'));
     }
 
     public function cancelDashboardSettings()
     {
-        $this->dashboardWidgetSettings = $this->dashboardWidgetSettingsService->getUserDefaults();
+        $this->settings = $this->settingsService->getUserDefaults($this->scope);
+    }
+
+    public function cancelChartsSettings()
+    {
+        $this->settings = $this->settingsService->getUserDefaults($this->scope);
     }
 }

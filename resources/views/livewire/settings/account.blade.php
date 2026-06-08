@@ -26,10 +26,10 @@
             @if(Auth::user()->isAdmin)
                 <x-slot name="passwordPolicySlot"><livewire:admin.password-policy /></x-slot>
                 <x-slot name="dashboardSlot">
-                    <x-account.dashboard-widget-settings :dashboard-widget-settings="$dashboardWidgetSettings" />
+                    <x-account.dashboard-widget-settings />
                 </x-slot>
                 <x-slot name="chartsSlot">
-                    <x-account.charts-settings :charts-settings="$chartsSettings" />
+                    <x-account.dashboard-widget-settings mode="charts" />
                 </x-slot>
             @endif
             <x-slot name="settingsSlot">

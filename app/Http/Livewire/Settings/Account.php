@@ -2,7 +2,6 @@
 namespace App\Http\Livewire\Settings;
 
 use App\Helpers\GroupCache;
-use App\Services\ChartsSettingsService;
 use App\Services\DashboardWidgetSettingsService;
 use App\Services\RolesService;
 use App\Services\SettingsService;
@@ -22,7 +21,6 @@ class Account extends Component
     private SettingsService $settingsService;
     private RolesService $rolesService;
     private DashboardWidgetSettingsService $dashboardWidgetSettingsService;
-    private ChartsSettingsService $chartsSettingsService;
 
     public function __construct($id = null)
     {
@@ -30,7 +28,6 @@ class Account extends Component
         $this->settingsService = new SettingsService();
         $this->rolesService = new RolesService();
         $this->dashboardWidgetSettingsService = new DashboardWidgetSettingsService();
-        $this->chartsSettingsService = new ChartsSettingsService();
     }
 
     public function mount()
@@ -43,7 +40,7 @@ class Account extends Component
         $accountSettings = $this->settingsService->getAccountSettings(session('account.id'));
         $this->accountSettings = $this->settingsService->prepareSettingsForView(SettingsService::ACCOUNT, $accountSettings);
         $this->dashboardWidgetSettings = $this->dashboardWidgetSettingsService->getAccountDefaults();
-        $this->chartsSettings = $this->chartsSettingsService->getAccountDefaults();
+        $this->chartsSettings = $this->dashboardWidgetSettingsService->getAccountDefaults(DashboardWidgetSettingsService::SCOPE_CHARTS);
     }
 
     public function render()
@@ -85,7 +82,10 @@ class Account extends Component
             abort(403);
         }
 
-        $this->chartsSettings = $this->chartsSettingsService->saveAccountDefaults($this->chartsSettings);
+        $this->chartsSettings = $this->dashboardWidgetSettingsService->saveAccountDefaults(
+            $this->chartsSettings,
+            DashboardWidgetSettingsService::SCOPE_CHARTS
+        );
         $this->notify('success', __('Charts defaults updated'));
     }
 
@@ -135,7 +135,7 @@ class Account extends Component
 
     public function cancelChartsSettings()
     {
-        $this->chartsSettings = $this->chartsSettingsService->getAccountDefaults();
+        $this->chartsSettings = $this->dashboardWidgetSettingsService->getAccountDefaults(DashboardWidgetSettingsService::SCOPE_CHARTS);
     }
 
     private function makeFsReload()

@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\ChartsSettingsService;
+use App\Services\DashboardWidgetSettingsService;
 use Illuminate\Http\JsonResponse;
 
 class ChartsSettingsController extends Controller
 {
-    public function settings(ChartsSettingsService $settings): JsonResponse
+    public function settings(DashboardWidgetSettingsService $settings): JsonResponse
     {
         return response()->json([
-            'data' => $settings->getEffectiveDefaults(),
+            'data' => $settings->getEffectiveDefaults(DashboardWidgetSettingsService::SCOPE_CHARTS),
         ]);
     }
 }
