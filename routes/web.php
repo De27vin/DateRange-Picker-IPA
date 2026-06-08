@@ -113,8 +113,6 @@ Route::middleware(['auth','setTimezone'])->group(function() {
     Route::get('/device-site/{device_site_id}', \App\Http\Livewire\Ucp\DeviceSiteDetails::class)->name('device-site-details');
 
     // Import devices routes
-    Route::post('import-devices-validate', [\App\Http\Controllers\ImportDevicesController::class, 'validateImportFile'])->name('import.devices.validate');
-    Route::post('import-devices-execute', [\App\Http\Controllers\ImportDevicesController::class, 'execute'])->name('import.devices.execute');
     Route::get('import-devices-template', [\App\Http\Controllers\ImportDevicesController::class, 'downloadTemplate'])->name('import.devices.template');
     Route::get('import-devices-instructions', [\App\Http\Controllers\ImportDevicesController::class, 'downloadInstructions'])->name('import.devices.instructions');
 

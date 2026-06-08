@@ -23,11 +23,14 @@ use App\Models\Setting;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Exception;
 
 class ImportService
 {
-    private ImportParserService $parser;
+    private const ALLOWED_EXTENSIONS = ['csv', 'xlsx', 'xls'];
+    private const MAX_FILE_SIZE = 2 * 1024 * 1024;
+
     private ImportValidationService $validator;
     private ProfileAccessService $profileAccess;
     private DeviceGatewayPersistenceService $gatewayPersistence;
@@ -47,25 +50,20 @@ class ImportService
     private array $createdSites = [];
 
     public function __construct(
-        ImportParserService $parser,
         ImportValidationService $validator,
         ProfileAccessService $profileAccess,
         DeviceGatewayPersistenceService $gatewayPersistence
     ) {
-        $this->parser = $parser;
         $this->validator = $validator;
         $this->profileAccess = $profileAccess;
         $this->gatewayPersistence = $gatewayPersistence;
+        ini_set('max_execution_time', 120);
     }
 
 
     public function validateFile(UploadedFile $file, int $accountId): ImportValidationResult
     {
-        // Parse file
-        $rows = $this->parser->parse($file);
-
-        // Validate
-        return $this->validator->validate($rows, $accountId);
+        return $this->validator->validate($this->parse($file), $accountId);
     }
 
 
@@ -73,8 +71,7 @@ class ImportService
     {
         $this->copyNumberToCli = $copyNumberToCli;
 
-        // Parse file
-        $rows = $this->parser->parse($file);
+        $rows = $this->parse($file);
 
         // Validate first
         $validationResult = $this->validator->validate($rows, $accountId);
@@ -612,4 +609,121 @@ class ImportService
         return $this->cliSettingIds;
     }
 
+    private function parse(UploadedFile $file): array
+    {
+        $this->validateUpload($file);
+
+        return strtolower($file->getClientOriginalExtension()) === 'csv'
+            ? $this->parseCsv($file)
+            : $this->parseExcel($file);
+    }
+
+    private function validateUpload(UploadedFile $file): void
+    {
+        if (!$file->isValid()) {
+            throw new Exception(trans('Uploaded file is invalid'));
+        }
+
+        if ($file->getSize() > self::MAX_FILE_SIZE) {
+            throw new Exception(trans('File size exceeds maximum allowed size of :size MB', [
+                'size' => self::MAX_FILE_SIZE / 1024 / 1024,
+            ]));
+        }
+
+        $extension = strtolower($file->getClientOriginalExtension());
+        if (!in_array($extension, self::ALLOWED_EXTENSIONS)) {
+            throw new Exception(trans('Invalid file format. Allowed formats: :formats', [
+                'formats' => implode(', ', self::ALLOWED_EXTENSIONS),
+            ]));
+        }
+
+        $allowedMimes = [
+            'text/csv',
+            'text/plain',
+            'application/csv',
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ];
+
+        if (!in_array($file->getMimeType(), $allowedMimes)) {
+            throw new Exception(trans('Invalid file type'));
+        }
+    }
+
+    private function parseCsv(UploadedFile $file): array
+    {
+        $rows = [];
+
+        if (($handle = fopen($file->getRealPath(), 'r')) === false) {
+            throw new Exception(trans('Failed to open CSV file'));
+        }
+
+        $headers = fgetcsv($handle, 0, ',');
+        if ($headers === false || empty($headers)) {
+            fclose($handle);
+            throw new Exception(trans('CSV file is empty or has invalid headers'));
+        }
+
+        $headers = array_map(fn ($header) => trim(str_replace("\xEF\xBB\xBF", '', $header)), $headers);
+        $rows[] = array_combine($headers, $headers);
+
+        while (($data = fgetcsv($handle, 0, ',')) !== false) {
+            if (count(array_filter($data)) === 0) {
+                continue;
+            }
+
+            if (count($data) < count($headers)) {
+                $data = array_pad($data, count($headers), '');
+            } elseif (count($data) > count($headers)) {
+                $data = array_slice($data, 0, count($headers));
+            }
+
+            $data = array_map(fn ($value) => mb_convert_encoding($value, 'UTF-8', 'auto'), $data);
+            $rows[] = array_combine($headers, $data);
+        }
+
+        fclose($handle);
+
+        return $rows;
+    }
+
+    private function parseExcel(UploadedFile $file): array
+    {
+        try {
+            $sheetRows = IOFactory::load($file->getRealPath())->getActiveSheet()->toArray(null, true, true, true);
+        } catch (\PhpOffice\PhpSpreadsheet\Exception $e) {
+            throw new Exception(trans('Failed to parse Excel file: :error', [
+                'error' => $e->getMessage(),
+            ]));
+        }
+
+        if (empty($sheetRows)) {
+            throw new Exception(trans('Excel file is empty'));
+        }
+
+        $headers = array_map(fn ($header) => trim($header), array_filter(array_shift($sheetRows)));
+        if (empty($headers)) {
+            throw new Exception(trans('Excel file has invalid headers'));
+        }
+
+        $rows = [array_combine($headers, $headers)];
+
+        foreach ($sheetRows as $rowData) {
+            if (count(array_filter($rowData)) === 0) {
+                continue;
+            }
+
+            $rowData = array_slice($rowData, 0, count($headers));
+            if (count($rowData) < count($headers)) {
+                $rowData = array_pad($rowData, count($headers), '');
+            }
+
+            $rows[] = array_combine($headers, array_map(
+                fn ($value) => $value === null ? '' : trim((string) $value),
+                $rowData
+            ));
+        }
+
+        return $rows;
+    }
 }
