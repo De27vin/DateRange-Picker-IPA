@@ -3,10 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\ExportJob;
-use App\Services\Export\CommentsRowGenerator;
-use App\Services\Export\DevicesRowGenerator;
-use App\Services\Export\GatewaysRowGenerator;
-use App\Services\Export\HistoryRowGenerator;
 use App\Services\ExportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -32,7 +28,9 @@ class ExportController extends Controller
         $exportType  = $data['type'];
         $componentId = $data['component_id'] ?? null;
 
-        $this->validateParams($exportType, $params);
+        /** @var ExportService $exportService */
+        $exportService = app(ExportService::class);
+        $this->validateParams($exportService, $exportType, $params);
 
         ExportJob::dispatch(
             $exportType,
@@ -111,21 +109,9 @@ class ExportController extends Controller
         return response()->download($path)->deleteFileAfterSend(true);
     }
 
-    private function validateParams(string $type, array $params): void
+    private function validateParams(ExportService $exportService, string $type, array $params): void
     {
-        $generator = app(match ($type) {
-            'devices'  => DevicesRowGenerator::class,
-            'comments' => CommentsRowGenerator::class,
-            'history'  => HistoryRowGenerator::class,
-            'gateways' => GatewaysRowGenerator::class,
-            default    => null,
-        });
-
-        if (!$generator) {
-            return;
-        }
-
-        $missing = array_diff($generator->requiredParams(), array_keys($params));
+        $missing = array_diff($exportService->requiredParams($type), array_keys($params));
         if (!empty($missing)) {
             abort(422, "Missing required params for export type '{$type}': " . implode(', ', $missing));
         }

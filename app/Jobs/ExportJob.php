@@ -4,11 +4,6 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Services\AccountContext;
-use App\Services\Export\CommentsRowGenerator;
-use App\Services\Export\DevicesRowGenerator;
-use App\Services\Export\GatewaysRowGenerator;
-use App\Services\Export\HistoryRowGenerator;
-use App\Services\Export\RowGeneratorInterface;
 use App\Services\ExportService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -50,9 +45,7 @@ class ExportJob implements ShouldQueue
 
             $exportService->initProgress($progressFile);
 
-            $generator = $this->makeGenerator();
-            $header    = $generator->getHeader($this->params);
-            $rows      = $generator->generate($this->params, $progressFile);
+            [$header, $rows] = $exportService->makeExport($this->exportType, $this->params, $progressFile);
 
             $exportService->writeFile($rows, $header, $this->format, $filePath);
             $exportService->finalizeProgress($progressFile);
@@ -65,16 +58,5 @@ class ExportJob implements ShouldQueue
             $accountContext->reset();
             Auth::forgetUser();
         }
-    }
-
-    private function makeGenerator(): RowGeneratorInterface
-    {
-        return app(match($this->exportType) {
-            'devices'  => DevicesRowGenerator::class,
-            'comments' => CommentsRowGenerator::class,
-            'history'  => HistoryRowGenerator::class,
-            'gateways' => GatewaysRowGenerator::class,
-            default    => throw new \InvalidArgumentException("Unknown export type: {$this->exportType}"),
-        });
     }
 }
