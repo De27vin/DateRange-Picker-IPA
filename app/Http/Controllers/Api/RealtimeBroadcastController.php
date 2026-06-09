@@ -2,20 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\RealtimeEventBroadcast;
 use App\Http\Controllers\Controller;
-use App\Services\RealtimeBroadcastService;
+use App\Services\AlarmNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class RealtimeBroadcastController extends Controller
 {
-    private RealtimeBroadcastService $broadcastService;
-
-    public function __construct(RealtimeBroadcastService $broadcastService)
-    {
-        $this->broadcastService = $broadcastService;
-    }
+    public function __construct(private AlarmNotificationService $alarmService) {}
 
     public function broadcast(Request $request)
     {
@@ -60,7 +56,17 @@ class RealtimeBroadcastController extends Controller
 
     private function handleAlarmNotification(int $accountId, array $data): void
     {
-        $this->broadcastService->broadcastAlarmNotification($accountId);
+        $currentAlarmCalls = $this->alarmService->getActiveAlarmsForAccount($accountId);
+
+        $this->broadcastEvent('alarm_notification', $accountId, [
+            'alarmCalls' => $currentAlarmCalls->toArray(),
+            'count' => $currentAlarmCalls->count()
+        ]);
+
+        Log::info('Alarm notification broadcast triggered', [
+            'account_id' => $accountId,
+            'alarm_count' => $currentAlarmCalls->count()
+        ]);
     }
 
     private function handleCarCallStatus(int $accountId, array $data): void
@@ -74,11 +80,10 @@ class RealtimeBroadcastController extends Controller
             throw new \InvalidArgumentException('Invalid status value. Must be "start" or "end"');
         }
 
-        $this->broadcastService->broadcastCarCallStatus(
-            $accountId,
-            $data['device_id'],
-            $data['status']
-        );
+        $this->broadcastEvent('carcall_status', $accountId, [
+            'device_id' => $data['device_id'],
+            'status' => $data['status']
+        ]);
     }
 
     private function handleAgentStatus(int $accountId, array $data): void
@@ -92,10 +97,21 @@ class RealtimeBroadcastController extends Controller
             throw new \InvalidArgumentException('Invalid status value. Must be "connecting", "connected", or "disconnected"');
         }
 
-        $this->broadcastService->broadcastAgentStatus(
-            $accountId,
-            $data['device_id'],
-            $data['status']
-        );
+        $this->broadcastEvent('agent_status', $accountId, [
+            'device_id' => $data['device_id'],
+            'status' => $data['status']
+        ]);
+    }
+
+    private function broadcastEvent(string $eventType, int $accountId, array $data): void
+    {
+        event(new RealtimeEventBroadcast($eventType, $accountId, $data));
+
+        Log::info('Realtime event broadcast', [
+            'event_type' => $eventType,
+            'account_id' => $accountId,
+            'channel' => 'realtime.account.' . $accountId,
+            'data' => $data,
+        ]);
     }
 }

@@ -4,14 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\AlarmNotificationService;
-use App\Traits\DevicesTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class AlarmBroadcastController extends Controller
 {
-    use DevicesTrait;
-
     private AlarmNotificationService $alarmService;
 
     public function __construct(AlarmNotificationService $alarmService)
