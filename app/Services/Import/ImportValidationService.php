@@ -2,10 +2,7 @@
 
 namespace App\Services\Import;
 
-use App\DTO\Import\ImportError;
 use App\DTO\Import\ImportRowDTO;
-use App\DTO\Import\ImportSummary;
-use App\DTO\Import\ImportValidationResult;
 use App\Enum\ModuleFlags;
 use App\Models\Country;
 use App\Models\CustomFieldConfig;
@@ -1460,5 +1457,160 @@ class ImportValidationService
         }
 
         return $errors;
+    }
+}
+
+class ImportError
+{
+    public function __construct(
+        public readonly int $row,
+        public readonly ?string $column,
+        public readonly ?string $value,
+        public readonly string $message,
+        public readonly string $severity = 'error'
+    ) {}
+
+    public function toArray(): array
+    {
+        return [
+            'row' => $this->row,
+            'column' => $this->column,
+            'value' => $this->value,
+            'message' => $this->message,
+            'severity' => $this->severity,
+        ];
+    }
+
+    public function isError(): bool
+    {
+        return $this->severity === 'error';
+    }
+}
+
+class ImportSummary
+{
+    public int $totalRows = 0;
+    public int $validRows = 0;
+    public int $invalidRows = 0;
+    public int $newSites = 0;
+    public int $existingSites = 0;
+    public int $newDevices = 0;
+    public int $totalErrors = 0;
+    public int $totalWarnings = 0;
+
+    public array $siteKeysToCreate = [];
+    public array $existingSiteKeys = [];
+    public array $rowToSiteKeyMap = [];
+
+    public function toArray(): array
+    {
+        return [
+            'totalRows' => $this->totalRows,
+            'validRows' => $this->validRows,
+            'invalidRows' => $this->invalidRows,
+            'newSites' => $this->newSites,
+            'existingSites' => $this->existingSites,
+            'newDevices' => $this->newDevices,
+            'totalErrors' => $this->totalErrors,
+            'totalWarnings' => $this->totalWarnings,
+        ];
+    }
+}
+
+class ImportValidationResult
+{
+    /** @var ImportError[] */
+    private array $errors = [];
+
+    /** @var ImportError[] */
+    private array $warnings = [];
+
+    private ?ImportSummary $summary = null;
+
+    public function addError(ImportError $error): void
+    {
+        if ($error->isError()) {
+            $this->errors[] = $error;
+        } else {
+            $this->warnings[] = $error;
+        }
+    }
+
+    public function addErrors(array $errors): void
+    {
+        foreach ($errors as $error) {
+            $this->addError($error);
+        }
+    }
+
+    public function isValid(): bool
+    {
+        return empty($this->errors);
+    }
+
+    public function hasErrors(): bool
+    {
+        return !empty($this->errors);
+    }
+
+    public function hasWarnings(): bool
+    {
+        return !empty($this->warnings);
+    }
+
+    public function getErrors(): array
+    {
+        return $this->errors;
+    }
+
+    public function getWarnings(): array
+    {
+        return $this->warnings;
+    }
+
+    public function getErrorsByRow(): array
+    {
+        $grouped = [];
+        foreach ($this->errors as $error) {
+            $grouped[$error->row][] = $error;
+        }
+        return $grouped;
+    }
+
+    public function getWarningsByRow(): array
+    {
+        $grouped = [];
+        foreach ($this->warnings as $warning) {
+            $grouped[$warning->row][] = $warning;
+        }
+        return $grouped;
+    }
+
+    public function setSummary(ImportSummary $summary): void
+    {
+        $this->summary = $summary;
+    }
+
+    public function getSummary(): ?ImportSummary
+    {
+        return $this->summary;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'valid' => $this->isValid(),
+            'errors' => array_map(fn ($error) => $error->toArray(), $this->errors),
+            'warnings' => array_map(fn ($warning) => $warning->toArray(), $this->warnings),
+            'errorsByRow' => array_map(
+                fn ($errors) => array_map(fn ($error) => $error->toArray(), $errors),
+                $this->getErrorsByRow()
+            ),
+            'warningsByRow' => array_map(
+                fn ($warnings) => array_map(fn ($warning) => $warning->toArray(), $warnings),
+                $this->getWarningsByRow()
+            ),
+            'summary' => $this->summary?->toArray(),
+        ];
     }
 }
