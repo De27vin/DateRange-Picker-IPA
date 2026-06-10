@@ -62,14 +62,6 @@ import axios from 'axios'
 import Chart from 'chart.js'
 import DatePicker from 'vue2-datepicker'
 import 'vue2-datepicker/index.css'
-import { formatChartLabel } from '../../js/utils/timeseriesDisplay'
-import { buildLiveSeriesRow, normalizeSeriesRows } from '../../js/utils/timeseriesSeries'
-import {
-  disableFutureUtc,
-  toIso8601Utc,
-  toYmdUtc,
-  validateAndNormalizeRange,
-} from '../../js/utils/timeseriesRangeValidation'
 import {
   resolveRollingRange,
   sanitizeRollingRange,
@@ -84,6 +76,9 @@ const SYSTEM_CHART_SETTINGS = {
     serviceLevel: { amount: 3, unit: 'months' },
   },
 }
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000
+const MAX_RANGE_MS = 365 * MS_PER_DAY
 
 const ALERT_FIELDS = [
   { key: 'active_alarm', liveKey: 'Active_alarm', label: 'Active alarm' },
@@ -238,6 +233,147 @@ function outlineLegendLabels(chartInstance) {
     strokeStyle: item.strokeStyle || item.fillStyle,
     lineWidth: item.lineWidth || 2,
   }))
+}
+
+function buildFormatters(options = {}) {
+  const locale = options.locale
+  const timeZone = options.timeZone
+
+  return {
+    date: new Intl.DateTimeFormat(locale, { day: '2-digit', month: '2-digit', timeZone }),
+    time: new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit', hour12: false, timeZone }),
+  }
+}
+
+function formatChartLabel(ts, resolution, isSingleDay, options = {}) {
+  if (ts === null) return 'Live'
+
+  const date = new Date(ts)
+  if (Number.isNaN(date.getTime())) return ''
+
+  const formatters = buildFormatters(options)
+  if (resolution === '1d' || resolution === '1w') return formatters.date.format(date)
+  if (isSingleDay && (resolution === '1h' || resolution === '6h')) return formatters.time.format(date)
+  return `${formatters.date.format(date)} ${formatters.time.format(date)}`
+}
+
+function toDate(value) {
+  if (!value) return null
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? null : date
+}
+
+function normalizeStartUtc(raw) {
+  const date = toDate(raw)
+  if (!date) return null
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0)
+}
+
+function normalizeEndUtc(raw) {
+  const date = toDate(raw)
+  if (!date) return null
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 0, 0, 0)
+}
+
+function startOfLocalDay(date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0)
+}
+
+function isSameLocalDay(a, b) {
+  return a.getFullYear() === b.getFullYear()
+    && a.getMonth() === b.getMonth()
+    && a.getDate() === b.getDate()
+}
+
+function floorLocalHour(date) {
+  const floored = new Date(date)
+  floored.setMinutes(0, 0, 0)
+  return floored
+}
+
+function validateAndNormalizeRange(rawStart, rawEnd) {
+  const startUtc = normalizeStartUtc(rawStart)
+  const requestedEndUtc = normalizeEndUtc(rawEnd)
+
+  if (!startUtc || !requestedEndUtc) {
+    return { ok: false, error: 'Start and end date are required.' }
+  }
+
+  const now = new Date()
+  const todayStart = startOfLocalDay(now)
+  const requestedEndStart = startOfLocalDay(requestedEndUtc)
+
+  if (requestedEndStart.getTime() > todayStart.getTime()) {
+    return { ok: false, error: 'Future ranges are not allowed.' }
+  }
+
+  let endUtc = requestedEndUtc
+  if (isSameLocalDay(requestedEndUtc, now)) {
+    endUtc = floorLocalHour(now)
+  }
+
+  if (endUtc.getTime() < startUtc.getTime()) {
+    return { ok: false, error: 'End date must be the same day or after start date.' }
+  }
+
+  if ((endUtc.getTime() - startUtc.getTime()) > MAX_RANGE_MS) {
+    return { ok: false, error: 'Date range must be 365 days or less.' }
+  }
+
+  return { ok: true, startUtc, endUtc }
+}
+
+function disableFutureUtc(day) {
+  const selected = toDate(day)
+  if (!selected) return false
+
+  return startOfLocalDay(selected).getTime() > startOfLocalDay(new Date()).getTime()
+}
+
+function toIso8601Utc(date) {
+  return date.toISOString()
+}
+
+function toYmdUtc(date) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+
+  return `${year}-${month}-${day}`
+}
+
+function clamp0To100(value) {
+  const numeric = Number(value)
+  if (!Number.isFinite(numeric)) {
+    return 0
+  }
+
+  return Math.max(0, Math.min(100, Math.round(numeric)))
+}
+
+function normalizeSeriesRows(rows, keys) {
+  return (rows ?? [])
+    .slice()
+    .sort((a, b) => String(a?.ts ?? '').localeCompare(String(b?.ts ?? '')))
+    .map((row) => {
+      const base = { timestamp: row?.ts ?? null }
+      const rowSeries = row?.series ?? {}
+      keys.forEach((key) => {
+        base[key] = clamp0To100(rowSeries[key])
+      })
+
+      return base
+    })
+}
+
+function buildLiveSeriesRow(valuesByKey) {
+  const row = { timestamp: null }
+
+  Object.entries(valuesByKey).forEach(([key, value]) => {
+    row[key] = clamp0To100(value)
+  })
+
+  return row
 }
 
 export default {
