@@ -65,7 +65,7 @@ abstract class TestCase extends BaseTestCase
         ]);
     }
 
-    protected function resetTimeseriesPointsTable(): void
+    protected function resetTimeseriesTable(): void
     {
         Schema::dropIfExists('timeseries');
         Schema::create('timeseries', function (Blueprint $table): void {

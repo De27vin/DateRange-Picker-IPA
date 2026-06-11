@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Services\DatabaseTimeseriesLoader;
-use App\Services\TimeseriesDataService;
 use Carbon\CarbonImmutable;
 use Tests\TestCase;
 
@@ -13,7 +12,7 @@ class TimeseriesTest extends TestCase
     {
         parent::setUp();
 
-        $this->resetTimeseriesPointsTable();
+        $this->resetTimeseriesTable();
     }
 
     protected function tearDown(): void
@@ -307,7 +306,6 @@ class TimeseriesTest extends TestCase
             }
         };
 
-        $this->app->forgetInstance(TimeseriesDataService::class);
         $this->app->instance(DatabaseTimeseriesLoader::class, $fake);
 
         $res = $this->getJson('/api/timeseries?chart=EquipmentChart&start=2026-01-24&end=2026-01-24');
@@ -344,7 +342,6 @@ class TimeseriesTest extends TestCase
             }
         };
 
-        $this->app->forgetInstance(TimeseriesDataService::class);
         $this->app->instance(DatabaseTimeseriesLoader::class, $fake);
 
         $res = $this->getJson('/api/timeseries?chart=AlarmChart&start=2026-02-01&end=2026-02-03');
@@ -372,7 +369,6 @@ class TimeseriesTest extends TestCase
             }
         };
 
-        $this->app->forgetInstance(TimeseriesDataService::class);
         $this->app->instance(DatabaseTimeseriesLoader::class, $fake);
 
         $this->getJson('/api/timeseries?chart=InvalidChart&start=2026-01-24&end=2026-01-24')
