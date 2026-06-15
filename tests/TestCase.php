@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Carbon\CarbonImmutable;
+use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
@@ -11,7 +12,14 @@ use Illuminate\Support\Facades\Schema;
 
 abstract class TestCase extends BaseTestCase
 {
-    use CreatesApplication;
+    public function createApplication()
+    {
+        $app = require __DIR__.'/../bootstrap/app.php';
+
+        $app->make(Kernel::class)->bootstrap();
+
+        return $app;
+    }
 
     protected function setUp(): void
     {
@@ -70,7 +78,7 @@ abstract class TestCase extends BaseTestCase
         Schema::dropIfExists('timeseries');
         Schema::create('timeseries', function (Blueprint $table): void {
             $table->unsignedInteger('ts_account_id');
-            $table->timestamp('ts_timestamp');
+            $table->dateTime('ts_timestamp');
             $table->json('ts_data');
             $table->primary(['ts_account_id', 'ts_timestamp']);
         });

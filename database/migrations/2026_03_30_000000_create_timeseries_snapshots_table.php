@@ -12,7 +12,7 @@ return new class extends Migration
 create table timeseries
 (
     ts_account_id int                                   not null,
-    ts_timestamp  timestamp default current_timestamp() not null on update current_timestamp(),
+    ts_timestamp  datetime                              not null,
     ts_data       longtext collate utf8mb4_bin          not null
         check (json_valid(`ts_data`)),
     primary key (ts_account_id, ts_timestamp)

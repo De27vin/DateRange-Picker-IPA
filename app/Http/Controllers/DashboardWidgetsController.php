@@ -67,6 +67,13 @@ class DashboardWidgetsController extends Controller
         ]);
     }
 
+    public function chartsSettings(DashboardWidgetSettingsService $settings): JsonResponse
+    {
+        return response()->json([
+            'data' => $settings->getEffectiveDefaults(DashboardWidgetSettingsService::SCOPE_CHARTS),
+        ]);
+    }
+
     public function series(
         Request $request,
         DatabaseTimeseriesLoader $loader,

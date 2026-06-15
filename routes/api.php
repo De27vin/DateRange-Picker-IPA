@@ -5,7 +5,6 @@ use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\SetupAccountDataForSession;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ChartsSettingsController;
 use App\Http\Controllers\DashboardWidgetsController;
 use App\Http\Controllers\TimeSeriesController;
 use Illuminate\Session\Middleware\StartSession;
@@ -40,5 +39,5 @@ Route::middleware([
     Route::get('/dashboard/widgets/summary', [DashboardWidgetsController::class, 'summary'])->name('api.dashboard.widgets.summary');
     Route::get('/dashboard/widgets/settings', [DashboardWidgetsController::class, 'settings'])->name('api.dashboard.widgets.settings');
     Route::get('/dashboard/widgets/series', [DashboardWidgetsController::class, 'series'])->name('api.dashboard.widgets.series');
-    Route::get('/charts/settings', [ChartsSettingsController::class, 'settings'])->name('api.charts.settings');
+    Route::get('/charts/settings', [DashboardWidgetsController::class, 'chartsSettings'])->name('api.charts.settings');
 });
