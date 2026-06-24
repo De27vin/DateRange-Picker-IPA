@@ -9,6 +9,7 @@ use Illuminate\Console\Command;
 
 class GenerateTimeseriesData extends Command
 {
+    private const DELTA_MARKER = '_delta';
     private const DEVICES_PROFILE = ['baseline' => 78.0, 'dailyAmplitude' => 9.0, 'weeklyAmplitude' => 6.0, 'trendStep' => 2.5, 'noise' => 4];
     private const ALARMS_PROFILE = ['baseline' => 34.0, 'dailyAmplitude' => 14.0, 'weeklyAmplitude' => 10.0, 'trendStep' => 3.5, 'noise' => 6];
     private const SERVICE_PROFILE = ['baseline' => 88.0, 'dailyAmplitude' => 5.0, 'weeklyAmplitude' => 4.0, 'trendStep' => 2.0, 'noise' => 3];
@@ -71,14 +72,15 @@ class GenerateTimeseriesData extends Command
         }
 
         foreach ($accountIds as $accountId) {
-            foreach (array_chunk($this->generateForAccount($accountId, $startUtc, $endUtc), 500) as $chunk) {
+            $rows = $this->generateForAccount($accountId, $startUtc, $endUtc);
+            foreach (array_chunk($rows, 500) as $chunk) {
                 TimeseriesSnapshot::query()->upsert($chunk, ['ts_account_id', 'ts_timestamp'], ['ts_data']);
             }
 
             $this->line(sprintf(
-                'account %d: %d hourly snapshots generated from %s to %s',
+                'account %d: %d snapshot changes generated from %s to %s',
                 $accountId,
-                $endUtc->diffInHours($startUtc) + 1,
+                count($rows),
                 $startUtc->toIso8601String(),
                 $endUtc->toIso8601String()
             ));
@@ -145,6 +147,7 @@ class GenerateTimeseriesData extends Command
         $devicesDrift = $this->seededInitialValue('devices.enabled.' . $accountId);
         $alarmsDrift = $this->seededInitialValue('alarms.inbound_calls.' . $accountId);
         $serviceDrift = $this->seededInitialValue('service_level.periodical_calls.' . $accountId);
+        $previousSnapshot = null;
 
         for ($ts = $startUtc->startOfHour(); $ts->lte($endUtc->startOfHour()); $ts = $ts->addHour()) {
             $devicesEnabled = $this->metricValue(self::DEVICES_PROFILE, $devicesDrift, $ts);
@@ -174,14 +177,54 @@ class GenerateTimeseriesData extends Command
                 ],
             ];
 
+            $storedSnapshot = $snapshot;
+            if ($previousSnapshot !== null) {
+                $delta = $this->snapshotDiff($snapshot, $previousSnapshot);
+                $previousSnapshot = $snapshot;
+
+                if ($delta === []) {
+                    continue;
+                }
+
+                $storedSnapshot = [self::DELTA_MARKER => true] + $delta;
+            } else {
+                $previousSnapshot = $snapshot;
+            }
+
             $rows[] = [
                 'ts_account_id' => $accountId,
                 'ts_timestamp' => $ts->toDateTimeString(),
-                'ts_data' => json_encode($snapshot, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                'ts_data' => json_encode($storedSnapshot, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
             ];
         }
 
         return $rows;
+    }
+
+    private function snapshotDiff(array $current, array $previous): array
+    {
+        $delta = [];
+        $keys = array_unique(array_merge(array_keys($current), array_keys($previous)));
+
+        foreach ($keys as $key) {
+            $hasCurrent = array_key_exists($key, $current);
+            $hasPrevious = array_key_exists($key, $previous);
+
+            if (!$hasCurrent) {
+                $delta[$key] = null;
+            } elseif (!$hasPrevious) {
+                $delta[$key] = $current[$key];
+            } elseif (is_array($current[$key]) && is_array($previous[$key])) {
+                $nested = $this->snapshotDiff($current[$key], $previous[$key]);
+                if ($nested !== []) {
+                    $delta[$key] = $nested;
+                }
+            } elseif ($current[$key] !== $previous[$key]) {
+                $delta[$key] = $current[$key];
+            }
+        }
+
+        return $delta;
     }
 
     /**

@@ -2065,16 +2065,28 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _charts_AlarmChart_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./charts/AlarmChart.vue */ "./resources/vue/dashboard-graphics/charts/AlarmChart.vue");
-/* harmony import */ var _charts_AlertsChart_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./charts/AlertsChart.vue */ "./resources/vue/dashboard-graphics/charts/AlertsChart.vue");
-/* harmony import */ var _charts_EquipmentChart_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./charts/EquipmentChart.vue */ "./resources/vue/dashboard-graphics/charts/EquipmentChart.vue");
-/* harmony import */ var _charts_ServiceLevelChart_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./charts/ServiceLevelChart.vue */ "./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! chart.js */ "./node_modules/chart.js/dist/Chart.js");
+/* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(chart_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var vue2_datepicker__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue2-datepicker */ "./node_modules/vue2-datepicker/index.esm.js");
+/* harmony import */ var vue2_datepicker_index_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vue2-datepicker/index.css */ "./node_modules/vue2-datepicker/index.css");
+/* harmony import */ var _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../js/utils/dashboardWidgetSettings */ "./resources/js/utils/dashboardWidgetSettings.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; }, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) }), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; defineProperty(this, "_invoke", { value: function value(method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; } function maybeInvokeDelegate(delegate, context) { var methodName = context.method, method = delegate.iterator[methodName]; if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel; var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), defineProperty(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (val) { var object = Object(val), keys = []; for (var key in object) keys.push(key); return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _iterableToArrayLimit(arr, i) { var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"]; if (null != _i) { var _s, _e, _x, _r, _arr = [], _n = !0, _d = !1; try { if (_x = (_i = _i.call(arr)).next, 0 === i) { if (Object(_i) !== _i) return; _n = !1; } else for (; !(_n = (_s = _x.call(_i)).done) && (_arr.push(_s.value), _arr.length !== i); _n = !0); } catch (err) { _d = !0, _e = err; } finally { try { if (!_n && null != _i["return"] && (_r = _i["return"](), Object(_r) !== _r)) return; } finally { if (_d) throw _e; } } return _arr; } }
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 
@@ -2100,59 +2112,427 @@ var SYSTEM_CHART_SETTINGS = {
     }
   }
 };
+var MS_PER_DAY = 24 * 60 * 60 * 1000;
+var MAX_RANGE_MS = 365 * MS_PER_DAY;
+var ALERT_FIELDS = [{
+  key: 'active_alarm',
+  liveKey: 'Active_alarm',
+  label: 'Active alarm'
+}, {
+  key: 'battery_malfunction',
+  liveKey: 'Battery_malfunction',
+  label: 'Battery malfunction'
+}, {
+  key: 'battery_low',
+  liveKey: 'Battery_low',
+  label: 'Battery low'
+}, {
+  key: 'button_malfunction',
+  liveKey: 'Button_malfunction',
+  label: 'Button malfunction'
+}, {
+  key: 'charge_malfunction',
+  liveKey: 'Charge_malfunction',
+  label: 'Charge malfunction'
+}, {
+  key: 'database_malfunction',
+  liveKey: 'Database_malfunction',
+  label: 'Database malfunction'
+}, {
+  key: 'disk_low',
+  liveKey: 'Disk_low',
+  label: 'Disk low'
+}, {
+  key: 'object_door_failure',
+  liveKey: 'Object_door_failure',
+  label: 'Object door failure'
+}, {
+  key: 'elevator_failure',
+  liveKey: 'Elevator_failure',
+  label: 'Elevator failure'
+}, {
+  key: 'gateway_malfunction',
+  liveKey: 'Gateway_malfunction',
+  label: 'Gateway malfunction'
+}, {
+  key: 'identity_mismatch',
+  liveKey: 'Identity_mismatch',
+  label: 'Identity mismatch'
+}, {
+  key: 'line_alarm',
+  liveKey: 'Line_alarm',
+  label: 'Line alarm'
+}, {
+  key: 'object_is_under_maintenance',
+  liveKey: 'Object_is_under_maintenance',
+  label: 'Object under maintenance'
+}, {
+  key: 'microphone_malfunction',
+  liveKey: 'Microphone_malfunction',
+  label: 'Microphone malfunction'
+}, {
+  key: 'network_malfunction',
+  liveKey: 'Network_malfunction',
+  label: 'Network malfunction'
+}, {
+  key: 'periodical_call_overdue',
+  liveKey: 'Periodical_call_overdue',
+  label: 'Periodical call overdue'
+}, {
+  key: 'pin_mismatch',
+  liveKey: 'Pin_mismatch',
+  label: 'Pin mismatch'
+}, {
+  key: 'power_malfunction',
+  liveKey: 'Power_malfunction',
+  label: 'Power malfunction'
+}, {
+  key: 'ram_low',
+  liveKey: 'Ram_low',
+  label: 'Ram low'
+}, {
+  key: 'reserved_device',
+  liveKey: 'Reserved_device',
+  label: 'Reserved device'
+}, {
+  key: 'serial_port_malfunction',
+  liveKey: 'Serial_port_malfunction',
+  label: 'Serial port malfunction'
+}, {
+  key: 'shaft_failure',
+  liveKey: 'Shaft_failure',
+  label: 'Shaft failure'
+}, {
+  key: 'low_signal',
+  liveKey: 'Low_signal',
+  label: 'Low signal'
+}, {
+  key: 'sip_registration_failure',
+  liveKey: 'Sip_registration_failure',
+  label: 'SIP registration failure'
+}, {
+  key: 'speaker_malfunction',
+  liveKey: 'Speaker_malfunction',
+  label: 'Speaker malfunction'
+}, {
+  key: 'technician_check_overdue',
+  liveKey: 'Technician_check_overdue',
+  label: 'Technician check overdue'
+}, {
+  key: 'voice_alarm',
+  liveKey: 'Voice_alarm',
+  label: 'Voice alarm'
+}];
+var CHART_CONFIGS = [{
+  key: 'equipment',
+  apiChart: 'EquipmentChart',
+  title: 'Equipment',
+  rangeKey: 'equipment',
+  liveSource: 'equipmentStats',
+  fields: [{
+    key: 'enabled',
+    liveKey: 'enabled',
+    label: 'Enabled',
+    borderColor: '#d60f12',
+    pointRadius: 3,
+    pointHoverRadius: 5,
+    borderWidth: 2
+  }, {
+    key: 'disabled',
+    liveKey: 'disabled',
+    label: 'Disabled',
+    borderColor: '#677080',
+    pointRadius: 3,
+    pointHoverRadius: 5,
+    borderWidth: 2
+  }],
+  xGridColor: 'transparent',
+  yGridColor: 'rgba(190,180,182,0.15)'
+}, {
+  key: 'alarms',
+  apiChart: 'AlarmChart',
+  title: 'Alarms',
+  rangeKey: 'alarms',
+  liveSource: 'alarmStats',
+  shiftPicker: true,
+  fields: [{
+    key: 'inbound_calls',
+    liveKey: 'inbound',
+    label: 'Inbound calls',
+    borderColor: '#c17579',
+    pointBackgroundColor: '#ff7a18',
+    pointRadius: 4
+  }, {
+    key: 'active_alarms',
+    liveKey: 'active',
+    label: 'Active alarms',
+    borderColor: '#a2232a',
+    pointBackgroundColor: '#e11d48',
+    pointRadius: 4
+  }],
+  xGridColor: 'transparent',
+  yGridColor: 'rgba(190,180,182,0.15)'
+}, {
+  key: 'alerts',
+  apiChart: 'AlertsChart',
+  title: 'Alerts',
+  rangeKey: 'alerts',
+  liveSource: 'alertsStats',
+  filterable: true,
+  fields: ALERT_FIELDS,
+  xGridColor: 'rgba(255,255,255,0.05)',
+  yGridColor: 'rgba(255,255,255,0.05)',
+  tickFont: {
+    size: 12,
+    weight: '500'
+  }
+}, {
+  key: 'serviceLevel',
+  apiChart: 'ServiceLevelChart',
+  title: 'Service Level',
+  rangeKey: 'serviceLevel',
+  liveSource: 'serviceStats',
+  shiftPicker: true,
+  fields: [{
+    key: 'periodical_calls',
+    liveKey: 'periodicalCalls',
+    label: 'Periodic calls',
+    borderColor: '#d60f12',
+    pointBackgroundColor: '#ff7a18',
+    pointRadius: 4
+  }, {
+    key: 'local_checks',
+    liveKey: 'localChecks',
+    label: 'Local checks',
+    borderColor: '#c17579',
+    pointBackgroundColor: '#e11d48',
+    pointRadius: 4
+  }],
+  xGridColor: 'transparent',
+  yGridColor: 'rgba(190,180,182,0.15)'
+}];
+function interpolateColor(start, end, factor) {
+  return start.map(function (value, index) {
+    return Math.round(value + factor * (end[index] - value));
+  });
+}
+function gradientColor(index, total) {
+  var start = [23, 44, 81];
+  var end = [162, 35, 42];
+  if (total <= 1) {
+    return "rgba(".concat(start.join(','), ", 1)");
+  }
+  var _interpolateColor = interpolateColor(start, end, index / (total - 1)),
+    _interpolateColor2 = _slicedToArray(_interpolateColor, 3),
+    r = _interpolateColor2[0],
+    g = _interpolateColor2[1],
+    b = _interpolateColor2[2];
+  return "rgba(".concat(r, ", ").concat(g, ", ").concat(b, ", 1)");
+}
+function outlineLegendLabels(chartInstance) {
+  return chart_js__WEBPACK_IMPORTED_MODULE_1___default().defaults.global.legend.labels.generateLabels(chartInstance).map(function (item) {
+    return _objectSpread(_objectSpread({}, item), {}, {
+      fillStyle: 'rgba(0, 0, 0, 0)',
+      strokeStyle: item.strokeStyle || item.fillStyle,
+      lineWidth: item.lineWidth || 2
+    });
+  });
+}
+function buildFormatters() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var locale = options.locale;
+  var timeZone = options.timeZone;
+  return {
+    date: new Intl.DateTimeFormat(locale, {
+      day: '2-digit',
+      month: '2-digit',
+      timeZone: timeZone
+    }),
+    time: new Intl.DateTimeFormat(locale, {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+      timeZone: timeZone
+    })
+  };
+}
+function formatChartLabel(ts, resolution, isSingleDay) {
+  var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+  if (ts === null) return 'Live';
+  var date = new Date(ts);
+  if (Number.isNaN(date.getTime())) return '';
+  var formatters = buildFormatters(options);
+  if (resolution === '1d' || resolution === '1w') return formatters.date.format(date);
+  if (isSingleDay && (resolution === '1h' || resolution === '6h')) return formatters.time.format(date);
+  return "".concat(formatters.date.format(date), " ").concat(formatters.time.format(date));
+}
+function toDate(value) {
+  if (!value) return null;
+  var date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+function normalizeStartUtc(raw) {
+  var date = toDate(raw);
+  if (!date) return null;
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
+}
+function normalizeEndUtc(raw) {
+  var date = toDate(raw);
+  if (!date) return null;
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 0, 0, 0);
+}
+function startOfLocalDay(date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
+}
+function isSameLocalDay(a, b) {
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+}
+function floorLocalHour(date) {
+  var floored = new Date(date);
+  floored.setMinutes(0, 0, 0);
+  return floored;
+}
+function validateAndNormalizeRange(rawStart, rawEnd) {
+  var startUtc = normalizeStartUtc(rawStart);
+  var requestedEndUtc = normalizeEndUtc(rawEnd);
+  if (!startUtc || !requestedEndUtc) {
+    return {
+      ok: false,
+      error: 'Start and end date are required.'
+    };
+  }
+  var now = new Date();
+  var todayStart = startOfLocalDay(now);
+  var requestedEndStart = startOfLocalDay(requestedEndUtc);
+  if (requestedEndStart.getTime() > todayStart.getTime()) {
+    return {
+      ok: false,
+      error: 'Future ranges are not allowed.'
+    };
+  }
+  var endUtc = requestedEndUtc;
+  if (isSameLocalDay(requestedEndUtc, now)) {
+    endUtc = floorLocalHour(now);
+  }
+  if (endUtc.getTime() < startUtc.getTime()) {
+    return {
+      ok: false,
+      error: 'End date must be the same day or after start date.'
+    };
+  }
+  if (endUtc.getTime() - startUtc.getTime() > MAX_RANGE_MS) {
+    return {
+      ok: false,
+      error: 'Date range must be 365 days or less.'
+    };
+  }
+  return {
+    ok: true,
+    startUtc: startUtc,
+    endUtc: endUtc
+  };
+}
+function disableFutureUtc(day) {
+  var selected = toDate(day);
+  if (!selected) return false;
+  return startOfLocalDay(selected).getTime() > startOfLocalDay(new Date()).getTime();
+}
+function toIso8601Utc(date) {
+  return date.toISOString();
+}
+function toYmdUtc(date) {
+  var year = date.getFullYear();
+  var month = String(date.getMonth() + 1).padStart(2, '0');
+  var day = String(date.getDate()).padStart(2, '0');
+  return "".concat(year, "-").concat(month, "-").concat(day);
+}
+function clamp0To100(value) {
+  var numeric = Number(value);
+  if (!Number.isFinite(numeric)) {
+    return 0;
+  }
+  return Math.max(0, Math.min(100, Math.round(numeric)));
+}
+function normalizeSeriesRows(rows, keys) {
+  return (rows !== null && rows !== void 0 ? rows : []).slice().sort(function (a, b) {
+    var _a$ts, _b$ts;
+    return String((_a$ts = a === null || a === void 0 ? void 0 : a.ts) !== null && _a$ts !== void 0 ? _a$ts : '').localeCompare(String((_b$ts = b === null || b === void 0 ? void 0 : b.ts) !== null && _b$ts !== void 0 ? _b$ts : ''));
+  }).map(function (row) {
+    var _row$ts, _row$series;
+    var base = {
+      timestamp: (_row$ts = row === null || row === void 0 ? void 0 : row.ts) !== null && _row$ts !== void 0 ? _row$ts : null
+    };
+    var rowSeries = (_row$series = row === null || row === void 0 ? void 0 : row.series) !== null && _row$series !== void 0 ? _row$series : {};
+    keys.forEach(function (key) {
+      base[key] = clamp0To100(rowSeries[key]);
+    });
+    return base;
+  });
+}
+function buildLiveSeriesRow(valuesByKey) {
+  var row = {
+    timestamp: null
+  };
+  Object.entries(valuesByKey).forEach(function (_ref) {
+    var _ref2 = _slicedToArray(_ref, 2),
+      key = _ref2[0],
+      value = _ref2[1];
+    row[key] = clamp0To100(value);
+  });
+  return row;
+}
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  name: 'ChartsPage',
   components: {
-    AlarmChart: _charts_AlarmChart_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
-    AlertsChart: _charts_AlertsChart_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
-    EquipmentChart: _charts_EquipmentChart_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
-    ServiceLevelChart: _charts_ServiceLevelChart_vue__WEBPACK_IMPORTED_MODULE_3__["default"]
+    DatePicker: vue2_datepicker__WEBPACK_IMPORTED_MODULE_2__["default"]
   },
   data: function data() {
     return {
+      chartConfigs: CHART_CONFIGS,
       chartSettings: SYSTEM_CHART_SETTINGS,
+      chartStates: this.createChartStates(SYSTEM_CHART_SETTINGS),
+      chartInstances: {},
       settingsLoaded: false,
-      equipmentStats: typeof window !== 'undefined' && window.EQUIPMENT_STATS ? window.EQUIPMENT_STATS : {
+      equipmentStats: this.windowValue('EQUIPMENT_STATS', {
         enabled: 0,
         disabled: 0
-      },
-      alarmStats: typeof window !== 'undefined' && window.ALARM_STATS ? window.ALARM_STATS : {
+      }),
+      alarmStats: this.windowValue('ALARM_STATS', {
         inbound: 0,
         active: 0
-      },
-      alertsStats: typeof window !== 'undefined' && window.ALERTS_STATS ? window.ALERTS_STATS : {
-        Active_alarm: 0,
-        Battery_malfunction: 0,
-        Battery_low: 0,
-        Button_malfunction: 0,
-        Charge_malfunction: 0,
-        Database_malfunction: 0,
-        Disk_low: 0,
-        Object_door_failure: 0,
-        Elevator_failure: 0,
-        Gateway_malfunction: 0,
-        Identity_mismatch: 0,
-        Line_alarm: 0,
-        Object_is_under_maintenance: 0,
-        Microphone_malfunction: 0,
-        Network_malfunction: 0,
-        Periodical_call_overdue: 0,
-        Pin_mismatch: 0,
-        Power_malfunction: 0,
-        Ram_low: 0,
-        Reserved_device: 0,
-        Serial_port_malfunction: 0,
-        Shaft_failure: 0,
-        Low_signal: 0,
-        Sip_registration_failure: 0,
-        Speaker_malfunction: 0,
-        Technician_check_overdue: 0,
-        Voice_alarm: 0
-      },
-      serviceStats: typeof window !== 'undefined' && window.SERVICE_STATS ? window.SERVICE_STATS : {
+      }),
+      alertsStats: this.windowValue('ALERTS_STATS', this.emptyAlertStats()),
+      serviceStats: this.windowValue('SERVICE_STATS', {
         periodicalCalls: 0,
         localChecks: 0
-      }
+      })
     };
+  },
+  watch: {
+    equipmentStats: {
+      deep: true,
+      handler: function handler() {
+        this.refreshLiveData('equipment');
+      }
+    },
+    alarmStats: {
+      deep: true,
+      handler: function handler() {
+        this.refreshLiveData('alarms');
+      }
+    },
+    alertsStats: {
+      deep: true,
+      handler: function handler() {
+        this.refreshLiveData('alerts');
+      }
+    },
+    serviceStats: {
+      deep: true,
+      handler: function handler() {
+        this.refreshLiveData('serviceLevel');
+      }
+    }
   },
   mounted: function mounted() {
     var _this = this;
@@ -2163,7 +2543,7 @@ var SYSTEM_CHART_SETTINGS = {
           case 0:
             _context.prev = 0;
             _context.next = 3;
-            return axios__WEBPACK_IMPORTED_MODULE_4___default().get('/api/charts/settings');
+            return axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/charts/settings');
           case 3:
             response = _context.sent;
             _this.chartSettings = (response === null || response === void 0 ? void 0 : (_response$data = response.data) === null || _response$data === void 0 ? void 0 : _response$data.data) || SYSTEM_CHART_SETTINGS;
@@ -2175,154 +2555,90 @@ var SYSTEM_CHART_SETTINGS = {
             console.error('Charts settings fetch failed:', _context.t0);
             _this.chartSettings = SYSTEM_CHART_SETTINGS;
           case 11:
-            _context.prev = 11;
+            _this.applyDefaultRanges();
             _this.settingsLoaded = true;
-            return _context.finish(11);
-          case 14:
+            _context.next = 15;
+            return _this.$nextTick();
+          case 15:
+            _context.next = 17;
+            return Promise.all(_this.chartConfigs.map(function (chart) {
+              return _this.loadData(chart.key);
+            }));
+          case 17:
           case "end":
             return _context.stop();
         }
-      }, _callee, null, [[0, 7, 11, 14]]);
+      }, _callee, null, [[0, 7]]);
     }))();
-  }
-});
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=script&lang=js":
-/*!********************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=script&lang=js ***!
-  \********************************************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! chart.js */ "./node_modules/chart.js/dist/Chart.js");
-/* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(chart_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _js_utils_timeseriesDisplay__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../js/utils/timeseriesDisplay */ "./resources/js/utils/timeseriesDisplay.js");
-/* harmony import */ var _js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../js/utils/timeseriesSeries */ "./resources/js/utils/timeseriesSeries.js");
-/* harmony import */ var _js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../js/utils/timeseriesRangeValidation */ "./resources/js/utils/timeseriesRangeValidation.js");
-/* harmony import */ var vue2_datepicker__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vue2-datepicker */ "./node_modules/vue2-datepicker/index.esm.js");
-/* harmony import */ var vue2_datepicker_index_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vue2-datepicker/index.css */ "./node_modules/vue2-datepicker/index.css");
-/* harmony import */ var _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../js/utils/dashboardWidgetSettings */ "./resources/js/utils/dashboardWidgetSettings.js");
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function _iterableToArrayLimit(arr, i) { var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"]; if (null != _i) { var _s, _e, _x, _r, _arr = [], _n = !0, _d = !1; try { if (_x = (_i = _i.call(arr)).next, 0 === i) { if (Object(_i) !== _i) return; _n = !1; } else for (; !(_n = (_s = _x.call(_i)).done) && (_arr.push(_s.value), _arr.length !== i); _n = !0); } catch (err) { _d = !0, _e = err; } finally { try { if (!_n && null != _i["return"] && (_r = _i["return"](), Object(_r) !== _r)) return; } finally { if (_d) throw _e; } } return _arr; } }
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; }, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) }), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; defineProperty(this, "_invoke", { value: function value(method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; } function maybeInvokeDelegate(delegate, context) { var methodName = context.method, method = delegate.iterator[methodName]; if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel; var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), defineProperty(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (val) { var object = Object(val), keys = []; for (var key in object) keys.push(key); return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-
-
-
-
-
-
-
-var ALARM_SERIES_KEYS = ['inbound_calls', 'active_alarms'];
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  name: 'AlarmChart',
-  components: {
-    DatePicker: vue2_datepicker__WEBPACK_IMPORTED_MODULE_5__["default"]
   },
-  props: {
-    liveInbound: Number,
-    liveActive: Number,
-    defaultRange: {
-      type: Object,
-      "default": function _default() {
-        return _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.equipment;
-      }
-    }
-  },
-  data: function data() {
-    var dateRange = this.resolveDateRange(this.defaultRange);
-    return {
-      _chart: null,
-      series: [],
-      seriesResolution: '1h',
-      // date range
-      dateRange: dateRange,
-      dateError: '',
-      fetchError: '',
-      lastValidRange: [new Date(dateRange[0]), new Date(dateRange[1])],
-      isManualDateRange: false
-    };
-  },
-  watch: {
-    defaultRange: {
-      deep: true,
-      handler: function handler(nextRange) {
-        var _this = this;
-        return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-          return _regeneratorRuntime().wrap(function _callee$(_context) {
-            while (1) switch (_context.prev = _context.next) {
-              case 0:
-                if (_this.isManualDateRange) {
-                  _context.next = 3;
-                  break;
-                }
-                _context.next = 3;
-                return _this.applyDefaultRange(nextRange);
-              case 3:
-              case "end":
-                return _context.stop();
-            }
-          }, _callee);
-        }))();
-      }
-    },
-    liveInbound: function liveInbound() {
-      this.injectLiveData();
-      this.renderChart();
-    },
-    liveActive: function liveActive() {
-      this.injectLiveData();
-      this.renderChart();
-    }
-  },
-  mounted: function mounted() {
-    var _this2 = this;
-    return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-        while (1) switch (_context2.prev = _context2.next) {
-          case 0:
-            _context2.next = 2;
-            return _this2.loadData();
-          case 2:
-          case "end":
-            return _context2.stop();
-        }
-      }, _callee2);
-    }))();
+  beforeDestroy: function beforeDestroy() {
+    Object.values(this.chartInstances).forEach(function (chart) {
+      return chart === null || chart === void 0 ? void 0 : chart.destroy();
+    });
   },
   methods: {
-    // Method: Disable future dates in date picker
+    windowValue: function windowValue(key, fallback) {
+      return typeof window !== 'undefined' && window[key] ? window[key] : fallback;
+    },
+    emptyAlertStats: function emptyAlertStats() {
+      return ALERT_FIELDS.reduce(function (stats, field) {
+        stats[field.liveKey] = 0;
+        return stats;
+      }, {});
+    },
+    createChartStates: function createChartStates(settings) {
+      var _this2 = this;
+      return CHART_CONFIGS.reduce(function (states, chart) {
+        var _settings$ranges;
+        var dateRange = _this2.resolveDateRange(settings === null || settings === void 0 ? void 0 : (_settings$ranges = settings.ranges) === null || _settings$ranges === void 0 ? void 0 : _settings$ranges[chart.rangeKey]);
+        states[chart.key] = {
+          series: [],
+          seriesResolution: '1h',
+          dateRange: dateRange,
+          dateError: '',
+          fetchError: '',
+          lastValidRange: [new Date(dateRange[0]), new Date(dateRange[1])],
+          isManualDateRange: false,
+          selectedKeys: chart.filterable ? chart.fields.slice(0, 5).map(function (field) {
+            return field.key;
+          }) : [],
+          showFilters: false
+        };
+        return states;
+      }, {});
+    },
+    applyDefaultRanges: function applyDefaultRanges() {
+      var _this3 = this;
+      this.chartConfigs.forEach(function (chart) {
+        var state = _this3.chartStates[chart.key];
+        if (!(state !== null && state !== void 0 && state.isManualDateRange)) {
+          var _this3$chartSettings, _this3$chartSettings$;
+          _this3.setDateRange(chart.key, (_this3$chartSettings = _this3.chartSettings) === null || _this3$chartSettings === void 0 ? void 0 : (_this3$chartSettings$ = _this3$chartSettings.ranges) === null || _this3$chartSettings$ === void 0 ? void 0 : _this3$chartSettings$[chart.rangeKey]);
+        }
+      });
+    },
+    setDateRange: function setDateRange(key, range) {
+      var dateRange = this.resolveDateRange(range);
+      var state = this.chartStates[key];
+      state.dateRange = dateRange;
+      state.lastValidRange = [new Date(dateRange[0]), new Date(dateRange[1])];
+    },
     disableFuture: function disableFuture(date) {
-      return (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.disableFutureUtc)(date);
+      return disableFutureUtc(date);
     },
     toYmd: function toYmd(date) {
-      return (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.toYmdUtc)(date);
+      return toYmdUtc(date);
     },
     toIso: function toIso(date) {
-      return (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.toIso8601Utc)(date);
+      return toIso8601Utc(date);
     },
     buildLabel: function buildLabel(ts, resolution, isSingleDay) {
-      return (0,_js_utils_timeseriesDisplay__WEBPACK_IMPORTED_MODULE_2__.formatChartLabel)(ts, resolution, isSingleDay, {
+      return formatChartLabel(ts, resolution, isSingleDay, {
         displayMode: 'local'
       });
     },
     resolveDateRange: function resolveDateRange(range) {
-      var resolved = (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.resolveRollingRange)((0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.sanitizeRollingRange)(range, _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.equipment));
+      var resolved = (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_4__.resolveRollingRange)((0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_4__.sanitizeRollingRange)(range, _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_4__.SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.equipment));
       var _resolved$start$split = resolved.start.split('-').map(Number),
         _resolved$start$split2 = _slicedToArray(_resolved$start$split, 3),
         startYear = _resolved$start$split2[0],
@@ -2335,1418 +2651,220 @@ var ALARM_SERIES_KEYS = ['inbound_calls', 'active_alarms'];
         endDay = _resolved$end$split$m2[2];
       return [new Date(startYear, startMonth - 1, startDay, 0, 0, 0, 0), new Date(endYear, endMonth - 1, endDay, 23, 0, 0, 0)];
     },
-    applyDefaultRange: function applyDefaultRange(range) {
-      var _this3 = this;
+    onDateRangeChange: function onDateRangeChange(key, value) {
+      var _this4 = this;
+      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+        var state, _ref3, _ref4, startRaw, endRaw, normalized, start, end;
+        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+          while (1) switch (_context2.prev = _context2.next) {
+            case 0:
+              state = _this4.chartStates[key];
+              _ref3 = value || state.dateRange || [], _ref4 = _slicedToArray(_ref3, 2), startRaw = _ref4[0], endRaw = _ref4[1];
+              normalized = validateAndNormalizeRange(startRaw, endRaw);
+              if (normalized.ok) {
+                _context2.next = 6;
+                break;
+              }
+              state.dateError = normalized.error;
+              return _context2.abrupt("return");
+            case 6:
+              start = normalized.startUtc, end = normalized.endUtc;
+              state.dateError = '';
+              state.isManualDateRange = true;
+              state.lastValidRange = [new Date(start), new Date(end)];
+              _context2.next = 12;
+              return _this4.loadData(key);
+            case 12:
+            case "end":
+              return _context2.stop();
+          }
+        }, _callee2);
+      }))();
+    },
+    loadData: function loadData(key) {
+      var _this5 = this;
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+        var chart, state, _ref5, _ref6, startRaw, endRaw, normalized, start, end, _response$data$meta$r, _response$data2, _response$data2$meta, _response$data3, response, _error$response;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
-              _this3.dateRange = _this3.resolveDateRange(range);
-              _this3.lastValidRange = [new Date(_this3.dateRange[0]), new Date(_this3.dateRange[1])];
-              _context3.next = 4;
-              return _this3.loadData();
-            case 4:
-            case "end":
-              return _context3.stop();
-          }
-        }, _callee3);
-      }))();
-    },
-    // Method: Handle date range changes
-    onDateRangeChange: function onDateRangeChange(value) {
-      var _this4 = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
-        var _ref, _ref2, startRaw, endRaw, normalized, start, end;
-        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-          while (1) switch (_context4.prev = _context4.next) {
-            case 0:
-              _ref = value || _this4.dateRange || [], _ref2 = _slicedToArray(_ref, 2), startRaw = _ref2[0], endRaw = _ref2[1];
-              normalized = (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.validateAndNormalizeRange)(startRaw, endRaw);
+              chart = _this5.chartByKey(key);
+              state = _this5.chartStates[key];
+              _ref5 = state.dateRange || [], _ref6 = _slicedToArray(_ref5, 2), startRaw = _ref6[0], endRaw = _ref6[1];
+              normalized = validateAndNormalizeRange(startRaw, endRaw);
               if (normalized.ok) {
-                _context4.next = 5;
+                _context3.next = 7;
                 break;
               }
-              _this4.dateError = normalized.error;
-              return _context4.abrupt("return");
-            case 5:
+              state.dateError = normalized.error;
+              return _context3.abrupt("return");
+            case 7:
               start = normalized.startUtc, end = normalized.endUtc;
-              _this4.dateError = '';
-              _this4.isManualDateRange = true;
-              _this4.lastValidRange = [new Date(start), new Date(end)];
-              _context4.next = 11;
-              return _this4.loadData();
-            case 11:
-            case "end":
-              return _context4.stop();
-          }
-        }, _callee4);
-      }))();
-    },
-    loadData: function loadData() {
-      var _this5 = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
-        var _ref3, _ref4, startRaw, endRaw, normalized, start, end, _res$data$meta$resolu, _res$data, _res$data$meta, _res$data2, res, _e$response;
-        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-          while (1) switch (_context5.prev = _context5.next) {
-            case 0:
-              _ref3 = _this5.dateRange || [], _ref4 = _slicedToArray(_ref3, 2), startRaw = _ref4[0], endRaw = _ref4[1];
-              normalized = (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.validateAndNormalizeRange)(startRaw, endRaw);
-              if (normalized.ok) {
-                _context5.next = 5;
-                break;
-              }
-              _this5.dateError = normalized.error;
-              return _context5.abrupt("return");
-            case 5:
-              start = normalized.startUtc, end = normalized.endUtc;
-              _this5.dateError = '';
-              _context5.prev = 7;
-              _this5.fetchError = '';
-              _context5.next = 11;
+              state.dateError = '';
+              _context3.prev = 9;
+              state.fetchError = '';
+              _context3.next = 13;
               return axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/timeseries', {
                 params: {
-                  chart: 'AlarmChart',
+                  chart: chart.apiChart,
                   start: _this5.toIso(start),
                   end: _this5.toIso(end)
                 }
               });
-            case 11:
-              res = _context5.sent;
-              _this5.seriesResolution = (_res$data$meta$resolu = res === null || res === void 0 ? void 0 : (_res$data = res.data) === null || _res$data === void 0 ? void 0 : (_res$data$meta = _res$data.meta) === null || _res$data$meta === void 0 ? void 0 : _res$data$meta.resolution) !== null && _res$data$meta$resolu !== void 0 ? _res$data$meta$resolu : '1h';
-              _this5.series = (0,_js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__.normalizeSeriesRows)(res === null || res === void 0 ? void 0 : (_res$data2 = res.data) === null || _res$data2 === void 0 ? void 0 : _res$data2.data, ALARM_SERIES_KEYS);
-              _this5.injectLiveData();
-              _this5.renderChart();
-              _context5.next = 25;
-              break;
-            case 18:
-              _context5.prev = 18;
-              _context5.t0 = _context5["catch"](7);
-              console.error('Timeseries fetch failed:', _context5.t0);
-              _this5.series = [];
-              _this5.fetchError = (_context5.t0 === null || _context5.t0 === void 0 ? void 0 : (_e$response = _context5.t0.response) === null || _e$response === void 0 ? void 0 : _e$response.status) === 422 ? 'Invalid date range' : 'Failed to load data';
-              _this5.injectLiveData();
-              _this5.renderChart();
-            case 25:
-            case "end":
-              return _context5.stop();
-          }
-        }, _callee5, null, [[7, 18]]);
-      }))();
-    },
-    injectLiveData: function injectLiveData() {
-      this.series = this.series.filter(function (x) {
-        return x.timestamp !== null;
-      });
-      this.series.push((0,_js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__.buildLiveSeriesRow)({
-        inbound_calls: this.liveInbound,
-        active_alarms: this.liveActive
-      }));
-    },
-    renderChart: function renderChart() {
-      var _this6 = this;
-      var ctx = this.$refs.chart.getContext('2d');
-      var inboundGradient = ctx.createLinearGradient(0, 0, 0, 400);
-      inboundGradient.addColorStop(0, 'rgba(193,117,121,0.45)');
-      inboundGradient.addColorStop(0, 'rgba(193,117,121,0)');
-      var activeGradient = ctx.createLinearGradient(0, 0, 0, 400);
-      activeGradient.addColorStop(0, 'rgba(162,35,42,0.55)');
-      activeGradient.addColorStop(0, 'rgba(162,35,42,0)');
-      var isSingleDay = this.toYmd(new Date(this.lastValidRange[0])) === this.toYmd(new Date(this.lastValidRange[1]));
-      var labels = this.series.map(function (item) {
-        return _this6.buildLabel(item.timestamp, _this6.seriesResolution, isSingleDay);
-      });
-      var inbound = this.series.map(function (x) {
-        var _x$inbound_calls;
-        return (_x$inbound_calls = x.inbound_calls) !== null && _x$inbound_calls !== void 0 ? _x$inbound_calls : 0;
-      });
-      var active = this.series.map(function (x) {
-        var _x$active_alarms;
-        return (_x$active_alarms = x.active_alarms) !== null && _x$active_alarms !== void 0 ? _x$active_alarms : 0;
-      });
-      if (this._chart) this._chart.destroy();
-      this._chart = new (chart_js__WEBPACK_IMPORTED_MODULE_1___default())(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Inbound calls',
-            data: inbound,
-            borderColor: '#c17579',
-            backgroundColor: inboundGradient,
-            fill: true,
-            tension: 0,
-            pointRadius: 4,
-            pointBackgroundColor: '#ff7a18'
-          }, {
-            label: 'Active alarms',
-            data: active,
-            borderColor: '#a2232a',
-            backgroundColor: activeGradient,
-            fill: true,
-            tension: 0,
-            pointRadius: 4,
-            pointBackgroundColor: '#e11d48'
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          tooltips: {
-            enabled: true
-          },
-          title: {
-            display: true,
-            text: 'Alarms',
-            fontSize: 16,
-            fontStyle: 'bold',
-            color: '#beb4b6',
-            padding: 10
-          },
-          plugins: {
-            legend: {
-              labels: {
-                color: '#beb4b6',
-                font: {
-                  size: 13,
-                  weight: '500'
-                }
-              }
-            }
-          },
-          scales: {
-            x: {
-              ticks: {
-                color: '#beb4b6'
-              },
-              grid: {
-                color: 'transparent'
-              }
-            },
-            y: {
-              ticks: {
-                color: '#beb4b6',
-                beginAtZero: true
-              },
-              grid: {
-                color: 'rgba(190,180,182,0.15)'
-              }
-            }
-          }
-        }
-      });
-    }
-  }
-});
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=script&lang=js":
-/*!*********************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=script&lang=js ***!
-  \*********************************************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! chart.js */ "./node_modules/chart.js/dist/Chart.js");
-/* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(chart_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _js_utils_timeseriesDisplay__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../js/utils/timeseriesDisplay */ "./resources/js/utils/timeseriesDisplay.js");
-/* harmony import */ var _js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../js/utils/timeseriesSeries */ "./resources/js/utils/timeseriesSeries.js");
-/* harmony import */ var _js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../js/utils/timeseriesRangeValidation */ "./resources/js/utils/timeseriesRangeValidation.js");
-/* harmony import */ var vue2_datepicker__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vue2-datepicker */ "./node_modules/vue2-datepicker/index.esm.js");
-/* harmony import */ var vue2_datepicker_index_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vue2-datepicker/index.css */ "./node_modules/vue2-datepicker/index.css");
-/* harmony import */ var _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../js/utils/dashboardWidgetSettings */ "./resources/js/utils/dashboardWidgetSettings.js");
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; }, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) }), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; defineProperty(this, "_invoke", { value: function value(method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; } function maybeInvokeDelegate(delegate, context) { var methodName = context.method, method = delegate.iterator[methodName]; if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel; var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), defineProperty(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (val) { var object = Object(val), keys = []; for (var key in object) keys.push(key); return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function _iterableToArrayLimit(arr, i) { var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"]; if (null != _i) { var _s, _e, _x, _r, _arr = [], _n = !0, _d = !1; try { if (_x = (_i = _i.call(arr)).next, 0 === i) { if (Object(_i) !== _i) return; _n = !1; } else for (; !(_n = (_s = _x.call(_i)).done) && (_arr.push(_s.value), _arr.length !== i); _n = !0); } catch (err) { _d = !0, _e = err; } finally { try { if (!_n && null != _i["return"] && (_r = _i["return"](), Object(_r) !== _r)) return; } finally { if (_d) throw _e; } } return _arr; } }
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-
-
-
-
-
-
-
-
-var ALERT_DEFS = [{
-  key: 'active_alarm',
-  label: 'Active alarm'
-}, {
-  key: 'battery_malfunction',
-  label: 'Battery malfunction'
-}, {
-  key: 'battery_low',
-  label: 'Battery low'
-}, {
-  key: 'button_malfunction',
-  label: 'Button malfunction'
-}, {
-  key: 'charge_malfunction',
-  label: 'Charge malfunction'
-}, {
-  key: 'database_malfunction',
-  label: 'Database malfunction'
-}, {
-  key: 'disk_low',
-  label: 'Disk low'
-}, {
-  key: 'object_door_failure',
-  label: 'Object door failure'
-}, {
-  key: 'elevator_failure',
-  label: 'Elevator failure'
-}, {
-  key: 'gateway_malfunction',
-  label: 'Gateway malfunction'
-}, {
-  key: 'identity_mismatch',
-  label: 'Identity mismatch'
-}, {
-  key: 'line_alarm',
-  label: 'Line alarm'
-}, {
-  key: 'object_is_under_maintenance',
-  label: 'Object under maintenance'
-}, {
-  key: 'microphone_malfunction',
-  label: 'Microphone malfunction'
-}, {
-  key: 'network_malfunction',
-  label: 'Network malfunction'
-}, {
-  key: 'periodical_call_overdue',
-  label: 'Periodical call overdue'
-}, {
-  key: 'pin_mismatch',
-  label: 'Pin mismatch'
-}, {
-  key: 'power_malfunction',
-  label: 'Power malfunction'
-}, {
-  key: 'ram_low',
-  label: 'Ram low'
-}, {
-  key: 'reserved_device',
-  label: 'Reserved device'
-}, {
-  key: 'serial_port_malfunction',
-  label: 'Serial port malfunction'
-}, {
-  key: 'shaft_failure',
-  label: 'Shaft failure'
-}, {
-  key: 'low_signal',
-  label: 'Low signal'
-}, {
-  key: 'sip_registration_failure',
-  label: 'SIP registration failure'
-}, {
-  key: 'speaker_malfunction',
-  label: 'Speaker malfunction'
-}, {
-  key: 'technician_check_overdue',
-  label: 'Technician check overdue'
-}, {
-  key: 'voice_alarm',
-  label: 'Voice alarm'
-}];
-function interpolateColor(start, end, factor) {
-  return start.map(function (s, i) {
-    return Math.round(s + factor * (end[i] - s));
-  });
-}
-function gradientColor(index, total) {
-  var start = [23, 44, 81];
-  var end = [162, 35, 42];
-  if (total <= 1) {
-    return "rgba(".concat(start.join(','), ", 1)");
-  }
-  var factor = index / (total - 1);
-  var _interpolateColor = interpolateColor(start, end, factor),
-    _interpolateColor2 = _slicedToArray(_interpolateColor, 3),
-    r = _interpolateColor2[0],
-    g = _interpolateColor2[1],
-    b = _interpolateColor2[2];
-  return "rgba(".concat(r, ", ").concat(g, ", ").concat(b, ", 1)");
-}
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  name: 'AlertsChart',
-  components: {
-    DatePicker: vue2_datepicker__WEBPACK_IMPORTED_MODULE_5__["default"]
-  },
-  props: {
-    'live-active-alarm': Number,
-    'live-battery-malfunction': Number,
-    'live-battery-low': Number,
-    'live-button-malfunction': Number,
-    'live-charge-malfunction': Number,
-    'live-database-malfunction': Number,
-    'live-disk-low': Number,
-    'live-object-door-failure': Number,
-    'live-elevator-failure': Number,
-    'live-gateway-malfunction': Number,
-    'live-identity-mismatch': Number,
-    'live-line-alarm': Number,
-    'live-object-is-under-maintenance': Number,
-    'live-microphone-malfunction': Number,
-    'live-network-malfunction': Number,
-    'live-periodical-call-overdue': Number,
-    'live-pin-mismatch': Number,
-    'live-power-malfunction': Number,
-    'live-ram-low': Number,
-    'live-reserved-device': Number,
-    'live-serial-port-malfunction': Number,
-    'live-shaft-failure': Number,
-    'live-low-signal': Number,
-    'live-sip-registration-failure': Number,
-    'live-speaker-malfunction': Number,
-    'live-technician-check-overdue': Number,
-    'live-voice-alarm': Number,
-    defaultRange: {
-      type: Object,
-      "default": function _default() {
-        return _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.equipment;
-      }
-    }
-  },
-  data: function data() {
-    var dateRange = this.resolveDateRange(this.defaultRange);
-    return {
-      _chart: null,
-      series: [],
-      seriesResolution: '1h',
-      showFilters: false,
-      filterAlerts: ALERT_DEFS,
-      dateRange: dateRange,
-      dateError: '',
-      fetchError: '',
-      lastValidRange: [new Date(dateRange[0]), new Date(dateRange[1])],
-      isManualDateRange: false,
-      selectedAlerts: []
-    };
-  },
-  mounted: function mounted() {
-    var _this = this;
-    return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-      return _regeneratorRuntime().wrap(function _callee$(_context) {
-        while (1) switch (_context.prev = _context.next) {
-          case 0:
-            _context.next = 2;
-            return _this.loadData();
-          case 2:
-            _this.initSelectedAlerts();
-            _this.renderChart();
-          case 4:
-          case "end":
-            return _context.stop();
-        }
-      }, _callee);
-    }))();
-  },
-  watch: {
-    defaultRange: {
-      deep: true,
-      handler: function handler(nextRange) {
-        var _this2 = this;
-        return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-          return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-            while (1) switch (_context2.prev = _context2.next) {
-              case 0:
-                if (_this2.isManualDateRange) {
-                  _context2.next = 3;
-                  break;
-                }
-                _context2.next = 3;
-                return _this2.applyDefaultRange(nextRange);
-              case 3:
-              case "end":
-                return _context2.stop();
-            }
-          }, _callee2);
-        }))();
-      }
-    },
-    selectedAlerts: function selectedAlerts() {
-      this.renderChart();
-    }
-  },
-  methods: {
-    disableFuture: function disableFuture(date) {
-      return (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.disableFutureUtc)(date);
-    },
-    toYmd: function toYmd(date) {
-      return (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.toYmdUtc)(date);
-    },
-    toIso: function toIso(date) {
-      return (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.toIso8601Utc)(date);
-    },
-    buildLabel: function buildLabel(ts, resolution, isSingleDay) {
-      return (0,_js_utils_timeseriesDisplay__WEBPACK_IMPORTED_MODULE_2__.formatChartLabel)(ts, resolution, isSingleDay, {
-        displayMode: 'local'
-      });
-    },
-    resolveDateRange: function resolveDateRange(range) {
-      var resolved = (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.resolveRollingRange)((0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.sanitizeRollingRange)(range, _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.equipment));
-      var _resolved$start$split = resolved.start.split('-').map(Number),
-        _resolved$start$split2 = _slicedToArray(_resolved$start$split, 3),
-        startYear = _resolved$start$split2[0],
-        startMonth = _resolved$start$split2[1],
-        startDay = _resolved$start$split2[2];
-      var _resolved$end$split$m = resolved.end.split('-').map(Number),
-        _resolved$end$split$m2 = _slicedToArray(_resolved$end$split$m, 3),
-        endYear = _resolved$end$split$m2[0],
-        endMonth = _resolved$end$split$m2[1],
-        endDay = _resolved$end$split$m2[2];
-      return [new Date(startYear, startMonth - 1, startDay, 0, 0, 0, 0), new Date(endYear, endMonth - 1, endDay, 23, 0, 0, 0)];
-    },
-    applyDefaultRange: function applyDefaultRange(range) {
-      var _this3 = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-          while (1) switch (_context3.prev = _context3.next) {
-            case 0:
-              _this3.dateRange = _this3.resolveDateRange(range);
-              _this3.lastValidRange = [new Date(_this3.dateRange[0]), new Date(_this3.dateRange[1])];
-              _context3.next = 4;
-              return _this3.loadData();
-            case 4:
-            case "end":
-              return _context3.stop();
-          }
-        }, _callee3);
-      }))();
-    },
-    onDateRangeChange: function onDateRangeChange(value) {
-      var _this4 = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
-        var _ref, _ref2, startRaw, endRaw, normalized, start, end;
-        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-          while (1) switch (_context4.prev = _context4.next) {
-            case 0:
-              _ref = value || _this4.dateRange || [], _ref2 = _slicedToArray(_ref, 2), startRaw = _ref2[0], endRaw = _ref2[1];
-              normalized = (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.validateAndNormalizeRange)(startRaw, endRaw);
-              if (normalized.ok) {
-                _context4.next = 5;
-                break;
-              }
-              _this4.dateError = normalized.error;
-              return _context4.abrupt("return");
-            case 5:
-              start = normalized.startUtc, end = normalized.endUtc;
-              _this4.dateError = '';
-              _this4.isManualDateRange = true;
-              _this4.lastValidRange = [new Date(start), new Date(end)];
-              _context4.next = 11;
-              return _this4.loadData();
-            case 11:
-            case "end":
-              return _context4.stop();
-          }
-        }, _callee4);
-      }))();
-    },
-    loadData: function loadData() {
-      var _this5 = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
-        var _ref3, _ref4, startRaw, endRaw, normalized, start, end, _res$data$meta$resolu, _res$data, _res$data$meta, _res$data2, res, _e$response;
-        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-          while (1) switch (_context5.prev = _context5.next) {
-            case 0:
-              _ref3 = _this5.dateRange || [], _ref4 = _slicedToArray(_ref3, 2), startRaw = _ref4[0], endRaw = _ref4[1];
-              normalized = (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.validateAndNormalizeRange)(startRaw, endRaw);
-              if (normalized.ok) {
-                _context5.next = 5;
-                break;
-              }
-              _this5.dateError = normalized.error;
-              return _context5.abrupt("return");
-            case 5:
-              start = normalized.startUtc, end = normalized.endUtc;
-              _this5.dateError = '';
-              _context5.prev = 7;
-              _this5.fetchError = '';
-              _context5.next = 11;
-              return axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/timeseries', {
-                params: {
-                  chart: 'AlertsChart',
-                  start: _this5.toIso(start),
-                  end: _this5.toIso(end)
-                }
-              });
-            case 11:
-              res = _context5.sent;
-              _this5.seriesResolution = (_res$data$meta$resolu = res === null || res === void 0 ? void 0 : (_res$data = res.data) === null || _res$data === void 0 ? void 0 : (_res$data$meta = _res$data.meta) === null || _res$data$meta === void 0 ? void 0 : _res$data$meta.resolution) !== null && _res$data$meta$resolu !== void 0 ? _res$data$meta$resolu : '1h';
-              _this5.series = (0,_js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__.normalizeSeriesRows)(res === null || res === void 0 ? void 0 : (_res$data2 = res.data) === null || _res$data2 === void 0 ? void 0 : _res$data2.data, ALERT_DEFS.map(function (alert) {
-                return alert.key;
+            case 13:
+              response = _context3.sent;
+              state.seriesResolution = (_response$data$meta$r = response === null || response === void 0 ? void 0 : (_response$data2 = response.data) === null || _response$data2 === void 0 ? void 0 : (_response$data2$meta = _response$data2.meta) === null || _response$data2$meta === void 0 ? void 0 : _response$data2$meta.resolution) !== null && _response$data$meta$r !== void 0 ? _response$data$meta$r : '1h';
+              state.series = normalizeSeriesRows(response === null || response === void 0 ? void 0 : (_response$data3 = response.data) === null || _response$data3 === void 0 ? void 0 : _response$data3.data, chart.fields.map(function (field) {
+                return field.key;
               }));
-              _this5.injectLiveData();
-              _this5.renderChart();
-              _context5.next = 25;
+              _context3.next = 23;
               break;
             case 18:
-              _context5.prev = 18;
-              _context5.t0 = _context5["catch"](7);
-              console.error('Timeseries fetch failed:', _context5.t0);
-              _this5.series = [];
-              _this5.fetchError = (_context5.t0 === null || _context5.t0 === void 0 ? void 0 : (_e$response = _context5.t0.response) === null || _e$response === void 0 ? void 0 : _e$response.status) === 422 ? 'Invalid date range' : 'Failed to load data';
-              _this5.injectLiveData();
-              _this5.renderChart();
+              _context3.prev = 18;
+              _context3.t0 = _context3["catch"](9);
+              console.error('Timeseries fetch failed:', _context3.t0);
+              state.series = [];
+              state.fetchError = (_context3.t0 === null || _context3.t0 === void 0 ? void 0 : (_error$response = _context3.t0.response) === null || _error$response === void 0 ? void 0 : _error$response.status) === 422 ? 'Invalid date range' : 'Failed to load data';
+            case 23:
+              _this5.injectLiveData(key);
+              _this5.renderChart(key);
             case 25:
             case "end":
-              return _context5.stop();
+              return _context3.stop();
           }
-        }, _callee5, null, [[7, 18]]);
+        }, _callee3, null, [[9, 18]]);
       }))();
     },
-    injectLiveData: function injectLiveData() {
-      this.series = this.series.filter(function (x) {
-        return x.timestamp !== null;
-      });
-      this.series.push((0,_js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__.buildLiveSeriesRow)({
-        active_alarm: this.liveActiveAlarm,
-        battery_malfunction: this.liveBatteryMalfunction,
-        battery_low: this.liveBatteryLow,
-        button_malfunction: this.liveButtonMalfunction,
-        charge_malfunction: this.liveChargeMalfunction,
-        database_malfunction: this.liveDatabaseMalfunction,
-        disk_low: this.liveDiskLow,
-        object_door_failure: this.liveObjectDoorFailure,
-        elevator_failure: this.liveElevatorFailure,
-        gateway_malfunction: this.liveGatewayMalfunction,
-        identity_mismatch: this.liveIdentityMismatch,
-        line_alarm: this.liveLineAlarm,
-        object_is_under_maintenance: this.liveObjectIsUnderMaintenance,
-        microphone_malfunction: this.liveMicrophoneMalfunction,
-        network_malfunction: this.liveNetworkMalfunction,
-        periodical_call_overdue: this.livePeriodicalCallOverdue,
-        pin_mismatch: this.livePinMismatch,
-        power_malfunction: this.livePowerMalfunction,
-        ram_low: this.liveRamLow,
-        reserved_device: this.liveReservedDevice,
-        serial_port_malfunction: this.liveSerialPortMalfunction,
-        shaft_failure: this.liveShaftFailure,
-        low_signal: this.liveLowSignal,
-        sip_registration_failure: this.liveSipRegistrationFailure,
-        speaker_malfunction: this.liveSpeakerMalfunction,
-        technician_check_overdue: this.liveTechnicianCheckOverdue,
-        voice_alarm: this.liveVoiceAlarm
-      }));
+    refreshLiveData: function refreshLiveData(key) {
+      if (!this.chartStates[key]) {
+        return;
+      }
+      this.injectLiveData(key);
+      this.renderChart(key);
     },
-    initSelectedAlerts: function initSelectedAlerts() {
-      this.selectedAlerts = ALERT_DEFS.slice(0, 5).map(function (alert) {
-        return alert.key;
+    injectLiveData: function injectLiveData(key) {
+      var chart = this.chartByKey(key);
+      var state = this.chartStates[key];
+      var liveSource = this[chart.liveSource] || {};
+      var liveValues = chart.fields.reduce(function (values, field) {
+        values[field.key] = liveSource[field.liveKey];
+        return values;
+      }, {});
+      state.series = state.series.filter(function (row) {
+        return row.timestamp !== null;
       });
+      state.series.push(buildLiveSeriesRow(liveValues));
     },
-    renderChart: function renderChart() {
+    renderChart: function renderChart(key) {
       var _this6 = this;
-      var data = this.series;
-      var ctx = this.$refs.chart.getContext('2d');
-      var isSingleDay = this.toYmd(new Date(this.lastValidRange[0])) === this.toYmd(new Date(this.lastValidRange[1]));
-      var labels = data.map(function (item) {
-        if (item.timestamp === null) {
-          return 'Live';
-        }
-        return _this6.buildLabel(item.timestamp, _this6.seriesResolution, isSingleDay);
+      var chart = this.chartByKey(key);
+      var state = this.chartStates[key];
+      var canvasRef = this.$refs["chart-".concat(key)];
+      var canvas = Array.isArray(canvasRef) ? canvasRef[0] : canvasRef;
+      if (!canvas || !state) {
+        return;
+      }
+      var ctx = canvas.getContext('2d');
+      var isSingleDay = this.toYmd(new Date(state.lastValidRange[0])) === this.toYmd(new Date(state.lastValidRange[1]));
+      var labels = state.series.map(function (item) {
+        return _this6.buildLabel(item.timestamp, state.seriesResolution, isSingleDay);
       });
-      if (this._chart) this._chart.destroy();
-      this._chart = new (chart_js__WEBPACK_IMPORTED_MODULE_1___default())(ctx, {
+      var fields = chart.filterable ? chart.fields.filter(function (field) {
+        return state.selectedKeys.includes(field.key);
+      }) : chart.fields;
+      if (this.chartInstances[key]) {
+        this.chartInstances[key].destroy();
+      }
+      this.chartInstances[key] = new (chart_js__WEBPACK_IMPORTED_MODULE_1___default())(ctx, {
         type: 'line',
         data: {
           labels: labels,
-          datasets: ALERT_DEFS.filter(function (alert) {
-            return _this6.selectedAlerts.includes(alert.key);
-          }).map(function (alert, index, arr) {
-            var color = gradientColor(index, arr.length);
-            return {
-              label: alert.label,
-              data: data.map(function (point) {
-                var _point$alert$key;
-                return (_point$alert$key = point[alert.key]) !== null && _point$alert$key !== void 0 ? _point$alert$key : 0;
-              }),
-              borderColor: color,
-              pointBackgroundColor: color,
-              backgroundColor: color.replace(', 1)', ', 0)'),
-              fill: true,
-              tension: 0,
-              pointRadius: 4
-            };
+          datasets: fields.map(function (field, index) {
+            return _this6.datasetForField(chart, field, index, fields.length);
           })
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          tooltips: {
-            enabled: true
-          },
-          title: {
-            display: true,
-            text: 'Alerts',
-            fontSize: 16,
-            fontStyle: 'bold',
-            color: '#beb4b6',
-            padding: 10
-          },
-          plugins: {
-            legend: {
-              labels: {
-                color: '#beb4b6',
-                font: {
-                  size: 13,
-                  weight: '500'
-                }
-              }
-            }
-          },
-          scales: {
-            x: {
-              ticks: {
-                color: '#beb4b6',
-                font: {
-                  size: 12,
-                  weight: '500'
-                }
-              },
-              grid: {
-                color: 'rgba(255,255,255,0.05)'
-              }
-            },
-            y: {
-              ticks: {
-                color: '#beb4b6',
-                font: {
-                  size: 12,
-                  weight: '500'
-                },
-                beginAtZero: true
-              },
-              grid: {
-                color: 'rgba(255,255,255,0.05)'
-              }
-            }
-          }
-        }
-      });
-    }
-  }
-});
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=script&lang=js":
-/*!************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=script&lang=js ***!
-  \************************************************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! chart.js */ "./node_modules/chart.js/dist/Chart.js");
-/* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(chart_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _js_utils_timeseriesDisplay__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../js/utils/timeseriesDisplay */ "./resources/js/utils/timeseriesDisplay.js");
-/* harmony import */ var _js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../js/utils/timeseriesSeries */ "./resources/js/utils/timeseriesSeries.js");
-/* harmony import */ var _js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../js/utils/timeseriesRangeValidation */ "./resources/js/utils/timeseriesRangeValidation.js");
-/* harmony import */ var vue2_datepicker__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vue2-datepicker */ "./node_modules/vue2-datepicker/index.esm.js");
-/* harmony import */ var vue2_datepicker_index_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vue2-datepicker/index.css */ "./node_modules/vue2-datepicker/index.css");
-/* harmony import */ var _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../js/utils/dashboardWidgetSettings */ "./resources/js/utils/dashboardWidgetSettings.js");
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function _iterableToArrayLimit(arr, i) { var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"]; if (null != _i) { var _s, _e, _x, _r, _arr = [], _n = !0, _d = !1; try { if (_x = (_i = _i.call(arr)).next, 0 === i) { if (Object(_i) !== _i) return; _n = !1; } else for (; !(_n = (_s = _x.call(_i)).done) && (_arr.push(_s.value), _arr.length !== i); _n = !0); } catch (err) { _d = !0, _e = err; } finally { try { if (!_n && null != _i["return"] && (_r = _i["return"](), Object(_r) !== _r)) return; } finally { if (_d) throw _e; } } return _arr; } }
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; }, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) }), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; defineProperty(this, "_invoke", { value: function value(method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; } function maybeInvokeDelegate(delegate, context) { var methodName = context.method, method = delegate.iterator[methodName]; if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel; var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), defineProperty(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (val) { var object = Object(val), keys = []; for (var key in object) keys.push(key); return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-
-
-
-
-
-
-
-var EQUIPMENT_SERIES_KEYS = ['enabled', 'disabled'];
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  name: 'EquipmentChart',
-  components: {
-    DatePicker: vue2_datepicker__WEBPACK_IMPORTED_MODULE_5__["default"]
-  },
-  // Props for live data from Charts.vue
-  props: {
-    liveEnabled: Number,
-    liveDisabled: Number,
-    defaultRange: {
-      type: Object,
-      "default": function _default() {
-        return _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.equipment;
-      }
-    }
-  },
-  data: function data() {
-    var dateRange = this.resolveDateRange(this.defaultRange);
-    return {
-      _chart: null,
-      series: [],
-      seriesResolution: '1h',
-      // date range
-      dateRange: dateRange,
-      dateError: '',
-      fetchError: '',
-      lastValidRange: [new Date(dateRange[0]), new Date(dateRange[1])],
-      isManualDateRange: false
-    };
-  },
-  watch: {
-    defaultRange: {
-      deep: true,
-      handler: function handler(nextRange) {
-        var _this = this;
-        return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-          return _regeneratorRuntime().wrap(function _callee$(_context) {
-            while (1) switch (_context.prev = _context.next) {
-              case 0:
-                if (_this.isManualDateRange) {
-                  _context.next = 3;
-                  break;
-                }
-                _context.next = 3;
-                return _this.applyDefaultRange(nextRange);
-              case 3:
-              case "end":
-                return _context.stop();
-            }
-          }, _callee);
-        }))();
-      }
-    },
-    liveEnabled: function liveEnabled() {
-      this.injectLiveData();
-      this.renderChart();
-    },
-    liveDisabled: function liveDisabled() {
-      this.injectLiveData();
-      this.renderChart();
-    }
-  },
-  mounted: function mounted() {
-    var _this2 = this;
-    return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-        while (1) switch (_context2.prev = _context2.next) {
-          case 0:
-            _context2.next = 2;
-            return _this2.loadData();
-          case 2:
-          case "end":
-            return _context2.stop();
-        }
-      }, _callee2);
-    }))();
-  },
-  methods: {
-    // Method: Disable future dates in date picker
-    disableFuture: function disableFuture(date) {
-      return (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.disableFutureUtc)(date);
-    },
-    toYmd: function toYmd(date) {
-      return (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.toYmdUtc)(date);
-    },
-    // Method: Convert date to ISO string in UTC
-    toIso: function toIso(date) {
-      return (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.toIso8601Utc)(date);
-    },
-    buildLabel: function buildLabel(ts, resolution, isSingleDay) {
-      return (0,_js_utils_timeseriesDisplay__WEBPACK_IMPORTED_MODULE_2__.formatChartLabel)(ts, resolution, isSingleDay, {
-        displayMode: 'local'
+        options: this.chartOptions(chart)
       });
     },
-    resolveDateRange: function resolveDateRange(range) {
-      var resolved = (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.resolveRollingRange)((0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.sanitizeRollingRange)(range, _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.equipment));
-      var _resolved$start$split = resolved.start.split('-').map(Number),
-        _resolved$start$split2 = _slicedToArray(_resolved$start$split, 3),
-        startYear = _resolved$start$split2[0],
-        startMonth = _resolved$start$split2[1],
-        startDay = _resolved$start$split2[2];
-      var _resolved$end$split$m = resolved.end.split('-').map(Number),
-        _resolved$end$split$m2 = _slicedToArray(_resolved$end$split$m, 3),
-        endYear = _resolved$end$split$m2[0],
-        endMonth = _resolved$end$split$m2[1],
-        endDay = _resolved$end$split$m2[2];
-      return [new Date(startYear, startMonth - 1, startDay, 0, 0, 0, 0), new Date(endYear, endMonth - 1, endDay, 23, 0, 0, 0)];
+    datasetForField: function datasetForField(chart, field, index, total) {
+      var _field$pointRadius;
+      var alertColor = chart.filterable ? gradientColor(index, total) : null;
+      var backgroundColor = alertColor ? alertColor.replace(', 1)', ', 0)') : 'transparent';
+      return {
+        label: field.label,
+        data: this.chartStates[chart.key].series.map(function (point) {
+          var _point$field$key;
+          return (_point$field$key = point[field.key]) !== null && _point$field$key !== void 0 ? _point$field$key : 0;
+        }),
+        borderColor: alertColor || field.borderColor,
+        backgroundColor: backgroundColor,
+        fill: Boolean(alertColor),
+        tension: 0,
+        pointRadius: (_field$pointRadius = field.pointRadius) !== null && _field$pointRadius !== void 0 ? _field$pointRadius : 4,
+        pointHoverRadius: field.pointHoverRadius,
+        pointBackgroundColor: alertColor || field.pointBackgroundColor || field.borderColor,
+        borderWidth: field.borderWidth
+      };
     },
-    applyDefaultRange: function applyDefaultRange(range) {
-      var _this3 = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-          while (1) switch (_context3.prev = _context3.next) {
-            case 0:
-              _this3.dateRange = _this3.resolveDateRange(range);
-              _this3.lastValidRange = [new Date(_this3.dateRange[0]), new Date(_this3.dateRange[1])];
-              _context3.next = 4;
-              return _this3.loadData();
-            case 4:
-            case "end":
-              return _context3.stop();
-          }
-        }, _callee3);
-      }))();
-    },
-    // Method: Handle date range changes
-    onDateRangeChange: function onDateRangeChange(value) {
-      var _this4 = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
-        var _ref, _ref2, startRaw, endRaw, normalized, start, end;
-        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-          while (1) switch (_context4.prev = _context4.next) {
-            case 0:
-              _ref = value || _this4.dateRange || [], _ref2 = _slicedToArray(_ref, 2), startRaw = _ref2[0], endRaw = _ref2[1]; // Reuse the shared UTC validation before fetching new data
-              normalized = (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.validateAndNormalizeRange)(startRaw, endRaw);
-              if (normalized.ok) {
-                _context4.next = 5;
-                break;
-              }
-              _this4.dateError = normalized.error;
-              return _context4.abrupt("return");
-            case 5:
-              start = normalized.startUtc, end = normalized.endUtc;
-              _this4.dateError = '';
-              _this4.isManualDateRange = true;
-              _this4.lastValidRange = [new Date(start), new Date(end)];
-              _context4.next = 11;
-              return _this4.loadData();
-            case 11:
-            case "end":
-              return _context4.stop();
-          }
-        }, _callee4);
-      }))();
-    },
-    loadData: function loadData() {
-      var _this5 = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
-        var _ref3, _ref4, startRaw, endRaw, normalized, start, end, _res$data$meta$resolu, _res$data, _res$data$meta, _res$data2, res, _e$response;
-        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-          while (1) switch (_context5.prev = _context5.next) {
-            case 0:
-              _ref3 = _this5.dateRange || [], _ref4 = _slicedToArray(_ref3, 2), startRaw = _ref4[0], endRaw = _ref4[1]; // Normalize, validate date range and handle errors
-              normalized = (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.validateAndNormalizeRange)(startRaw, endRaw);
-              if (normalized.ok) {
-                _context5.next = 5;
-                break;
-              }
-              _this5.dateError = normalized.error;
-              return _context5.abrupt("return");
-            case 5:
-              start = normalized.startUtc, end = normalized.endUtc;
-              _this5.dateError = '';
-              _context5.prev = 7;
-              _this5.fetchError = '';
-              // Load timeseries data from API with axios
-              _context5.next = 11;
-              return axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/timeseries', {
-                params: {
-                  chart: 'EquipmentChart',
-                  start: _this5.toIso(start),
-                  end: _this5.toIso(end)
-                }
-              });
-            case 11:
-              res = _context5.sent;
-              _this5.seriesResolution = (_res$data$meta$resolu = res === null || res === void 0 ? void 0 : (_res$data = res.data) === null || _res$data === void 0 ? void 0 : (_res$data$meta = _res$data.meta) === null || _res$data$meta === void 0 ? void 0 : _res$data$meta.resolution) !== null && _res$data$meta$resolu !== void 0 ? _res$data$meta$resolu : '1h';
-              _this5.series = (0,_js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__.normalizeSeriesRows)(res === null || res === void 0 ? void 0 : (_res$data2 = res.data) === null || _res$data2 === void 0 ? void 0 : _res$data2.data, EQUIPMENT_SERIES_KEYS);
-              _this5.injectLiveData();
-              _this5.renderChart();
-              _context5.next = 25;
-              break;
-            case 18:
-              _context5.prev = 18;
-              _context5.t0 = _context5["catch"](7);
-              console.error('Timeseries fetch failed:', _context5.t0);
-              _this5.series = [];
-              _this5.fetchError = (_context5.t0 === null || _context5.t0 === void 0 ? void 0 : (_e$response = _context5.t0.response) === null || _e$response === void 0 ? void 0 : _e$response.status) === 422 ? 'Invalid date range' : 'Failed to load data';
-              _this5.injectLiveData();
-              _this5.renderChart();
-            case 25:
-            case "end":
-              return _context5.stop();
-          }
-        }, _callee5, null, [[7, 18]]);
-      }))();
-    },
-    // Method: Inject live data point into series
-    injectLiveData: function injectLiveData() {
-      // Replace the previous live point so only one live value is shown
-      this.series = this.series.filter(function (x) {
-        return x.timestamp !== null;
-      });
-      this.series.push((0,_js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__.buildLiveSeriesRow)({
-        enabled: this.liveEnabled,
-        disabled: this.liveDisabled
-      }));
-    },
-    // line chart rendering
-    renderChart: function renderChart() {
-      var _this6 = this;
-      var ctx = this.$refs.barChart.getContext('2d');
-      var enabledGradient = ctx.createLinearGradient(0, 0, 0, 400);
-      enabledGradient.addColorStop(0, 'rgba(214,15,18,0.45)');
-      enabledGradient.addColorStop(0, 'rgba(214,15,18,0)');
-      var disabledGradient = ctx.createLinearGradient(0, 0, 0, 400);
-      disabledGradient.addColorStop(0, 'rgba(103,112,128,0.35)');
-      disabledGradient.addColorStop(0, 'rgba(103,112,128,0)');
-      var isSingleDay = this.toYmd(new Date(this.lastValidRange[0])) === this.toYmd(new Date(this.lastValidRange[1]));
-      // Labels depend on both the selected resolution and whether only one day is shown
-      var labels = this.series.map(function (item) {
-        return _this6.buildLabel(item.timestamp, _this6.seriesResolution, isSingleDay);
-      });
-      var enabled = this.series.map(function (x) {
-        return x.enabled;
-      });
-      var disabled = this.series.map(function (x) {
-        return x.disabled;
-      });
-      if (this._chart) this._chart.destroy();
-
-      // Render chart with Chart.js
-      this._chart = new (chart_js__WEBPACK_IMPORTED_MODULE_1___default())(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Enabled',
-            data: enabled,
-            borderColor: '#d60f12',
-            backgroundColor: enabledGradient,
-            fill: true,
-            tension: 0,
-            pointRadius: 3,
-            pointHoverRadius: 5,
-            borderWidth: 2
-          }, {
-            label: 'Disabled',
-            data: disabled,
-            borderColor: '#677080',
-            backgroundColor: disabledGradient,
-            fill: true,
-            tension: 0,
-            pointRadius: 3,
-            pointHoverRadius: 5,
-            borderWidth: 2
-          }]
+    chartOptions: function chartOptions(chart) {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        tooltips: {
+          enabled: true
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          tooltips: {
-            enabled: true
-          },
-          title: {
-            display: true,
-            text: 'Equipment',
-            fontSize: 16,
-            fontStyle: 'bold',
-            color: '#beb4b6',
-            padding: 10
-          },
-          plugins: {
-            legend: {
-              labels: {
-                color: '#beb4b6',
-                font: {
-                  size: 13,
-                  weight: '500'
-                }
-              }
-            }
-          },
-          scales: {
-            x: {
-              ticks: {
-                color: '#beb4b6'
-              },
-              grid: {
-                color: 'transparent'
-              }
-            },
-            y: {
-              ticks: {
-                color: '#beb4b6',
-                beginAtZero: true
-              },
-              grid: {
-                color: 'rgba(190,180,182,0.15)'
-              }
-            }
-          }
-        }
-      });
-    }
-  }
-});
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=script&lang=js":
-/*!***************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=script&lang=js ***!
-  \***************************************************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! chart.js */ "./node_modules/chart.js/dist/Chart.js");
-/* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(chart_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _js_utils_timeseriesDisplay__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../js/utils/timeseriesDisplay */ "./resources/js/utils/timeseriesDisplay.js");
-/* harmony import */ var _js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../js/utils/timeseriesSeries */ "./resources/js/utils/timeseriesSeries.js");
-/* harmony import */ var _js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../js/utils/timeseriesRangeValidation */ "./resources/js/utils/timeseriesRangeValidation.js");
-/* harmony import */ var vue2_datepicker__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vue2-datepicker */ "./node_modules/vue2-datepicker/index.esm.js");
-/* harmony import */ var vue2_datepicker_index_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vue2-datepicker/index.css */ "./node_modules/vue2-datepicker/index.css");
-/* harmony import */ var _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../js/utils/dashboardWidgetSettings */ "./resources/js/utils/dashboardWidgetSettings.js");
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function _iterableToArrayLimit(arr, i) { var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"]; if (null != _i) { var _s, _e, _x, _r, _arr = [], _n = !0, _d = !1; try { if (_x = (_i = _i.call(arr)).next, 0 === i) { if (Object(_i) !== _i) return; _n = !1; } else for (; !(_n = (_s = _x.call(_i)).done) && (_arr.push(_s.value), _arr.length !== i); _n = !0); } catch (err) { _d = !0, _e = err; } finally { try { if (!_n && null != _i["return"] && (_r = _i["return"](), Object(_r) !== _r)) return; } finally { if (_d) throw _e; } } return _arr; } }
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; }, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) }), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; defineProperty(this, "_invoke", { value: function value(method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; } function maybeInvokeDelegate(delegate, context) { var methodName = context.method, method = delegate.iterator[methodName]; if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel; var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), defineProperty(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (val) { var object = Object(val), keys = []; for (var key in object) keys.push(key); return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-
-
-
-
-
-
-
-var SERVICE_LEVEL_SERIES_KEYS = ['periodical_calls', 'local_checks'];
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  name: 'ServiceLevelChart',
-  components: {
-    DatePicker: vue2_datepicker__WEBPACK_IMPORTED_MODULE_5__["default"]
-  },
-  props: {
-    livePeriodic: Number,
-    liveLocal: Number,
-    defaultRange: {
-      type: Object,
-      "default": function _default() {
-        return _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.equipment;
-      }
-    }
-  },
-  data: function data() {
-    var dateRange = this.resolveDateRange(this.defaultRange);
-    return {
-      _chart: null,
-      series: [],
-      seriesResolution: '1h',
-      // date range
-      dateRange: dateRange,
-      dateError: '',
-      fetchError: '',
-      lastValidRange: [new Date(dateRange[0]), new Date(dateRange[1])],
-      isManualDateRange: false
-    };
-  },
-  watch: {
-    defaultRange: {
-      deep: true,
-      handler: function handler(nextRange) {
-        var _this = this;
-        return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-          return _regeneratorRuntime().wrap(function _callee$(_context) {
-            while (1) switch (_context.prev = _context.next) {
-              case 0:
-                if (_this.isManualDateRange) {
-                  _context.next = 3;
-                  break;
-                }
-                _context.next = 3;
-                return _this.applyDefaultRange(nextRange);
-              case 3:
-              case "end":
-                return _context.stop();
-            }
-          }, _callee);
-        }))();
-      }
-    },
-    livePeriodic: function livePeriodic() {
-      this.injectLiveData();
-      this.renderChart();
-    },
-    liveLocal: function liveLocal() {
-      this.injectLiveData();
-      this.renderChart();
-    }
-  },
-  mounted: function mounted() {
-    var _this2 = this;
-    return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-        while (1) switch (_context2.prev = _context2.next) {
-          case 0:
-            _context2.next = 2;
-            return _this2.loadData();
-          case 2:
-          case "end":
-            return _context2.stop();
-        }
-      }, _callee2);
-    }))();
-  },
-  methods: {
-    // Method: Disable future dates in date picker
-    disableFuture: function disableFuture(date) {
-      return (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.disableFutureUtc)(date);
-    },
-    toYmd: function toYmd(date) {
-      return (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.toYmdUtc)(date);
-    },
-    toIso: function toIso(date) {
-      return (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.toIso8601Utc)(date);
-    },
-    buildLabel: function buildLabel(ts, resolution, isSingleDay) {
-      return (0,_js_utils_timeseriesDisplay__WEBPACK_IMPORTED_MODULE_2__.formatChartLabel)(ts, resolution, isSingleDay, {
-        displayMode: 'local'
-      });
-    },
-    resolveDateRange: function resolveDateRange(range) {
-      var resolved = (0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.resolveRollingRange)((0,_js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.sanitizeRollingRange)(range, _js_utils_dashboardWidgetSettings__WEBPACK_IMPORTED_MODULE_7__.SYSTEM_DASHBOARD_WIDGET_DEFAULTS.ranges.equipment));
-      var _resolved$start$split = resolved.start.split('-').map(Number),
-        _resolved$start$split2 = _slicedToArray(_resolved$start$split, 3),
-        startYear = _resolved$start$split2[0],
-        startMonth = _resolved$start$split2[1],
-        startDay = _resolved$start$split2[2];
-      var _resolved$end$split$m = resolved.end.split('-').map(Number),
-        _resolved$end$split$m2 = _slicedToArray(_resolved$end$split$m, 3),
-        endYear = _resolved$end$split$m2[0],
-        endMonth = _resolved$end$split$m2[1],
-        endDay = _resolved$end$split$m2[2];
-      return [new Date(startYear, startMonth - 1, startDay, 0, 0, 0, 0), new Date(endYear, endMonth - 1, endDay, 23, 0, 0, 0)];
-    },
-    applyDefaultRange: function applyDefaultRange(range) {
-      var _this3 = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-          while (1) switch (_context3.prev = _context3.next) {
-            case 0:
-              _this3.dateRange = _this3.resolveDateRange(range);
-              _this3.lastValidRange = [new Date(_this3.dateRange[0]), new Date(_this3.dateRange[1])];
-              _context3.next = 4;
-              return _this3.loadData();
-            case 4:
-            case "end":
-              return _context3.stop();
-          }
-        }, _callee3);
-      }))();
-    },
-    // Method: Handle date range changes
-    onDateRangeChange: function onDateRangeChange(value) {
-      var _this4 = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
-        var _ref, _ref2, startRaw, endRaw, normalized, start, end;
-        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-          while (1) switch (_context4.prev = _context4.next) {
-            case 0:
-              _ref = value || _this4.dateRange || [], _ref2 = _slicedToArray(_ref, 2), startRaw = _ref2[0], endRaw = _ref2[1];
-              normalized = (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.validateAndNormalizeRange)(startRaw, endRaw);
-              if (normalized.ok) {
-                _context4.next = 5;
-                break;
-              }
-              _this4.dateError = normalized.error;
-              return _context4.abrupt("return");
-            case 5:
-              start = normalized.startUtc, end = normalized.endUtc;
-              _this4.dateError = '';
-              _this4.isManualDateRange = true;
-              _this4.lastValidRange = [new Date(start), new Date(end)];
-              _context4.next = 11;
-              return _this4.loadData();
-            case 11:
-            case "end":
-              return _context4.stop();
-          }
-        }, _callee4);
-      }))();
-    },
-    loadData: function loadData() {
-      var _this5 = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
-        var _ref3, _ref4, startRaw, endRaw, normalized, start, end, _res$data$meta$resolu, _res$data, _res$data$meta, _res$data2, res, _e$response;
-        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-          while (1) switch (_context5.prev = _context5.next) {
-            case 0:
-              _ref3 = _this5.dateRange || [], _ref4 = _slicedToArray(_ref3, 2), startRaw = _ref4[0], endRaw = _ref4[1];
-              normalized = (0,_js_utils_timeseriesRangeValidation__WEBPACK_IMPORTED_MODULE_4__.validateAndNormalizeRange)(startRaw, endRaw);
-              if (normalized.ok) {
-                _context5.next = 5;
-                break;
-              }
-              _this5.dateError = normalized.error;
-              return _context5.abrupt("return");
-            case 5:
-              start = normalized.startUtc, end = normalized.endUtc;
-              _this5.dateError = '';
-              _context5.prev = 7;
-              _this5.fetchError = '';
-              _context5.next = 11;
-              return axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/timeseries', {
-                params: {
-                  chart: 'ServiceLevelChart',
-                  start: _this5.toIso(start),
-                  end: _this5.toIso(end)
-                }
-              });
-            case 11:
-              res = _context5.sent;
-              _this5.seriesResolution = (_res$data$meta$resolu = res === null || res === void 0 ? void 0 : (_res$data = res.data) === null || _res$data === void 0 ? void 0 : (_res$data$meta = _res$data.meta) === null || _res$data$meta === void 0 ? void 0 : _res$data$meta.resolution) !== null && _res$data$meta$resolu !== void 0 ? _res$data$meta$resolu : '1h';
-              _this5.series = (0,_js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__.normalizeSeriesRows)(res === null || res === void 0 ? void 0 : (_res$data2 = res.data) === null || _res$data2 === void 0 ? void 0 : _res$data2.data, SERVICE_LEVEL_SERIES_KEYS);
-              _this5.injectLiveData();
-              _this5.renderChart();
-              _context5.next = 25;
-              break;
-            case 18:
-              _context5.prev = 18;
-              _context5.t0 = _context5["catch"](7);
-              console.error('Timeseries fetch failed:', _context5.t0);
-              _this5.series = [];
-              _this5.fetchError = (_context5.t0 === null || _context5.t0 === void 0 ? void 0 : (_e$response = _context5.t0.response) === null || _e$response === void 0 ? void 0 : _e$response.status) === 422 ? 'Invalid date range' : 'Failed to load data';
-              _this5.injectLiveData();
-              _this5.renderChart();
-            case 25:
-            case "end":
-              return _context5.stop();
-          }
-        }, _callee5, null, [[7, 18]]);
-      }))();
-    },
-    injectLiveData: function injectLiveData() {
-      this.series = this.series.filter(function (x) {
-        return x.timestamp !== null;
-      });
-      this.series.push((0,_js_utils_timeseriesSeries__WEBPACK_IMPORTED_MODULE_3__.buildLiveSeriesRow)({
-        periodical_calls: this.livePeriodic,
-        local_checks: this.liveLocal
-      }));
-    },
-    renderChart: function renderChart() {
-      var _this6 = this;
-      var ctx = this.$refs.chart.getContext('2d');
-      var periodicGradient = ctx.createLinearGradient(0, 0, 0, 400);
-      periodicGradient.addColorStop(0, 'rgba(214,15,18,0.45)');
-      periodicGradient.addColorStop(0, 'rgba(214,15,18,0)');
-      var localGradient = ctx.createLinearGradient(0, 0, 0, 400);
-      localGradient.addColorStop(0, 'rgba(193,117,121,0.45)');
-      localGradient.addColorStop(0, 'rgba(193,117,121,0)');
-      var isSingleDay = this.toYmd(new Date(this.lastValidRange[0])) === this.toYmd(new Date(this.lastValidRange[1]));
-      var labels = this.series.map(function (item) {
-        return _this6.buildLabel(item.timestamp, _this6.seriesResolution, isSingleDay);
-      });
-      var periodic = this.series.map(function (x) {
-        var _x$periodical_calls;
-        return (_x$periodical_calls = x.periodical_calls) !== null && _x$periodical_calls !== void 0 ? _x$periodical_calls : 0;
-      });
-      var local = this.series.map(function (x) {
-        var _x$local_checks;
-        return (_x$local_checks = x.local_checks) !== null && _x$local_checks !== void 0 ? _x$local_checks : 0;
-      });
-      if (this._chart) this._chart.destroy();
-      this._chart = new (chart_js__WEBPACK_IMPORTED_MODULE_1___default())(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Periodic calls',
-            data: periodic,
-            borderColor: '#d60f12',
-            backgroundColor: periodicGradient,
-            fill: true,
-            tension: 0,
-            pointRadius: 4,
-            pointBackgroundColor: '#ff7a18'
-          }, {
-            label: 'Local checks',
-            data: local,
-            borderColor: '#c17579',
-            backgroundColor: localGradient,
-            fill: true,
-            tension: 0,
-            pointRadius: 4,
-            pointBackgroundColor: '#e11d48'
-          }]
+        title: {
+          display: true,
+          text: chart.title,
+          fontSize: 16,
+          fontStyle: 'bold',
+          color: '#beb4b6',
+          padding: 10
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          tooltips: {
-            enabled: true
-          },
-          title: {
-            display: true,
-            text: 'Service Level',
-            fontSize: 16,
-            fontStyle: 'bold',
-            color: '#beb4b6',
-            padding: 10
-          },
-          plugins: {
-            legend: {
-              labels: {
-                color: '#beb4b6',
-                font: {
-                  size: 13,
-                  weight: '500'
-                }
-              }
-            }
-          },
-          scales: {
-            x: {
-              ticks: {
-                color: '#beb4b6'
-              },
-              grid: {
-                color: 'transparent'
-              }
-            },
-            y: {
-              ticks: {
-                color: '#beb4b6',
-                beginAtZero: true
-              },
-              grid: {
-                color: 'rgba(190,180,182,0.15)'
+        legend: {
+          labels: {
+            fontColor: '#beb4b6',
+            fontSize: 13,
+            generateLabels: outlineLegendLabels
+          }
+        },
+        plugins: {
+          legend: {
+            labels: {
+              color: '#beb4b6',
+              font: {
+                size: 13,
+                weight: '500'
               }
             }
           }
+        },
+        scales: {
+          x: {
+            ticks: {
+              color: '#beb4b6',
+              font: chart.tickFont
+            },
+            grid: {
+              color: chart.xGridColor
+            }
+          },
+          y: {
+            ticks: {
+              color: '#beb4b6',
+              font: chart.tickFont,
+              beginAtZero: true
+            },
+            grid: {
+              color: chart.yGridColor
+            }
+          }
         }
+      };
+    },
+    chartByKey: function chartByKey(key) {
+      return this.chartConfigs.find(function (chart) {
+        return chart.key === key;
       });
     }
   }
@@ -3773,361 +2891,111 @@ var render = function render() {
     attrs: {
       id: "dashboard-grid"
     }
-  }, [_c("div", {
-    staticClass: "grid-box"
-  }, [_c("EquipmentChart", {
-    attrs: {
-      liveEnabled: _vm.equipmentStats.enabled,
-      liveDisabled: _vm.equipmentStats.disabled,
-      "default-range": _vm.chartSettings.ranges.equipment
-    }
-  })], 1), _vm._v(" "), _c("div", {
-    staticClass: "grid-box"
-  }, [_c("AlarmChart", {
-    attrs: {
-      "live-inbound": _vm.alarmStats.inbound,
-      "live-active": _vm.alarmStats.active,
-      "default-range": _vm.chartSettings.ranges.alarms
-    }
-  })], 1), _vm._v(" "), _c("div", {
-    staticClass: "grid-box"
-  }, [_c("AlertsChart", {
-    attrs: {
-      "live-active-alarm": _vm.alertsStats.Active_alarm,
-      "live-battery-malfunction": _vm.alertsStats.Battery_malfunction,
-      "live-battery-low": _vm.alertsStats.Battery_low,
-      "live-button-malfunction": _vm.alertsStats.Button_malfunction,
-      "live-charge-malfunction": _vm.alertsStats.Charge_malfunction,
-      "live-database-malfunction": _vm.alertsStats.Database_malfunction,
-      "live-disk-low": _vm.alertsStats.Disk_low,
-      "live-object-door-failure": _vm.alertsStats.Object_door_failure,
-      "live-elevator-failure": _vm.alertsStats.Elevator_failure,
-      "live-gateway-malfunction": _vm.alertsStats.Gateway_malfunction,
-      "live-identity-mismatch": _vm.alertsStats.Identity_mismatch,
-      "live-line-alarm": _vm.alertsStats.Line_alarm,
-      "live-object-is-under-maintenance": _vm.alertsStats.Object_is_under_maintenance,
-      "live-microphone-malfunction": _vm.alertsStats.Microphone_malfunction,
-      "live-network-malfunction": _vm.alertsStats.Network_malfunction,
-      "live-periodical-call-overdue": _vm.alertsStats.Periodical_call_overdue,
-      "live-pin-mismatch": _vm.alertsStats.Pin_mismatch,
-      "live-power-malfunction": _vm.alertsStats.Power_malfunction,
-      "live-ram-low": _vm.alertsStats.Ram_low,
-      "live-reserved-device": _vm.alertsStats.Reserved_device,
-      "live-serial-port-malfunction": _vm.alertsStats.Serial_port_malfunction,
-      "live-shaft-failure": _vm.alertsStats.Shaft_failure,
-      "live-low-signal": _vm.alertsStats.Low_signal,
-      "live-sip-registration-failure": _vm.alertsStats.Sip_registration_failure,
-      "live-speaker-malfunction": _vm.alertsStats.Speaker_malfunction,
-      "live-technician-check-overdue": _vm.alertsStats.Technician_check_overdue,
-      "live-voice-alarm": _vm.alertsStats.Voice_alarm,
-      "default-range": _vm.chartSettings.ranges.alerts
-    }
-  })], 1), _vm._v(" "), _c("div", {
-    staticClass: "grid-box"
-  }, [_c("ServiceLevelChart", {
-    attrs: {
-      "live-periodic": _vm.serviceStats.periodicalCalls,
-      "live-local": _vm.serviceStats.localChecks,
-      "default-range": _vm.chartSettings.ranges.serviceLevel
-    }
-  })], 1)]) : _vm._e();
-};
-var staticRenderFns = [];
-render._withStripped = true;
-
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=template&id=4a6706c6&scoped=true":
-/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=template&id=4a6706c6&scoped=true ***!
-  \*******************************************************************************************************************************************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "render": () => (/* binding */ render),
-/* harmony export */   "staticRenderFns": () => (/* binding */ staticRenderFns)
-/* harmony export */ });
-var render = function render() {
-  var _vm = this,
-    _c = _vm._self._c;
-  return _c("div", {
-    staticClass: "chart-container"
-  }, [_c("div", {
-    staticClass: "top-controls"
-  }, [_c("div", {
-    staticClass: "date-picker-wrap"
-  }, [_c("date-picker", {
-    attrs: {
-      range: "",
-      clearable: false,
-      editable: false,
-      format: "DD.MM.YYYY",
-      "value-type": "date",
-      "disabled-date": _vm.disableFuture,
-      "append-to-body": false,
-      "range-separator": " - ",
-      "input-class": "date-range-input",
-      "popup-class": "single-panel-range force-below-popup shift-right-popup"
-    },
-    on: {
-      change: _vm.onDateRangeChange
-    },
-    model: {
-      value: _vm.dateRange,
-      callback: function callback($$v) {
-        _vm.dateRange = $$v;
-      },
-      expression: "dateRange"
-    }
-  }), _vm._v(" "), _vm.dateError ? _c("div", {
-    staticClass: "date-error"
-  }, [_vm._v(_vm._s(_vm.dateError))]) : _vm._e(), _vm._v(" "), _vm.fetchError ? _c("div", {
-    staticClass: "date-error"
-  }, [_vm._v(_vm._s(_vm.fetchError))]) : _vm._e()], 1), _vm._v(" "), _c("div", {
-    staticClass: "resolution-selector"
-  })]), _vm._v(" "), _c("canvas", {
-    ref: "chart"
-  })]);
-};
-var staticRenderFns = [];
-render._withStripped = true;
-
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=template&id=01c0ddb2&scoped=true":
-/*!********************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=template&id=01c0ddb2&scoped=true ***!
-  \********************************************************************************************************************************************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "render": () => (/* binding */ render),
-/* harmony export */   "staticRenderFns": () => (/* binding */ staticRenderFns)
-/* harmony export */ });
-var render = function render() {
-  var _vm = this,
-    _c = _vm._self._c;
-  return _c("div", {
-    staticClass: "chart-container"
-  }, [_c("div", {
-    staticClass: "top-controls"
-  }, [_c("div", {
-    staticClass: "date-picker-wrap"
-  }, [_c("date-picker", {
-    attrs: {
-      range: "",
-      clearable: false,
-      editable: false,
-      format: "DD.MM.YYYY",
-      "value-type": "date",
-      "disabled-date": _vm.disableFuture,
-      "append-to-body": false,
-      "range-separator": " - ",
-      "input-class": "date-range-input",
-      "popup-class": "single-panel-range force-below-popup"
-    },
-    on: {
-      change: _vm.onDateRangeChange
-    },
-    model: {
-      value: _vm.dateRange,
-      callback: function callback($$v) {
-        _vm.dateRange = $$v;
-      },
-      expression: "dateRange"
-    }
-  }), _vm._v(" "), _vm.dateError ? _c("div", {
-    staticClass: "date-error"
-  }, [_vm._v(_vm._s(_vm.dateError))]) : _vm._e(), _vm._v(" "), _vm.fetchError ? _c("div", {
-    staticClass: "date-error"
-  }, [_vm._v(_vm._s(_vm.fetchError))]) : _vm._e()], 1), _vm._v(" "), _c("div", {
-    staticClass: "resolution-selector"
-  })]), _vm._v(" "), _c("button", {
-    staticClass: "filter-btn",
-    on: {
-      click: function click($event) {
-        _vm.showFilters = true;
-      }
-    }
-  }, [_vm._v("\n        Filters\n    ")]), _vm._v(" "), _c("canvas", {
-    ref: "chart"
-  }), _vm._v(" "), _vm.showFilters ? _c("div", {
-    staticClass: "filter-overlay"
-  }, [_c("div", {
-    staticClass: "filter-modal"
-  }, [_c("button", {
-    staticClass: "close-btn",
-    on: {
-      click: function click($event) {
-        _vm.showFilters = false;
-      }
-    }
-  }, [_vm._v("x")]), _vm._v(" "), _c("div", {
-    staticClass: "filter-grid"
-  }, _vm._l(_vm.filterAlerts, function (alert, i) {
+  }, _vm._l(_vm.chartConfigs, function (chart) {
     return _c("div", {
-      key: i,
-      staticClass: "filter-cell"
-    }, [alert ? [_c("input", {
-      directives: [{
-        name: "model",
-        rawName: "v-model",
-        value: _vm.selectedAlerts,
-        expression: "selectedAlerts"
-      }],
+      key: chart.key,
+      staticClass: "grid-box"
+    }, [_c("div", {
+      staticClass: "chart-container"
+    }, [_c("div", {
+      staticClass: "top-controls"
+    }, [_c("div", {
+      staticClass: "date-picker-wrap"
+    }, [_c("date-picker", {
       attrs: {
-        type: "checkbox"
-      },
-      domProps: {
-        value: alert.key,
-        checked: Array.isArray(_vm.selectedAlerts) ? _vm._i(_vm.selectedAlerts, alert.key) > -1 : _vm.selectedAlerts
+        range: "",
+        clearable: false,
+        editable: false,
+        format: "DD.MM.YYYY",
+        "value-type": "date",
+        "disabled-date": _vm.disableFuture,
+        "append-to-body": false,
+        "range-separator": " - ",
+        "input-class": "date-range-input",
+        "popup-class": chart.shiftPicker ? "single-panel-range force-below-popup shift-right-popup" : "single-panel-range force-below-popup"
       },
       on: {
         change: function change($event) {
-          var $$a = _vm.selectedAlerts,
-            $$el = $event.target,
-            $$c = $$el.checked ? true : false;
-          if (Array.isArray($$a)) {
-            var $$v = alert.key,
-              $$i = _vm._i($$a, $$v);
-            if ($$el.checked) {
-              $$i < 0 && (_vm.selectedAlerts = $$a.concat([$$v]));
-            } else {
-              $$i > -1 && (_vm.selectedAlerts = $$a.slice(0, $$i).concat($$a.slice($$i + 1)));
-            }
-          } else {
-            _vm.selectedAlerts = $$c;
-          }
+          return _vm.onDateRangeChange(chart.key, $event);
+        }
+      },
+      model: {
+        value: _vm.chartStates[chart.key].dateRange,
+        callback: function callback($$v) {
+          _vm.$set(_vm.chartStates[chart.key], "dateRange", $$v);
+        },
+        expression: "chartStates[chart.key].dateRange"
+      }
+    }), _vm._v(" "), _vm.chartStates[chart.key].dateError ? _c("div", {
+      staticClass: "date-error"
+    }, [_vm._v("\n            " + _vm._s(_vm.chartStates[chart.key].dateError) + "\n          ")]) : _vm._e(), _vm._v(" "), _vm.chartStates[chart.key].fetchError ? _c("div", {
+      staticClass: "date-error"
+    }, [_vm._v("\n            " + _vm._s(_vm.chartStates[chart.key].fetchError) + "\n          ")]) : _vm._e()], 1), _vm._v(" "), _c("div", {
+      staticClass: "resolution-selector"
+    })]), _vm._v(" "), chart.filterable ? _c("button", {
+      staticClass: "filter-btn",
+      on: {
+        click: function click($event) {
+          _vm.chartStates[chart.key].showFilters = true;
         }
       }
-    }), _vm._v(" "), _c("span", [_vm._v(_vm._s(alert.label))])] : _vm._e()], 2);
-  }), 0)])]) : _vm._e()]);
-};
-var staticRenderFns = [];
-render._withStripped = true;
-
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=template&id=fbbd2c00&scoped=true":
-/*!***********************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=template&id=fbbd2c00&scoped=true ***!
-  \***********************************************************************************************************************************************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "render": () => (/* binding */ render),
-/* harmony export */   "staticRenderFns": () => (/* binding */ staticRenderFns)
-/* harmony export */ });
-var render = function render() {
-  var _vm = this,
-    _c = _vm._self._c;
-  return _c("div", {
-    staticClass: "chart-container"
-  }, [_c("div", {
-    staticClass: "top-controls"
-  }, [_c("div", {
-    staticClass: "date-picker-wrap"
-  }, [_c("date-picker", {
-    attrs: {
-      range: "",
-      clearable: false,
-      editable: false,
-      format: "DD.MM.YYYY",
-      "value-type": "date",
-      "disabled-date": _vm.disableFuture,
-      "append-to-body": false,
-      "range-separator": " - ",
-      "input-class": "date-range-input",
-      "popup-class": "single-panel-range force-below-popup"
-    },
-    on: {
-      change: _vm.onDateRangeChange
-    },
-    model: {
-      value: _vm.dateRange,
-      callback: function callback($$v) {
-        _vm.dateRange = $$v;
-      },
-      expression: "dateRange"
-    }
-  }), _vm._v(" "), _vm.dateError ? _c("div", {
-    staticClass: "date-error"
-  }, [_vm._v(_vm._s(_vm.dateError))]) : _vm._e(), _vm._v(" "), _vm.fetchError ? _c("div", {
-    staticClass: "date-error"
-  }, [_vm._v(_vm._s(_vm.fetchError))]) : _vm._e()], 1), _vm._v(" "), _c("div", {
-    staticClass: "resolution-selector"
-  })]), _vm._v(" "), _c("canvas", {
-    ref: "barChart"
-  })]);
-};
-var staticRenderFns = [];
-render._withStripped = true;
-
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=template&id=e66d0222&scoped=true":
-/*!**************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=template&id=e66d0222&scoped=true ***!
-  \**************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "render": () => (/* binding */ render),
-/* harmony export */   "staticRenderFns": () => (/* binding */ staticRenderFns)
-/* harmony export */ });
-var render = function render() {
-  var _vm = this,
-    _c = _vm._self._c;
-  return _c("div", {
-    staticClass: "chart-container"
-  }, [_c("div", {
-    staticClass: "top-controls"
-  }, [_c("div", {
-    staticClass: "date-picker-wrap"
-  }, [_c("date-picker", {
-    attrs: {
-      range: "",
-      clearable: false,
-      editable: false,
-      format: "DD.MM.YYYY",
-      "value-type": "date",
-      "disabled-date": _vm.disableFuture,
-      "append-to-body": false,
-      "range-separator": " - ",
-      "input-class": "date-range-input",
-      "popup-class": "single-panel-range force-below-popup shift-right-popup"
-    },
-    on: {
-      change: _vm.onDateRangeChange
-    },
-    model: {
-      value: _vm.dateRange,
-      callback: function callback($$v) {
-        _vm.dateRange = $$v;
-      },
-      expression: "dateRange"
-    }
-  }), _vm._v(" "), _vm.dateError ? _c("div", {
-    staticClass: "date-error"
-  }, [_vm._v(_vm._s(_vm.dateError))]) : _vm._e(), _vm._v(" "), _vm.fetchError ? _c("div", {
-    staticClass: "date-error"
-  }, [_vm._v(_vm._s(_vm.fetchError))]) : _vm._e()], 1), _vm._v(" "), _c("div", {
-    staticClass: "resolution-selector"
-  })]), _vm._v(" "), _c("canvas", {
-    ref: "chart"
-  })]);
+    }, [_vm._v("\n        Filters\n      ")]) : _vm._e(), _vm._v(" "), _c("canvas", {
+      ref: "chart-".concat(chart.key),
+      refInFor: true
+    }), _vm._v(" "), chart.filterable && _vm.chartStates[chart.key].showFilters ? _c("div", {
+      staticClass: "filter-overlay"
+    }, [_c("div", {
+      staticClass: "filter-modal"
+    }, [_c("button", {
+      staticClass: "close-btn",
+      on: {
+        click: function click($event) {
+          _vm.chartStates[chart.key].showFilters = false;
+        }
+      }
+    }, [_vm._v("x")]), _vm._v(" "), _c("div", {
+      staticClass: "filter-grid"
+    }, _vm._l(chart.fields, function (field) {
+      return _c("div", {
+        key: field.key,
+        staticClass: "filter-cell"
+      }, [_c("input", {
+        directives: [{
+          name: "model",
+          rawName: "v-model",
+          value: _vm.chartStates[chart.key].selectedKeys,
+          expression: "chartStates[chart.key].selectedKeys"
+        }],
+        attrs: {
+          type: "checkbox"
+        },
+        domProps: {
+          value: field.key,
+          checked: Array.isArray(_vm.chartStates[chart.key].selectedKeys) ? _vm._i(_vm.chartStates[chart.key].selectedKeys, field.key) > -1 : _vm.chartStates[chart.key].selectedKeys
+        },
+        on: {
+          change: [function ($event) {
+            var $$a = _vm.chartStates[chart.key].selectedKeys,
+              $$el = $event.target,
+              $$c = $$el.checked ? true : false;
+            if (Array.isArray($$a)) {
+              var $$v = field.key,
+                $$i = _vm._i($$a, $$v);
+              if ($$el.checked) {
+                $$i < 0 && _vm.$set(_vm.chartStates[chart.key], "selectedKeys", $$a.concat([$$v]));
+              } else {
+                $$i > -1 && _vm.$set(_vm.chartStates[chart.key], "selectedKeys", $$a.slice(0, $$i).concat($$a.slice($$i + 1)));
+              }
+            } else {
+              _vm.$set(_vm.chartStates[chart.key], "selectedKeys", $$c);
+            }
+          }, function ($event) {
+            return _vm.renderChart(chart.key);
+          }]
+        }
+      }), _vm._v(" "), _c("span", [_vm._v(_vm._s(field.label))])]);
+    }), 0)])]) : _vm._e()])]);
+  }), 0) : _vm._e();
 };
 var staticRenderFns = [];
 render._withStripped = true;
@@ -4320,261 +3188,6 @@ function validateServiceThresholds(thresholds) {
     return DASHBOARD_WIDGET_ERRORS.INVALID_THRESHOLD_ORDER;
   }
   return null;
-}
-
-/***/ }),
-
-/***/ "./resources/js/utils/timeseriesDisplay.js":
-/*!*************************************************!*\
-  !*** ./resources/js/utils/timeseriesDisplay.js ***!
-  \*************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "formatChartLabel": () => (/* binding */ formatChartLabel),
-/* harmony export */   "formatChartTooltip": () => (/* binding */ formatChartTooltip)
-/* harmony export */ });
-function formatUtcParts(date) {
-  var dd = String(date.getUTCDate()).padStart(2, '0');
-  var mm = String(date.getUTCMonth() + 1).padStart(2, '0');
-  var yyyy = String(date.getUTCFullYear());
-  var hh = String(date.getUTCHours()).padStart(2, '0');
-  var min = String(date.getUTCMinutes()).padStart(2, '0');
-  return {
-    date: "".concat(dd, ".").concat(mm, ".").concat(yyyy),
-    shortDate: "".concat(dd, ".").concat(mm),
-    time: "".concat(hh, ":").concat(min)
-  };
-}
-function buildFormatters() {
-  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  var locale = options.locale;
-  var timeZone = options.timeZone;
-  return {
-    date: new Intl.DateTimeFormat(locale, {
-      day: '2-digit',
-      month: '2-digit',
-      timeZone: timeZone
-    }),
-    dateWithYear: new Intl.DateTimeFormat(locale, {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      timeZone: timeZone
-    }),
-    time: new Intl.DateTimeFormat(locale, {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-      timeZone: timeZone
-    })
-  };
-}
-function formatChartLabel(ts, resolution, isSingleDay) {
-  var _options$displayMode;
-  var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-  if (ts === null) return 'Live';
-  var date = new Date(ts);
-  if (Number.isNaN(date.getTime())) return '';
-  var displayMode = (_options$displayMode = options.displayMode) !== null && _options$displayMode !== void 0 ? _options$displayMode : 'local';
-
-  // Note: '1d' and '1w' labels are display-only. The underlying buckets remain UTC-based.
-  if (displayMode === 'utc') {
-    var parts = formatUtcParts(date);
-    if (resolution === '1d' || resolution === '1w') return parts.shortDate;
-    if (isSingleDay && (resolution === '1h' || resolution === '6h')) return parts.time;
-    return "".concat(parts.shortDate, " ").concat(parts.time);
-  }
-  var formatters = buildFormatters(options);
-  if (resolution === '1d' || resolution === '1w') return formatters.date.format(date);
-  if (isSingleDay && (resolution === '1h' || resolution === '6h')) return formatters.time.format(date);
-  return "".concat(formatters.date.format(date), " ").concat(formatters.time.format(date));
-}
-function formatChartTooltip(ts) {
-  var _options$displayMode2;
-  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  if (ts === null) return 'Live';
-  var date = new Date(ts);
-  if (Number.isNaN(date.getTime())) return '';
-  var displayMode = (_options$displayMode2 = options.displayMode) !== null && _options$displayMode2 !== void 0 ? _options$displayMode2 : 'local';
-  if (displayMode === 'utc') {
-    var parts = formatUtcParts(date);
-    return "".concat(parts.date, " ").concat(parts.time, " UTC");
-  }
-  var formatters = buildFormatters(options);
-  return "".concat(formatters.dateWithYear.format(date), " ").concat(formatters.time.format(date));
-}
-
-/***/ }),
-
-/***/ "./resources/js/utils/timeseriesRangeValidation.js":
-/*!*********************************************************!*\
-  !*** ./resources/js/utils/timeseriesRangeValidation.js ***!
-  \*********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "MAX_RANGE_MS": () => (/* binding */ MAX_RANGE_MS),
-/* harmony export */   "daysInRangeUtc": () => (/* binding */ daysInRangeUtc),
-/* harmony export */   "disableFutureUtc": () => (/* binding */ disableFutureUtc),
-/* harmony export */   "normalizeEndUtc": () => (/* binding */ normalizeEndUtc),
-/* harmony export */   "normalizeStartUtc": () => (/* binding */ normalizeStartUtc),
-/* harmony export */   "toIso8601Utc": () => (/* binding */ toIso8601Utc),
-/* harmony export */   "toYmdUtc": () => (/* binding */ toYmdUtc),
-/* harmony export */   "validateAndNormalizeRange": () => (/* binding */ validateAndNormalizeRange)
-/* harmony export */ });
-var MS_PER_DAY = 24 * 60 * 60 * 1000;
-var MAX_RANGE_MS = 365 * MS_PER_DAY;
-function toDate(value) {
-  if (!value) return null;
-  var date = new Date(value);
-  return Number.isNaN(date.getTime()) ? null : date;
-}
-function normalizeStartUtc(raw) {
-  var date = toDate(raw);
-  if (!date) return null;
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
-}
-function normalizeEndUtc(raw) {
-  var date = toDate(raw);
-  if (!date) return null;
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 0, 0, 0);
-}
-function startOfLocalDay(date) {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
-}
-function isSameLocalDay(a, b) {
-  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
-}
-function floorLocalHour(date) {
-  var floored = new Date(date);
-  floored.setMinutes(0, 0, 0);
-  return floored;
-}
-function validateAndNormalizeRange(rawStart, rawEnd) {
-  var startUtc = normalizeStartUtc(rawStart);
-  var requestedEndUtc = normalizeEndUtc(rawEnd);
-  if (!startUtc || !requestedEndUtc) {
-    return {
-      ok: false,
-      error: 'Start and end date are required.'
-    };
-  }
-  var now = new Date();
-  var todayStart = startOfLocalDay(now);
-  var requestedEndStart = startOfLocalDay(requestedEndUtc);
-
-  // Future local calendar days stay blocked, today is allowed.
-  if (requestedEndStart.getTime() > todayStart.getTime()) {
-    return {
-      ok: false,
-      error: 'Future ranges are not allowed.'
-    };
-  }
-  var endUtc = requestedEndUtc;
-  if (isSameLocalDay(requestedEndUtc, now)) {
-    endUtc = floorLocalHour(now);
-  }
-  if (endUtc.getTime() < startUtc.getTime()) {
-    return {
-      ok: false,
-      error: 'End date must be the same day or after start date.'
-    };
-  }
-  if (endUtc.getTime() - startUtc.getTime() > MAX_RANGE_MS) {
-    return {
-      ok: false,
-      error: 'Date range must be 365 days or less.'
-    };
-  }
-  return {
-    ok: true,
-    startUtc: startUtc,
-    endUtc: endUtc
-  };
-}
-function disableFutureUtc(day) {
-  var selected = toDate(day);
-  if (!selected) return false;
-  var selectedStartUtc = startOfLocalDay(selected);
-  var todayStartUtc = startOfLocalDay(new Date());
-  return selectedStartUtc.getTime() > todayStartUtc.getTime();
-}
-function daysInRangeUtc(startUtc, endUtc) {
-  return Math.floor((endUtc.getTime() - startUtc.getTime()) / MS_PER_DAY) + 1;
-}
-function toIso8601Utc(date) {
-  return date.toISOString();
-}
-function toYmdUtc(date) {
-  var year = date.getFullYear();
-  var month = String(date.getMonth() + 1).padStart(2, '0');
-  var day = String(date.getDate()).padStart(2, '0');
-  return "".concat(year, "-").concat(month, "-").concat(day);
-}
-
-/***/ }),
-
-/***/ "./resources/js/utils/timeseriesSeries.js":
-/*!************************************************!*\
-  !*** ./resources/js/utils/timeseriesSeries.js ***!
-  \************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "buildLiveSeriesRow": () => (/* binding */ buildLiveSeriesRow),
-/* harmony export */   "normalizeSeriesRow": () => (/* binding */ normalizeSeriesRow),
-/* harmony export */   "normalizeSeriesRows": () => (/* binding */ normalizeSeriesRows)
-/* harmony export */ });
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function _iterableToArrayLimit(arr, i) { var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"]; if (null != _i) { var _s, _e, _x, _r, _arr = [], _n = !0, _d = !1; try { if (_x = (_i = _i.call(arr)).next, 0 === i) { if (Object(_i) !== _i) return; _n = !1; } else for (; !(_n = (_s = _x.call(_i)).done) && (_arr.push(_s.value), _arr.length !== i); _n = !0); } catch (err) { _d = !0, _e = err; } finally { try { if (!_n && null != _i["return"] && (_r = _i["return"](), Object(_r) !== _r)) return; } finally { if (_d) throw _e; } } return _arr; } }
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-function clamp0To100(value) {
-  var numeric = Number(value);
-  if (!Number.isFinite(numeric)) {
-    return 0;
-  }
-  return Math.max(0, Math.min(100, Math.round(numeric)));
-}
-function normalizeSeriesRow(row, keys) {
-  var _row$ts, _row$series;
-  var base = {
-    timestamp: (_row$ts = row === null || row === void 0 ? void 0 : row.ts) !== null && _row$ts !== void 0 ? _row$ts : null
-  };
-  var rowSeries = (_row$series = row === null || row === void 0 ? void 0 : row.series) !== null && _row$series !== void 0 ? _row$series : {};
-  keys.forEach(function (key) {
-    base[key] = clamp0To100(rowSeries[key]);
-  });
-  return base;
-}
-function normalizeSeriesRows(rows, keys) {
-  return (rows !== null && rows !== void 0 ? rows : []).slice().sort(function (a, b) {
-    var _a$ts, _b$ts;
-    return String((_a$ts = a === null || a === void 0 ? void 0 : a.ts) !== null && _a$ts !== void 0 ? _a$ts : '').localeCompare(String((_b$ts = b === null || b === void 0 ? void 0 : b.ts) !== null && _b$ts !== void 0 ? _b$ts : ''));
-  }).map(function (row) {
-    return normalizeSeriesRow(row, keys);
-  });
-}
-function buildLiveSeriesRow(valuesByKey) {
-  var row = {
-    timestamp: null
-  };
-  Object.entries(valuesByKey).forEach(function (_ref) {
-    var _ref2 = _slicedToArray(_ref, 2),
-      key = _ref2[0],
-      value = _ref2[1];
-    row[key] = clamp0To100(value);
-  });
-  return row;
 }
 
 /***/ }),
@@ -20801,17 +19414,17 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n#dashboard-grid[data-v-0f9ce3ef] {\r\n  display: grid;\r\n  grid-template-columns: 1fr 1fr;\r\n  gap: 20px;\r\n  margin-top: 20px;\n}\n.grid-box[data-v-0f9ce3ef] {\r\n  border: 1px solid #ccc;\r\n  background-color: #fff;\r\n  padding: 10px;\r\n  height: 100%;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\n}\r\n\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n#dashboard-grid[data-v-0f9ce3ef] {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 20px;\n  margin-top: 20px;\n}\n.grid-box[data-v-0f9ce3ef] {\n  border: 1px solid #ccc;\n  background-color: #fff;\n  padding: 10px;\n  height: 100%;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n.chart-container[data-v-0f9ce3ef] {\n  width: 100%;\n  height: 420px;\n  position: relative;\n  padding: 12px;\n  border: 1px solid rgba(240, 240, 240, 0.08);\n  border-radius: 10px;\n  box-shadow: 0 10px 30px rgba(11, 18, 51, 0.5);\n  overflow: visible;\n  animation: chartEnter-0f9ce3ef 700ms cubic-bezier(.2, .9, .2, 1) both;\n}\n.chart-container[data-v-0f9ce3ef]::after {\n  content: '';\n  position: absolute;\n  inset: 0;\n  border-radius: 10px;\n  pointer-events: none;\n  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);\n}\ncanvas[data-v-0f9ce3ef] {\n  width: 100% !important;\n  height: 100% !important;\n  display: block;\n  background: transparent;\n}\n@keyframes chartEnter-0f9ce3ef {\n0% {\n    opacity: 0;\n    transform: translateY(8px);\n}\n100% {\n    opacity: 1;\n    transform: translateY(0);\n}\n}\n.top-controls[data-v-0f9ce3ef] {\n  position: absolute;\n  top: 12px;\n  left: 12px;\n  z-index: 30;\n  display: flex;\n  gap: 10px;\n  align-items: flex-start;\n}\n.date-picker-wrap[data-v-0f9ce3ef] {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n}\n.resolution-selector[data-v-0f9ce3ef] {\n  position: relative;\n  margin: 0;\n  padding: 0;\n  z-index: 20;\n}\n.filter-btn[data-v-0f9ce3ef] {\n  position: absolute;\n  top: 4px;\n  right: 12px;\n  z-index: 10;\n  background: rgba(24, 44, 81, 0.15);\n  border: 1px solid rgba(53, 64, 85, 0.4);\n  color: #354055;\n  padding: 4px 10px;\n  border-radius: 6px;\n  font-size: 12px;\n  cursor: pointer;\n}\n.filter-btn[data-v-0f9ce3ef]:hover {\n  background: rgba(24, 44, 81, 0.25);\n}\n.filter-overlay[data-v-0f9ce3ef] {\n  position: fixed;\n  inset: 0;\n  background: rgba(0, 0, 0, 0.6);\n  z-index: 1000;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n.filter-modal[data-v-0f9ce3ef] {\n  position: relative;\n  width: 80%;\n  max-width: 1300px;\n  height: 95%;\n  background: rgba(24, 44, 81, 0.25);\n  border-radius: 12px;\n  padding: 12px 24px 24px;\n  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);\n}\n.close-btn[data-v-0f9ce3ef] {\n  position: absolute;\n  top: -6px;\n  right: 0;\n  background: transparent;\n  border: none;\n  color: #cbd5e1;\n  font-size: 20px;\n  cursor: pointer;\n}\n.close-btn[data-v-0f9ce3ef]:hover {\n  color: #f43f5e;\n}\n.filter-grid[data-v-0f9ce3ef] {\n  display: grid;\n  grid-template-columns: repeat(5, 1fr);\n  grid-template-rows: repeat(6, 1fr);\n  gap: 12px;\n  margin-top: 24px;\n  height: calc(100% - 32px);\n}\n.filter-cell[data-v-0f9ce3ef] {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  background: rgba(255, 255, 255, 0.05);\n  padding: 0 10px;\n  border-radius: 6px;\n  color: #e5e7eb;\n  font-size: 12px;\n}\n.filter-cell input[type=\"checkbox\"][data-v-0f9ce3ef] {\n  width: 16px;\n  height: 16px;\n  color: #354055;\n  cursor: pointer;\n  border-radius: 4px;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=style&index=0&id=4a6706c6&scoped=true&lang=css":
-/*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=style&index=0&id=4a6706c6&scoped=true&lang=css ***!
-  \****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/Charts.vue?vue&type=style&index=1&id=0f9ce3ef&lang=css":
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/Charts.vue?vue&type=style&index=1&id=0f9ce3ef&lang=css ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -20819,181 +19432,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
 // Imports
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.chart-container[data-v-4a6706c6] {\r\n  width: 100%;\r\n  height: 420px;\r\n  position: relative;\r\n  padding: 12px;\r\n  border-radius: 10px;\r\n  box-shadow: 0 10px 30px rgba(11, 18, 51, 0.5);\r\n  overflow: visible;\n}\ncanvas[data-v-4a6706c6] {\r\n  width: 100% !important;\r\n  height: 100% !important;\n}\r\n\r\n/* Date Picker Styles */\n.top-controls[data-v-4a6706c6] {\r\n  position: absolute;\r\n  top: 12px;\r\n  left: 12px;\r\n  z-index: 30;\r\n  display: flex;\r\n  gap: 10px;\r\n  align-items: flex-start;\n}\n.date-picker-wrap[data-v-4a6706c6] {\r\n  display: flex;\r\n  flex-direction: column;\r\n  align-items: flex-start;\n}\n.resolution-selector[data-v-4a6706c6] {\r\n  position: relative;\r\n  margin: 0;\r\n  padding: 0;\r\n  z-index: 20;\n}\r\n", ""]);
-// Exports
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=style&index=1&id=4a6706c6&lang=css":
-/*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=style&index=1&id=4a6706c6&lang=css ***!
-  \****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
-// Imports
-
-var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
-// Module
-___CSS_LOADER_EXPORT___.push([module.id, "\r\n/* Custom style to show only one calendar panel */\n.single-panel-range .mx-range-wrapper .mx-calendar + .mx-calendar {\r\n  display: none;\n}\r\n\r\n/* Date range button styling */\n.date-range-input {\r\n  color: #000000 !important;\r\n  font-size: 13px !important;\r\n  font-weight: 600 !important;\r\n  height: 30px !important;\r\n  padding: 4px 30px 4px 8px !important;\r\n  border-radius: 8px !important;\n}\n.force-below-popup.mx-datepicker-popup {\r\n  top: calc(100% + 6px) !important;\r\n  bottom: auto !important;\n}\n.shift-right-popup.mx-datepicker-popup {\r\n  left: 1px !important;\n}\n.date-error {\r\n  margin-top: 4px;\r\n  font-size: 12px;\r\n  color: #b91c1c;\n}\r\n", ""]);
-// Exports
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=style&index=0&id=01c0ddb2&scoped=true&lang=css":
-/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=style&index=0&id=01c0ddb2&scoped=true&lang=css ***!
-  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
-// Imports
-
-var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
-// Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.chart-container[data-v-01c0ddb2] {\r\n    width: 100%;\r\n    height: 420px;\r\n    position: relative;\r\n    padding: 12px;\r\n    border-radius: 10px;\r\n    box-shadow: 0 10px 30px rgba(11, 18, 51, 0.5);\r\n    overflow: visible;\r\n    animation: chartEnter-01c0ddb2 700ms cubic-bezier(.2, .9, .2, 1) both;\n}\ncanvas[data-v-01c0ddb2] {\r\n    width: 100% !important;\r\n    height: 100% !important;\r\n    display: block;\r\n    background: transparent;\n}\n@keyframes chartEnter-01c0ddb2 {\n0% {\r\n        opacity: 0;\r\n        transform: translateY(8px);\n}\n100% {\r\n        opacity: 1;\r\n        transform: translateY(0);\n}\n}\n.filter-btn[data-v-01c0ddb2] {\r\n    position: absolute;\r\n    top: 4px;\r\n    right: 12px;\r\n    z-index: 10;\r\n    background: rgba(24, 44, 81, 0.15);\r\n    border: 1px solid rgba(53, 64, 85, 0.4);\r\n    color: #354055;\r\n    padding: 4px 10px;\r\n    border-radius: 6px;\r\n    font-size: 12px;\r\n    cursor: pointer;\n}\n.filter-btn[data-v-01c0ddb2]:hover {\r\n    background: rgba(24, 44, 81, 0.25);\n}\n.filter-overlay[data-v-01c0ddb2] {\r\n    position: fixed;\r\n    inset: 0;\r\n    background: rgba(0, 0, 0, 0.6);\r\n    z-index: 1000;\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: center;\n}\n.filter-modal[data-v-01c0ddb2] {\r\n    position: relative;\r\n    width: 80%;\r\n    max-width: 1300px;\r\n    height: 95%;\r\n    background: rgba(24, 44, 81, 0.25);\r\n    border-radius: 12px;\r\n    padding-left: 24px;\r\n    padding-right: 24px;\r\n    padding-bottom: 24px;\r\n    padding-top: 12px;\r\n    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);\n}\n.close-btn[data-v-01c0ddb2] {\r\n    position: absolute;\r\n    top: -6px;\r\n    right: 0;\r\n    background: transparent;\r\n    border: none;\r\n    color: #cbd5e1;\r\n    font-size: 20px;\r\n    cursor: pointer;\n}\n.close-btn[data-v-01c0ddb2]:hover {\r\n    color: #f43f5e;\n}\n.filter-grid[data-v-01c0ddb2] {\r\n    display: grid;\r\n    grid-template-columns: repeat(5, 1fr);\r\n    grid-template-rows: repeat(6, 1fr);\r\n    gap: 12px;\r\n    margin-top: 24px;\r\n    height: calc(100% - 32px);\n}\n.filter-cell[data-v-01c0ddb2] {\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 8px;\r\n    background: rgba(255, 255, 255, 0.05);\r\n    padding: 0 10px;\r\n    border-radius: 6px;\r\n    color: #e5e7eb;\r\n    font-size: 12px;\n}\n.filter-cell input[type=\"checkbox\"][data-v-01c0ddb2] {\r\n    width: 16px;\r\n    height: 16px;\r\n    color: #354055;\r\n    cursor: pointer;\r\n    border-radius: 4px;\n}\n.top-controls[data-v-01c0ddb2] {\r\n    position: absolute;\r\n    top: 12px;\r\n    left: 12px;\r\n    z-index: 30;\r\n    display: flex;\r\n    gap: 10px;\r\n    align-items: flex-start;\n}\n.date-picker-wrap[data-v-01c0ddb2] {\r\n    display: flex;\r\n    flex-direction: column;\r\n    align-items: flex-start;\n}\n.resolution-selector[data-v-01c0ddb2] {\r\n    position: relative;\r\n    margin: 0;\r\n    padding: 0;\r\n    z-index: 20;\n}\r\n", ""]);
-// Exports
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=style&index=1&id=01c0ddb2&lang=css":
-/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=style&index=1&id=01c0ddb2&lang=css ***!
-  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
-// Imports
-
-var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
-// Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.single-panel-range .mx-range-wrapper .mx-calendar + .mx-calendar {\r\n    display: none;\n}\n.date-range-input {\r\n    color: #000000 !important;\r\n    font-size: 13px !important;\r\n    font-weight: 600 !important;\r\n    height: 30px !important;\r\n    padding: 4px 30px 4px 8px !important;\r\n    border-radius: 8px !important;\n}\n.force-below-popup.mx-datepicker-popup {\r\n    top: calc(100% + 6px) !important;\r\n    bottom: auto !important;\n}\n.date-error {\r\n    margin-top: 4px;\r\n    font-size: 12px;\r\n    color: #b91c1c;\n}\r\n", ""]);
-// Exports
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=style&index=0&id=fbbd2c00&scoped=true&lang=css":
-/*!********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=style&index=0&id=fbbd2c00&scoped=true&lang=css ***!
-  \********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
-// Imports
-
-var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
-// Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.chart-container[data-v-fbbd2c00] {\r\n  width: 100%;\r\n  height: 420px;\r\n  position: relative;\r\n  padding: 12px;\r\n  border: 1px solid rgba(240, 240, 240, 0.08);\r\n  border-radius: 10px;\r\n  box-shadow: 0 10px 30px rgba(11, 18, 51, 0.5);\r\n  overflow: visible;\r\n  animation: chartEnter-fbbd2c00 700ms cubic-bezier(.2, .9, .2, 1) both;\n}\n.chart-container[data-v-fbbd2c00]::after {\r\n  content: '';\r\n  position: absolute;\r\n  inset: 0;\r\n  border-radius: 10px;\r\n  pointer-events: none;\r\n  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);\n}\ncanvas[data-v-fbbd2c00] {\r\n  width: 100% !important;\r\n  height: 100% !important;\r\n  display: block;\r\n  background: transparent;\n}\n@keyframes chartEnter-fbbd2c00 {\n0% {\r\n    opacity: 0;\r\n    transform: translateY(8px);\n}\n100% {\r\n    opacity: 1;\r\n    transform: translateY(0);\n}\n}\r\n\r\n/* Date Picker Styles */\n.top-controls[data-v-fbbd2c00] {\r\n  position: absolute;\r\n  top: 12px;\r\n  left: 12px;\r\n  z-index: 30;\r\n  display: flex;\r\n  gap: 10px;\r\n  align-items: flex-start;\n}\n.date-picker-wrap[data-v-fbbd2c00] {\r\n  display: flex;\r\n  flex-direction: column;\r\n  align-items: flex-start;\n}\n.resolution-selector[data-v-fbbd2c00] {\r\n  position: relative;\r\n  margin: 0;\r\n  padding: 0;\r\n  z-index: 20;\n}\r\n", ""]);
-// Exports
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=style&index=1&id=fbbd2c00&lang=css":
-/*!********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=style&index=1&id=fbbd2c00&lang=css ***!
-  \********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
-// Imports
-
-var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
-// Module
-___CSS_LOADER_EXPORT___.push([module.id, "\r\n/* Custom style to show only one calendar panel */\n.single-panel-range .mx-range-wrapper .mx-calendar + .mx-calendar {\r\n  display: none;\n}\r\n\r\n/* Date range button styling */\n.date-range-input {\r\n  color: #000000 !important;\r\n  font-size: 13px !important;\r\n  font-weight: 600 !important;\r\n  height: 30px !important;\r\n  padding: 4px 30px 4px 8px !important;\r\n  border-radius: 8px !important;\n}\n.force-below-popup.mx-datepicker-popup {\r\n  top: calc(100% + 6px) !important;\r\n  bottom: auto !important;\n}\n.date-error {\r\n  margin-top: 4px;\r\n  font-size: 12px;\r\n  color: #b91c1c;\n}\r\n", ""]);
-// Exports
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=style&index=0&id=e66d0222&scoped=true&lang=css":
-/*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=style&index=0&id=e66d0222&scoped=true&lang=css ***!
-  \***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
-// Imports
-
-var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
-// Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.chart-container[data-v-e66d0222] {\r\n  width: 100%;\r\n  height: 420px;\r\n  position: relative;\r\n  padding: 12px;\r\n  border: 1px solid rgba(240, 240, 240, 0.08);\r\n  border-radius: 10px;\r\n  box-shadow: 0 10px 30px rgba(11, 18, 51, 0.5);\r\n  overflow: visible;\n}\ncanvas[data-v-e66d0222] {\r\n  width: 100% !important;\r\n  height: 100% !important;\n}\r\n\r\n/* Date Picker Styles */\n.top-controls[data-v-e66d0222] {\r\n  position: absolute;\r\n  top: 12px;\r\n  left: 12px;\r\n  z-index: 30;\r\n  display: flex;\r\n  gap: 10px;\r\n  align-items: flex-start;\n}\n.date-picker-wrap[data-v-e66d0222] {\r\n  display: flex;\r\n  flex-direction: column;\r\n  align-items: flex-start;\n}\n.resolution-selector[data-v-e66d0222] {\r\n  position: relative;\r\n  margin: 0;\r\n  padding: 0;\r\n  z-index: 20;\n}\r\n", ""]);
-// Exports
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=style&index=1&id=e66d0222&lang=css":
-/*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=style&index=1&id=e66d0222&lang=css ***!
-  \***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
-// Imports
-
-var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
-// Module
-___CSS_LOADER_EXPORT___.push([module.id, "\r\n/* Custom style to show only one calendar panel */\n.single-panel-range .mx-range-wrapper .mx-calendar + .mx-calendar {\r\n  display: none;\n}\r\n\r\n/* Date range button styling */\n.date-range-input {\r\n  color: #000000 !important;\r\n  font-size: 13px !important;\r\n  font-weight: 600 !important;\r\n  height: 30px !important;\r\n  padding: 4px 30px 4px 8px !important;\r\n  border-radius: 8px !important;\n}\n.force-below-popup.mx-datepicker-popup {\r\n  top: calc(100% + 6px) !important;\r\n  bottom: auto !important;\n}\n.shift-right-popup.mx-datepicker-popup {\r\n  left: 1px !important;\n}\n.date-error {\r\n  margin-top: 4px;\r\n  font-size: 12px;\r\n  color: #b91c1c;\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.single-panel-range .mx-range-wrapper .mx-calendar + .mx-calendar {\n  display: none;\n}\n.date-range-input {\n  color: #000000 !important;\n  font-size: 13px !important;\n  font-weight: 600 !important;\n  height: 30px !important;\n  padding: 4px 30px 4px 8px !important;\n  border-radius: 8px !important;\n}\n.force-below-popup.mx-datepicker-popup {\n  top: calc(100% + 6px) !important;\n  bottom: auto !important;\n}\n.shift-right-popup.mx-datepicker-popup {\n  left: 1px !important;\n}\n.date-error {\n  margin-top: 4px;\n  font-size: 12px;\n  color: #b91c1c;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -43646,10 +42091,10 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 /***/ }),
 
-/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=style&index=0&id=4a6706c6&scoped=true&lang=css":
-/*!********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=style&index=0&id=4a6706c6&scoped=true&lang=css ***!
-  \********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/Charts.vue?vue&type=style&index=1&id=0f9ce3ef&lang=css":
+/*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/Charts.vue?vue&type=style&index=1&id=0f9ce3ef&lang=css ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -43657,9 +42102,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
 /* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlarmChart_vue_vue_type_style_index_0_id_4a6706c6_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./AlarmChart.vue?vue&type=style&index=0&id=4a6706c6&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=style&index=0&id=4a6706c6&scoped=true&lang=css");
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_Charts_vue_vue_type_style_index_1_id_0f9ce3ef_lang_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./Charts.vue?vue&type=style&index=1&id=0f9ce3ef&lang=css */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/Charts.vue?vue&type=style&index=1&id=0f9ce3ef&lang=css");
 
             
 
@@ -43668,221 +42113,11 @@ var options = {};
 options.insert = "head";
 options.singleton = false;
 
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlarmChart_vue_vue_type_style_index_0_id_4a6706c6_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"], options);
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_Charts_vue_vue_type_style_index_1_id_0f9ce3ef_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"], options);
 
 
 
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlarmChart_vue_vue_type_style_index_0_id_4a6706c6_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=style&index=1&id=4a6706c6&lang=css":
-/*!********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=style&index=1&id=4a6706c6&lang=css ***!
-  \********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlarmChart_vue_vue_type_style_index_1_id_4a6706c6_lang_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./AlarmChart.vue?vue&type=style&index=1&id=4a6706c6&lang=css */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=style&index=1&id=4a6706c6&lang=css");
-
-            
-
-var options = {};
-
-options.insert = "head";
-options.singleton = false;
-
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlarmChart_vue_vue_type_style_index_1_id_4a6706c6_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"], options);
-
-
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlarmChart_vue_vue_type_style_index_1_id_4a6706c6_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=style&index=0&id=01c0ddb2&scoped=true&lang=css":
-/*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=style&index=0&id=01c0ddb2&scoped=true&lang=css ***!
-  \*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlertsChart_vue_vue_type_style_index_0_id_01c0ddb2_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./AlertsChart.vue?vue&type=style&index=0&id=01c0ddb2&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=style&index=0&id=01c0ddb2&scoped=true&lang=css");
-
-            
-
-var options = {};
-
-options.insert = "head";
-options.singleton = false;
-
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlertsChart_vue_vue_type_style_index_0_id_01c0ddb2_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"], options);
-
-
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlertsChart_vue_vue_type_style_index_0_id_01c0ddb2_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=style&index=1&id=01c0ddb2&lang=css":
-/*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=style&index=1&id=01c0ddb2&lang=css ***!
-  \*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlertsChart_vue_vue_type_style_index_1_id_01c0ddb2_lang_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./AlertsChart.vue?vue&type=style&index=1&id=01c0ddb2&lang=css */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=style&index=1&id=01c0ddb2&lang=css");
-
-            
-
-var options = {};
-
-options.insert = "head";
-options.singleton = false;
-
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlertsChart_vue_vue_type_style_index_1_id_01c0ddb2_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"], options);
-
-
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlertsChart_vue_vue_type_style_index_1_id_01c0ddb2_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=style&index=0&id=fbbd2c00&scoped=true&lang=css":
-/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=style&index=0&id=fbbd2c00&scoped=true&lang=css ***!
-  \************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_EquipmentChart_vue_vue_type_style_index_0_id_fbbd2c00_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./EquipmentChart.vue?vue&type=style&index=0&id=fbbd2c00&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=style&index=0&id=fbbd2c00&scoped=true&lang=css");
-
-            
-
-var options = {};
-
-options.insert = "head";
-options.singleton = false;
-
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_EquipmentChart_vue_vue_type_style_index_0_id_fbbd2c00_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"], options);
-
-
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_EquipmentChart_vue_vue_type_style_index_0_id_fbbd2c00_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=style&index=1&id=fbbd2c00&lang=css":
-/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=style&index=1&id=fbbd2c00&lang=css ***!
-  \************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_EquipmentChart_vue_vue_type_style_index_1_id_fbbd2c00_lang_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./EquipmentChart.vue?vue&type=style&index=1&id=fbbd2c00&lang=css */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=style&index=1&id=fbbd2c00&lang=css");
-
-            
-
-var options = {};
-
-options.insert = "head";
-options.singleton = false;
-
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_EquipmentChart_vue_vue_type_style_index_1_id_fbbd2c00_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"], options);
-
-
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_EquipmentChart_vue_vue_type_style_index_1_id_fbbd2c00_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=style&index=0&id=e66d0222&scoped=true&lang=css":
-/*!***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=style&index=0&id=e66d0222&scoped=true&lang=css ***!
-  \***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_ServiceLevelChart_vue_vue_type_style_index_0_id_e66d0222_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./ServiceLevelChart.vue?vue&type=style&index=0&id=e66d0222&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=style&index=0&id=e66d0222&scoped=true&lang=css");
-
-            
-
-var options = {};
-
-options.insert = "head";
-options.singleton = false;
-
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_ServiceLevelChart_vue_vue_type_style_index_0_id_e66d0222_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"], options);
-
-
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_ServiceLevelChart_vue_vue_type_style_index_0_id_e66d0222_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=style&index=1&id=e66d0222&lang=css":
-/*!***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=style&index=1&id=e66d0222&lang=css ***!
-  \***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_ServiceLevelChart_vue_vue_type_style_index_1_id_e66d0222_lang_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./ServiceLevelChart.vue?vue&type=style&index=1&id=e66d0222&lang=css */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=style&index=1&id=e66d0222&lang=css");
-
-            
-
-var options = {};
-
-options.insert = "head";
-options.singleton = false;
-
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_ServiceLevelChart_vue_vue_type_style_index_1_id_e66d0222_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"], options);
-
-
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_ServiceLevelChart_vue_vue_type_style_index_1_id_e66d0222_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_Charts_vue_vue_type_style_index_1_id_0f9ce3ef_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
 
 /***/ }),
 
@@ -44179,16 +42414,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Charts_vue_vue_type_template_id_0f9ce3ef_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Charts.vue?vue&type=template&id=0f9ce3ef&scoped=true */ "./resources/vue/dashboard-graphics/Charts.vue?vue&type=template&id=0f9ce3ef&scoped=true");
 /* harmony import */ var _Charts_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Charts.vue?vue&type=script&lang=js */ "./resources/vue/dashboard-graphics/Charts.vue?vue&type=script&lang=js");
 /* harmony import */ var _Charts_vue_vue_type_style_index_0_id_0f9ce3ef_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Charts.vue?vue&type=style&index=0&id=0f9ce3ef&scoped=true&lang=css */ "./resources/vue/dashboard-graphics/Charts.vue?vue&type=style&index=0&id=0f9ce3ef&scoped=true&lang=css");
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* harmony import */ var _Charts_vue_vue_type_style_index_1_id_0f9ce3ef_lang_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Charts.vue?vue&type=style&index=1&id=0f9ce3ef&lang=css */ "./resources/vue/dashboard-graphics/Charts.vue?vue&type=style&index=1&id=0f9ce3ef&lang=css");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
 ;
 
 
+
 /* normalize component */
 
-var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_4__["default"])(
   _Charts_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"],
   _Charts_vue_vue_type_template_id_0f9ce3ef_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render,
   _Charts_vue_vue_type_template_id_0f9ce3ef_scoped_true__WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
@@ -44202,178 +42439,6 @@ var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__
 /* hot reload */
 if (false) { var api; }
 component.options.__file = "resources/vue/dashboard-graphics/Charts.vue"
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);
-
-/***/ }),
-
-/***/ "./resources/vue/dashboard-graphics/charts/AlarmChart.vue":
-/*!****************************************************************!*\
-  !*** ./resources/vue/dashboard-graphics/charts/AlarmChart.vue ***!
-  \****************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _AlarmChart_vue_vue_type_template_id_4a6706c6_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AlarmChart.vue?vue&type=template&id=4a6706c6&scoped=true */ "./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=template&id=4a6706c6&scoped=true");
-/* harmony import */ var _AlarmChart_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AlarmChart.vue?vue&type=script&lang=js */ "./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=script&lang=js");
-/* harmony import */ var _AlarmChart_vue_vue_type_style_index_0_id_4a6706c6_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./AlarmChart.vue?vue&type=style&index=0&id=4a6706c6&scoped=true&lang=css */ "./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=style&index=0&id=4a6706c6&scoped=true&lang=css");
-/* harmony import */ var _AlarmChart_vue_vue_type_style_index_1_id_4a6706c6_lang_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./AlarmChart.vue?vue&type=style&index=1&id=4a6706c6&lang=css */ "./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=style&index=1&id=4a6706c6&lang=css");
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
-
-
-
-;
-
-
-
-/* normalize component */
-
-var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_4__["default"])(
-  _AlarmChart_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"],
-  _AlarmChart_vue_vue_type_template_id_4a6706c6_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render,
-  _AlarmChart_vue_vue_type_template_id_4a6706c6_scoped_true__WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
-  false,
-  null,
-  "4a6706c6",
-  null
-  
-)
-
-/* hot reload */
-if (false) { var api; }
-component.options.__file = "resources/vue/dashboard-graphics/charts/AlarmChart.vue"
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);
-
-/***/ }),
-
-/***/ "./resources/vue/dashboard-graphics/charts/AlertsChart.vue":
-/*!*****************************************************************!*\
-  !*** ./resources/vue/dashboard-graphics/charts/AlertsChart.vue ***!
-  \*****************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _AlertsChart_vue_vue_type_template_id_01c0ddb2_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AlertsChart.vue?vue&type=template&id=01c0ddb2&scoped=true */ "./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=template&id=01c0ddb2&scoped=true");
-/* harmony import */ var _AlertsChart_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AlertsChart.vue?vue&type=script&lang=js */ "./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=script&lang=js");
-/* harmony import */ var _AlertsChart_vue_vue_type_style_index_0_id_01c0ddb2_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./AlertsChart.vue?vue&type=style&index=0&id=01c0ddb2&scoped=true&lang=css */ "./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=style&index=0&id=01c0ddb2&scoped=true&lang=css");
-/* harmony import */ var _AlertsChart_vue_vue_type_style_index_1_id_01c0ddb2_lang_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./AlertsChart.vue?vue&type=style&index=1&id=01c0ddb2&lang=css */ "./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=style&index=1&id=01c0ddb2&lang=css");
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
-
-
-
-;
-
-
-
-/* normalize component */
-
-var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_4__["default"])(
-  _AlertsChart_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"],
-  _AlertsChart_vue_vue_type_template_id_01c0ddb2_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render,
-  _AlertsChart_vue_vue_type_template_id_01c0ddb2_scoped_true__WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
-  false,
-  null,
-  "01c0ddb2",
-  null
-  
-)
-
-/* hot reload */
-if (false) { var api; }
-component.options.__file = "resources/vue/dashboard-graphics/charts/AlertsChart.vue"
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);
-
-/***/ }),
-
-/***/ "./resources/vue/dashboard-graphics/charts/EquipmentChart.vue":
-/*!********************************************************************!*\
-  !*** ./resources/vue/dashboard-graphics/charts/EquipmentChart.vue ***!
-  \********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _EquipmentChart_vue_vue_type_template_id_fbbd2c00_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EquipmentChart.vue?vue&type=template&id=fbbd2c00&scoped=true */ "./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=template&id=fbbd2c00&scoped=true");
-/* harmony import */ var _EquipmentChart_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EquipmentChart.vue?vue&type=script&lang=js */ "./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=script&lang=js");
-/* harmony import */ var _EquipmentChart_vue_vue_type_style_index_0_id_fbbd2c00_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EquipmentChart.vue?vue&type=style&index=0&id=fbbd2c00&scoped=true&lang=css */ "./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=style&index=0&id=fbbd2c00&scoped=true&lang=css");
-/* harmony import */ var _EquipmentChart_vue_vue_type_style_index_1_id_fbbd2c00_lang_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./EquipmentChart.vue?vue&type=style&index=1&id=fbbd2c00&lang=css */ "./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=style&index=1&id=fbbd2c00&lang=css");
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
-
-
-
-;
-
-
-
-/* normalize component */
-
-var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_4__["default"])(
-  _EquipmentChart_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"],
-  _EquipmentChart_vue_vue_type_template_id_fbbd2c00_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render,
-  _EquipmentChart_vue_vue_type_template_id_fbbd2c00_scoped_true__WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
-  false,
-  null,
-  "fbbd2c00",
-  null
-  
-)
-
-/* hot reload */
-if (false) { var api; }
-component.options.__file = "resources/vue/dashboard-graphics/charts/EquipmentChart.vue"
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);
-
-/***/ }),
-
-/***/ "./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue":
-/*!***********************************************************************!*\
-  !*** ./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue ***!
-  \***********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _ServiceLevelChart_vue_vue_type_template_id_e66d0222_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ServiceLevelChart.vue?vue&type=template&id=e66d0222&scoped=true */ "./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=template&id=e66d0222&scoped=true");
-/* harmony import */ var _ServiceLevelChart_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ServiceLevelChart.vue?vue&type=script&lang=js */ "./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=script&lang=js");
-/* harmony import */ var _ServiceLevelChart_vue_vue_type_style_index_0_id_e66d0222_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ServiceLevelChart.vue?vue&type=style&index=0&id=e66d0222&scoped=true&lang=css */ "./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=style&index=0&id=e66d0222&scoped=true&lang=css");
-/* harmony import */ var _ServiceLevelChart_vue_vue_type_style_index_1_id_e66d0222_lang_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ServiceLevelChart.vue?vue&type=style&index=1&id=e66d0222&lang=css */ "./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=style&index=1&id=e66d0222&lang=css");
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
-
-
-
-;
-
-
-
-/* normalize component */
-
-var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_4__["default"])(
-  _ServiceLevelChart_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"],
-  _ServiceLevelChart_vue_vue_type_template_id_e66d0222_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render,
-  _ServiceLevelChart_vue_vue_type_template_id_e66d0222_scoped_true__WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
-  false,
-  null,
-  "e66d0222",
-  null
-  
-)
-
-/* hot reload */
-if (false) { var api; }
-component.options.__file = "resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue"
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);
 
 /***/ }),
@@ -44394,70 +42459,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=script&lang=js":
-/*!****************************************************************************************!*\
-  !*** ./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=script&lang=js ***!
-  \****************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_AlarmChart_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./AlarmChart.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=script&lang=js");
- /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_AlarmChart_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"]); 
-
-/***/ }),
-
-/***/ "./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=script&lang=js":
-/*!*****************************************************************************************!*\
-  !*** ./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=script&lang=js ***!
-  \*****************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_AlertsChart_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./AlertsChart.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=script&lang=js");
- /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_AlertsChart_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"]); 
-
-/***/ }),
-
-/***/ "./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=script&lang=js":
-/*!********************************************************************************************!*\
-  !*** ./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=script&lang=js ***!
-  \********************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_EquipmentChart_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./EquipmentChart.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=script&lang=js");
- /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_EquipmentChart_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"]); 
-
-/***/ }),
-
-/***/ "./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=script&lang=js":
-/*!***********************************************************************************************!*\
-  !*** ./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=script&lang=js ***!
-  \***********************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ServiceLevelChart_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./ServiceLevelChart.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=script&lang=js");
- /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ServiceLevelChart_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"]); 
-
-/***/ }),
-
 /***/ "./resources/vue/dashboard-graphics/Charts.vue?vue&type=template&id=0f9ce3ef&scoped=true":
 /*!***********************************************************************************************!*\
   !*** ./resources/vue/dashboard-graphics/Charts.vue?vue&type=template&id=0f9ce3ef&scoped=true ***!
@@ -44475,74 +42476,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=template&id=4a6706c6&scoped=true":
-/*!**********************************************************************************************************!*\
-  !*** ./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=template&id=4a6706c6&scoped=true ***!
-  \**********************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "render": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlarmChart_vue_vue_type_template_id_4a6706c6_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render),
-/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlarmChart_vue_vue_type_template_id_4a6706c6_scoped_true__WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
-/* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlarmChart_vue_vue_type_template_id_4a6706c6_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./AlarmChart.vue?vue&type=template&id=4a6706c6&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=template&id=4a6706c6&scoped=true");
-
-
-/***/ }),
-
-/***/ "./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=template&id=01c0ddb2&scoped=true":
-/*!***********************************************************************************************************!*\
-  !*** ./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=template&id=01c0ddb2&scoped=true ***!
-  \***********************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "render": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlertsChart_vue_vue_type_template_id_01c0ddb2_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render),
-/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlertsChart_vue_vue_type_template_id_01c0ddb2_scoped_true__WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
-/* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlertsChart_vue_vue_type_template_id_01c0ddb2_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./AlertsChart.vue?vue&type=template&id=01c0ddb2&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=template&id=01c0ddb2&scoped=true");
-
-
-/***/ }),
-
-/***/ "./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=template&id=fbbd2c00&scoped=true":
-/*!**************************************************************************************************************!*\
-  !*** ./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=template&id=fbbd2c00&scoped=true ***!
-  \**************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "render": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_EquipmentChart_vue_vue_type_template_id_fbbd2c00_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render),
-/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_EquipmentChart_vue_vue_type_template_id_fbbd2c00_scoped_true__WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
-/* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_EquipmentChart_vue_vue_type_template_id_fbbd2c00_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./EquipmentChart.vue?vue&type=template&id=fbbd2c00&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=template&id=fbbd2c00&scoped=true");
-
-
-/***/ }),
-
-/***/ "./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=template&id=e66d0222&scoped=true":
-/*!*****************************************************************************************************************!*\
-  !*** ./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=template&id=e66d0222&scoped=true ***!
-  \*****************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "render": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_ServiceLevelChart_vue_vue_type_template_id_e66d0222_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render),
-/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_ServiceLevelChart_vue_vue_type_template_id_e66d0222_scoped_true__WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
-/* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_ServiceLevelChart_vue_vue_type_template_id_e66d0222_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./ServiceLevelChart.vue?vue&type=template&id=e66d0222&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=template&id=e66d0222&scoped=true");
-
-
-/***/ }),
-
 /***/ "./resources/vue/dashboard-graphics/Charts.vue?vue&type=style&index=0&id=0f9ce3ef&scoped=true&lang=css":
 /*!*************************************************************************************************************!*\
   !*** ./resources/vue/dashboard-graphics/Charts.vue?vue&type=style&index=0&id=0f9ce3ef&scoped=true&lang=css ***!
@@ -44556,106 +42489,15 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=style&index=0&id=4a6706c6&scoped=true&lang=css":
-/*!************************************************************************************************************************!*\
-  !*** ./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=style&index=0&id=4a6706c6&scoped=true&lang=css ***!
-  \************************************************************************************************************************/
+/***/ "./resources/vue/dashboard-graphics/Charts.vue?vue&type=style&index=1&id=0f9ce3ef&lang=css":
+/*!*************************************************************************************************!*\
+  !*** ./resources/vue/dashboard-graphics/Charts.vue?vue&type=style&index=1&id=0f9ce3ef&lang=css ***!
+  \*************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlarmChart_vue_vue_type_style_index_0_id_4a6706c6_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./AlarmChart.vue?vue&type=style&index=0&id=4a6706c6&scoped=true&lang=css */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=style&index=0&id=4a6706c6&scoped=true&lang=css");
-
-
-/***/ }),
-
-/***/ "./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=style&index=1&id=4a6706c6&lang=css":
-/*!************************************************************************************************************!*\
-  !*** ./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=style&index=1&id=4a6706c6&lang=css ***!
-  \************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlarmChart_vue_vue_type_style_index_1_id_4a6706c6_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./AlarmChart.vue?vue&type=style&index=1&id=4a6706c6&lang=css */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlarmChart.vue?vue&type=style&index=1&id=4a6706c6&lang=css");
-
-
-/***/ }),
-
-/***/ "./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=style&index=0&id=01c0ddb2&scoped=true&lang=css":
-/*!*************************************************************************************************************************!*\
-  !*** ./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=style&index=0&id=01c0ddb2&scoped=true&lang=css ***!
-  \*************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlertsChart_vue_vue_type_style_index_0_id_01c0ddb2_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./AlertsChart.vue?vue&type=style&index=0&id=01c0ddb2&scoped=true&lang=css */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=style&index=0&id=01c0ddb2&scoped=true&lang=css");
-
-
-/***/ }),
-
-/***/ "./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=style&index=1&id=01c0ddb2&lang=css":
-/*!*************************************************************************************************************!*\
-  !*** ./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=style&index=1&id=01c0ddb2&lang=css ***!
-  \*************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlertsChart_vue_vue_type_style_index_1_id_01c0ddb2_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./AlertsChart.vue?vue&type=style&index=1&id=01c0ddb2&lang=css */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/AlertsChart.vue?vue&type=style&index=1&id=01c0ddb2&lang=css");
-
-
-/***/ }),
-
-/***/ "./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=style&index=0&id=fbbd2c00&scoped=true&lang=css":
-/*!****************************************************************************************************************************!*\
-  !*** ./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=style&index=0&id=fbbd2c00&scoped=true&lang=css ***!
-  \****************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_EquipmentChart_vue_vue_type_style_index_0_id_fbbd2c00_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./EquipmentChart.vue?vue&type=style&index=0&id=fbbd2c00&scoped=true&lang=css */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=style&index=0&id=fbbd2c00&scoped=true&lang=css");
-
-
-/***/ }),
-
-/***/ "./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=style&index=1&id=fbbd2c00&lang=css":
-/*!****************************************************************************************************************!*\
-  !*** ./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=style&index=1&id=fbbd2c00&lang=css ***!
-  \****************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_EquipmentChart_vue_vue_type_style_index_1_id_fbbd2c00_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./EquipmentChart.vue?vue&type=style&index=1&id=fbbd2c00&lang=css */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/EquipmentChart.vue?vue&type=style&index=1&id=fbbd2c00&lang=css");
-
-
-/***/ }),
-
-/***/ "./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=style&index=0&id=e66d0222&scoped=true&lang=css":
-/*!*******************************************************************************************************************************!*\
-  !*** ./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=style&index=0&id=e66d0222&scoped=true&lang=css ***!
-  \*******************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_ServiceLevelChart_vue_vue_type_style_index_0_id_e66d0222_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./ServiceLevelChart.vue?vue&type=style&index=0&id=e66d0222&scoped=true&lang=css */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=style&index=0&id=e66d0222&scoped=true&lang=css");
-
-
-/***/ }),
-
-/***/ "./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=style&index=1&id=e66d0222&lang=css":
-/*!*******************************************************************************************************************!*\
-  !*** ./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=style&index=1&id=e66d0222&lang=css ***!
-  \*******************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_ServiceLevelChart_vue_vue_type_style_index_1_id_e66d0222_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./ServiceLevelChart.vue?vue&type=style&index=1&id=e66d0222&lang=css */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/charts/ServiceLevelChart.vue?vue&type=style&index=1&id=e66d0222&lang=css");
+/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_Charts_vue_vue_type_style_index_1_id_0f9ce3ef_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader/dist/cjs.js!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./Charts.vue?vue&type=style&index=1&id=0f9ce3ef&lang=css */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/vue/dashboard-graphics/Charts.vue?vue&type=style&index=1&id=0f9ce3ef&lang=css");
 
 
 /***/ }),

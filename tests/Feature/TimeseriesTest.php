@@ -33,6 +33,41 @@ class TimeseriesTest extends TestCase
             ->assertJsonCount(24, 'data');
     }
 
+    public function test_sparse_snapshots_are_forward_filled_for_missing_hours(): void
+    {
+        \DB::table('timeseries')->insert([
+            [
+                'ts_account_id' => 1,
+                'ts_timestamp' => '2026-01-24 00:00:00',
+                'ts_data' => json_encode(['devices' => ['enabled' => 10, 'disabled' => 90]], JSON_THROW_ON_ERROR),
+            ],
+            [
+                'ts_account_id' => 1,
+                'ts_timestamp' => '2026-01-24 03:00:00',
+                'ts_data' => json_encode([
+                    '_delta' => true,
+                    'devices' => ['enabled' => 20],
+                ], JSON_THROW_ON_ERROR),
+            ],
+        ]);
+
+        $this->getJson('/api/timeseries?chart=EquipmentChart&start=2026-01-24T00:00:00Z&end=2026-01-24T05:00:00Z')
+            ->assertOk()
+            ->assertJsonPath('meta.points', 6)
+            ->assertJsonPath('data.0.series.enabled', 10)
+            ->assertJsonPath('data.2.series.enabled', 10)
+            ->assertJsonPath('data.3.series.enabled', 20)
+            ->assertJsonPath('data.3.series.disabled', 90)
+            ->assertJsonPath('data.5.series.enabled', 20)
+            ->assertJsonPath('data.5.series.disabled', 90);
+
+        $this->getJson('/api/timeseries?chart=EquipmentChart&start=2026-01-24T04:00:00Z&end=2026-01-24T05:00:00Z')
+            ->assertOk()
+            ->assertJsonPath('meta.points', 2)
+            ->assertJsonPath('data.0.series.enabled', 20)
+            ->assertJsonPath('data.0.series.disabled', 90);
+    }
+
     public function test_valid_request_returns_16_points_for_4_days_inclusive(): void
     {
         $this->seedHourlyChartData('EquipmentChart', '2026-01-24T00:00:00Z', '2026-01-27T23:00:00Z');

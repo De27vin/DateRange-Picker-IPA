@@ -9,7 +9,7 @@ use Illuminate\Console\Command;
 class CollectTimeseriesSnapshots extends Command
 {
     protected $signature = 'timeseries:collect {--ts= : UTC timestamp to collect for, rounded down to the hour}';
-    protected $description = 'Collect one hourly timeseries snapshot per account from live database data';
+    protected $description = 'Collect changed hourly timeseries snapshots from live database data';
 
     public function __construct(
         private readonly TimeseriesSnapshotCollector $collector,
@@ -23,7 +23,7 @@ class CollectTimeseriesSnapshots extends Command
         $written = $this->collector->collectHourlySnapshots($tsUtc);
 
         $this->info(sprintf(
-            'Collected %d account snapshots for %s.',
+            'Stored %d changed account snapshots for %s.',
             $written,
             $tsUtc->toIso8601String()
         ));

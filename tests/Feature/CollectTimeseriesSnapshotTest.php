@@ -66,6 +66,70 @@ class CollectTimeseriesSnapshotTest extends TestCase
         $this->assertSame(1, TimeseriesSnapshot::query()->count());
     }
 
+    public function test_it_skips_the_next_hour_when_values_are_unchanged(): void
+    {
+        $collector = $this->app->make(TimeseriesSnapshotCollector::class);
+        $tsUtc = CarbonImmutable::parse('2026-04-07 10:00:00', 'UTC');
+
+        $this->assertSame(1, $collector->collectHourlySnapshots($tsUtc));
+        $this->assertSame(0, $collector->collectHourlySnapshots($tsUtc->addHour()));
+        $this->assertSame(1, TimeseriesSnapshot::query()->count());
+    }
+
+    public function test_it_stores_only_the_value_that_changed(): void
+    {
+        $collector = $this->app->make(TimeseriesSnapshotCollector::class);
+        $tsUtc = CarbonImmutable::parse('2026-04-07 10:00:00', 'UTC');
+
+        $collector->collectHourlySnapshots($tsUtc);
+        \DB::table('alert_types')->insert(['at_id' => 5, 'at_type' => 'BATLOW']);
+        \DB::table('device_alerts')->insert([
+            'da_id' => 5,
+            'da_device_id' => 1001,
+            'da_at_id' => 5,
+        ]);
+
+        $this->assertSame(1, $collector->collectHourlySnapshots($tsUtc->addHour()));
+        $this->assertSame(2, TimeseriesSnapshot::query()->count());
+        $this->assertSame(
+            [
+                '_delta' => true,
+                'alerts' => [
+                    'alert_type' => ['BATLOW' => 1],
+                ],
+            ],
+            TimeseriesSnapshot::query()->orderByDesc('ts_timestamp')->firstOrFail()->ts_data
+        );
+    }
+
+    public function test_it_stores_null_when_a_previous_value_disappears(): void
+    {
+        $collector = $this->app->make(TimeseriesSnapshotCollector::class);
+        $tsUtc = CarbonImmutable::parse('2026-04-07 10:00:00', 'UTC');
+
+        $collector->collectHourlySnapshots($tsUtc);
+        \DB::table('alert_types')->insert(['at_id' => 5, 'at_type' => 'BATLOW']);
+        \DB::table('device_alerts')->insert([
+            'da_id' => 5,
+            'da_device_id' => 1001,
+            'da_at_id' => 5,
+        ]);
+        $collector->collectHourlySnapshots($tsUtc->addHour());
+
+        \DB::table('device_alerts')->where('da_id', 5)->delete();
+        $collector->collectHourlySnapshots($tsUtc->addHours(2));
+
+        $this->assertSame(
+            [
+                '_delta' => true,
+                'alerts' => [
+                    'alert_type' => ['BATLOW' => null],
+                ],
+            ],
+            TimeseriesSnapshot::query()->orderByDesc('ts_timestamp')->firstOrFail()->ts_data
+        );
+    }
+
     private function createSchema(): void
     {
         Schema::create('accounts', function (Blueprint $table): void {

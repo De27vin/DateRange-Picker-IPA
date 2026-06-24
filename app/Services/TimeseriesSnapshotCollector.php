@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Log;
 
 class TimeseriesSnapshotCollector
 {
+    private const DELTA_MARKER = '_delta';
+
     public function collectHourlySnapshots(?CarbonImmutable $tsUtc = null): int
     {
         $snapshotTs = ($tsUtc ?? CarbonImmutable::now('UTC'))->utc()->startOfHour();
@@ -17,7 +19,12 @@ class TimeseriesSnapshotCollector
 
         foreach (Account::query()->orderBy('account_id')->cursor() as $account) {
             try {
-                $rows[] = $this->buildSnapshotRow($account, $snapshotTs);
+                $row = $this->buildSnapshotRow($account, $snapshotTs);
+                $row = $this->toSparseSnapshotRow($row);
+
+                if ($row !== null) {
+                    $rows[] = $row;
+                }
             } catch (\Throwable $e) {
                 Log::error('Timeseries snapshot collection failed.', [
                     'account_id' => $account->account_id,
@@ -38,6 +45,145 @@ class TimeseriesSnapshotCollector
         );
 
         return count($rows);
+    }
+
+    /**
+     * @param array{ts_account_id:int, ts_timestamp:string, ts_data:string} $row
+     * @return array{ts_account_id:int, ts_timestamp:string, ts_data:string}|null
+     */
+    private function toSparseSnapshotRow(array $row): ?array
+    {
+        $current = $this->decodeSnapshot($row['ts_data']);
+        if ($current === null) {
+            return $row;
+        }
+
+        $previous = $this->loadSnapshotStateBefore($row['ts_account_id'], $row['ts_timestamp']);
+        if ($previous === null) {
+            return $row;
+        }
+
+        $delta = $this->snapshotDiff($current, $previous);
+        if ($delta === []) {
+            DB::table('timeseries')
+                ->where('ts_account_id', $row['ts_account_id'])
+                ->where('ts_timestamp', $row['ts_timestamp'])
+                ->delete();
+
+            return null;
+        }
+
+        $row['ts_data'] = json_encode(
+            [self::DELTA_MARKER => true] + $delta,
+            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+        );
+
+        return $row;
+    }
+
+    private function loadSnapshotStateBefore(int $accountId, string $timestamp): ?array
+    {
+        $chain = [];
+        $rows = DB::table('timeseries')
+            ->where('ts_account_id', $accountId)
+            ->where('ts_timestamp', '<', $timestamp)
+            ->orderByDesc('ts_timestamp')
+            ->cursor();
+
+        foreach ($rows as $row) {
+            $stored = $this->decodeSnapshot($row->ts_data);
+            if ($stored === null) {
+                continue;
+            }
+
+            $chain[] = $stored;
+            if (!$this->isDelta($stored)) {
+                break;
+            }
+        }
+
+        $state = null;
+        foreach (array_reverse($chain) as $stored) {
+            $state = $this->applyStoredSnapshot($state, $stored);
+        }
+
+        return $state;
+    }
+
+    private function decodeSnapshot(mixed $snapshot): ?array
+    {
+        if (is_string($snapshot)) {
+            $snapshot = json_decode($snapshot, true);
+        }
+
+        if (!is_array($snapshot)) {
+            return null;
+        }
+
+        return $snapshot;
+    }
+
+    private function isDelta(array $snapshot): bool
+    {
+        return ($snapshot[self::DELTA_MARKER] ?? false) === true;
+    }
+
+    private function applyStoredSnapshot(?array $state, array $stored): array
+    {
+        if (!$this->isDelta($stored)) {
+            return $stored;
+        }
+
+        unset($stored[self::DELTA_MARKER]);
+
+        return $this->mergeDelta($state ?? [], $stored);
+    }
+
+    private function mergeDelta(array $state, array $delta): array
+    {
+        foreach ($delta as $key => $value) {
+            if ($value === null) {
+                unset($state[$key]);
+            } elseif (is_array($value) && is_array($state[$key] ?? null)) {
+                $state[$key] = $this->mergeDelta($state[$key], $value);
+            } else {
+                $state[$key] = $value;
+            }
+        }
+
+        return $state;
+    }
+
+    private function snapshotDiff(array $current, array $previous): array
+    {
+        $delta = [];
+        $keys = array_unique(array_merge(array_keys($current), array_keys($previous)));
+
+        foreach ($keys as $key) {
+            $hasCurrent = array_key_exists($key, $current);
+            $hasPrevious = array_key_exists($key, $previous);
+
+            if (!$hasCurrent) {
+                $delta[$key] = null;
+                continue;
+            }
+
+            if (!$hasPrevious) {
+                $delta[$key] = $current[$key];
+                continue;
+            }
+
+            if (is_array($current[$key]) && is_array($previous[$key])) {
+                $nested = $this->snapshotDiff($current[$key], $previous[$key]);
+                if ($nested !== []) {
+                    $delta[$key] = $nested;
+                }
+            } elseif ($current[$key] !== $previous[$key]) {
+                $delta[$key] = $current[$key];
+            }
+        }
+
+        return $delta;
     }
 
     /**

@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\DB;
 
 class DatabaseTimeseriesLoader
 {
+    private const DELTA_MARKER = '_delta';
+
     private const ALERT_TYPE_MAP = [
         'active_alarm' => 'ALARM',
         'battery_malfunction' => 'BATDEF',
@@ -87,8 +89,9 @@ class DatabaseTimeseriesLoader
     public function load(string $chart, CarbonImmutable $startUtc, CarbonImmutable $endUtc): array
     {
         $accountId = (int) session('account.id');
+        $snapshotData = $this->loadSnapshotStateBefore($accountId, $startUtc);
 
-        return DB::table('timeseries')
+        $changes = DB::table('timeseries')
             ->where('ts_account_id', $accountId)
             ->whereBetween('ts_timestamp', [
                 $startUtc->toDateTimeString(),
@@ -96,19 +99,101 @@ class DatabaseTimeseriesLoader
             ])
             ->orderBy('ts_timestamp')
             ->get(['ts_timestamp', 'ts_data'])
-            ->map(function (object $snapshot) use ($chart): array {
-                $data = $snapshot->ts_data;
-                if (is_string($data)) {
-                    $decoded = json_decode($data, true);
-                    $data = is_array($decoded) ? $decoded : [];
-                }
+            ->keyBy(fn (object $snapshot): string => CarbonImmutable::parse(
+                (string) $snapshot->ts_timestamp,
+                'UTC'
+            )->utc()->startOfHour()->toDateTimeString());
 
-                return [
-                    'ts' => CarbonImmutable::parse((string) $snapshot->ts_timestamp, 'UTC')->utc()->toIso8601String(),
-                    'series' => $this->extractSeries($chart, is_array($data) ? $data : []),
-                ];
-            })
-            ->all();
+        $points = [];
+        for ($ts = $startUtc->startOfHour(); $ts->lte($endUtc); $ts = $ts->addHour()) {
+            $change = $changes->get($ts->toDateTimeString());
+            if ($change !== null) {
+                $decoded = $this->decodeSnapshotData($change->ts_data);
+                if ($decoded !== null) {
+                    $snapshotData = $this->applyStoredSnapshot($snapshotData, $decoded);
+                }
+            }
+
+            if ($snapshotData === null) {
+                continue;
+            }
+
+            $points[] = [
+                'ts' => $ts->toIso8601String(),
+                'series' => $this->extractSeries($chart, $snapshotData),
+            ];
+        }
+
+        return $points;
+    }
+
+    private function loadSnapshotStateBefore(int $accountId, CarbonImmutable $startUtc): ?array
+    {
+        $chain = [];
+        $rows = DB::table('timeseries')
+            ->where('ts_account_id', $accountId)
+            ->where('ts_timestamp', '<', $startUtc->toDateTimeString())
+            ->orderByDesc('ts_timestamp')
+            ->cursor();
+
+        foreach ($rows as $row) {
+            $stored = $this->decodeSnapshotData($row->ts_data);
+            if ($stored === null) {
+                continue;
+            }
+
+            $chain[] = $stored;
+            if (!$this->isDelta($stored)) {
+                break;
+            }
+        }
+
+        $state = null;
+        foreach (array_reverse($chain) as $stored) {
+            $state = $this->applyStoredSnapshot($state, $stored);
+        }
+
+        return $state;
+    }
+
+    private function decodeSnapshotData(mixed $data): ?array
+    {
+        if (is_string($data)) {
+            $data = json_decode($data, true);
+        }
+
+        return is_array($data) ? $data : null;
+    }
+
+    private function isDelta(array $snapshot): bool
+    {
+        return ($snapshot[self::DELTA_MARKER] ?? false) === true;
+    }
+
+    private function applyStoredSnapshot(?array $state, array $stored): array
+    {
+        if (!$this->isDelta($stored)) {
+            return $stored;
+        }
+
+        unset($stored[self::DELTA_MARKER]);
+
+        return $this->mergeDelta($state ?? [], $stored);
+    }
+
+    private function mergeDelta(array $state, array $delta): array
+    {
+        foreach ($delta as $key => $value) {
+            if ($value === null) {
+                unset($state[$key]);
+            } elseif (is_array($value) && is_array($state[$key] ?? null)) {
+                $state[$key] = $this->mergeDelta($state[$key], $value);
+            } else {
+                $state[$key] = $value;
+            }
+        }
+
+        return $state;
     }
 
     private function resolutionForRange(CarbonImmutable $startUtc, CarbonImmutable $endUtc): string
