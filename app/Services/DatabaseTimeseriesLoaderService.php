@@ -5,7 +5,7 @@ namespace App\Services;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
 
-class DatabaseTimeseriesLoader
+class DatabaseTimeseriesLoaderService
 {
     private const DELTA_MARKER = '_delta';
 

@@ -7,7 +7,7 @@ use Carbon\CarbonImmutable;
 class DashboardWidgetSeriesService
 {
     public function __construct(
-        private readonly DatabaseTimeseriesLoader $loader,
+        private readonly DatabaseTimeseriesLoaderService $loader,
         private readonly TimeseriesAggregatorService $aggregator,
         private readonly TimeseriesSnapshotChartMapper $chartMapper,
         private readonly DeviceAlertsService $alertsService,
