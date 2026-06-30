@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Services\DatabaseTimeseriesLoaderService;
+use App\Services\DatabaseTimeseriesLoader;
 use RuntimeException;
 use Tests\TestCase;
 
@@ -38,14 +38,14 @@ class ApiExceptionHandlingTest extends TestCase
     {
         $requestId = (string) \Illuminate\Support\Str::uuid();
 
-        $failingLoader = new class extends DatabaseTimeseriesLoaderService {
+        $failingLoader = new class extends DatabaseTimeseriesLoader {
             public function load(string $chart, \Carbon\CarbonImmutable $startUtc, \Carbon\CarbonImmutable $endUtc): array
             {
                 throw new RuntimeException('forced failure');
             }
         };
 
-        $this->app->instance(DatabaseTimeseriesLoaderService::class, $failingLoader);
+        $this->app->instance(DatabaseTimeseriesLoader::class, $failingLoader);
 
         $response = $this->getJson(
             '/api/timeseries?chart=EquipmentChart&start=2026-01-24T00:00:00Z&end=2026-01-24T23:00:00Z',

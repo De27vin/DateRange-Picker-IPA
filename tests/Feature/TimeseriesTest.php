@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Services\DatabaseTimeseriesLoaderService;
+use App\Services\DatabaseTimeseriesLoader;
 use Carbon\CarbonImmutable;
 use Tests\TestCase;
 
@@ -321,7 +321,7 @@ class TimeseriesTest extends TestCase
 
     public function test_it_uses_container_bound_loader_and_returns_its_payload(): void
     {
-        $fake = new class extends DatabaseTimeseriesLoaderService {
+        $fake = new class extends DatabaseTimeseriesLoader {
             public int $calls = 0;
             public ?string $chart = null;
             public ?CarbonImmutable $startUtc = null;
@@ -341,7 +341,7 @@ class TimeseriesTest extends TestCase
             }
         };
 
-        $this->app->instance(DatabaseTimeseriesLoaderService::class, $fake);
+        $this->app->instance(DatabaseTimeseriesLoader::class, $fake);
 
         $res = $this->getJson('/api/timeseries?chart=EquipmentChart&start=2026-01-24&end=2026-01-24');
 
@@ -364,7 +364,7 @@ class TimeseriesTest extends TestCase
 
     public function test_it_passes_hour_normalized_utc_range_to_loader(): void
     {
-        $fake = new class extends DatabaseTimeseriesLoaderService {
+        $fake = new class extends DatabaseTimeseriesLoader {
             public ?CarbonImmutable $startUtc = null;
             public ?CarbonImmutable $endUtc = null;
 
@@ -377,7 +377,7 @@ class TimeseriesTest extends TestCase
             }
         };
 
-        $this->app->instance(DatabaseTimeseriesLoaderService::class, $fake);
+        $this->app->instance(DatabaseTimeseriesLoader::class, $fake);
 
         $res = $this->getJson('/api/timeseries?chart=AlarmChart&start=2026-02-01&end=2026-02-03');
 
@@ -394,7 +394,7 @@ class TimeseriesTest extends TestCase
 
     public function test_validation_failure_prevents_loader_execution(): void
     {
-        $fake = new class extends DatabaseTimeseriesLoaderService {
+        $fake = new class extends DatabaseTimeseriesLoader {
             public int $calls = 0;
 
             public function load(string $chart, CarbonImmutable $startUtc, CarbonImmutable $endUtc): array
@@ -404,7 +404,7 @@ class TimeseriesTest extends TestCase
             }
         };
 
-        $this->app->instance(DatabaseTimeseriesLoaderService::class, $fake);
+        $this->app->instance(DatabaseTimeseriesLoader::class, $fake);
 
         $this->getJson('/api/timeseries?chart=InvalidChart&start=2026-01-24&end=2026-01-24')
             ->assertStatus(422)
