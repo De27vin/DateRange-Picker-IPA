@@ -100,6 +100,24 @@ class TimeseriesSnapshotChartMapper
         return self::ALERT_TYPE_MAP[$seriesKey] ?? null;
     }
 
+    public function liveStatKeyForSeriesKey(string $seriesKey): string
+    {
+        return ucfirst($seriesKey);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function alertLiveStatKeysBySeriesKey(): array
+    {
+        $keys = [];
+        foreach (self::ALERT_TYPES as $seriesKey) {
+            $keys[$seriesKey] = $this->liveStatKeyForSeriesKey($seriesKey);
+        }
+
+        return $keys;
+    }
+
     /**
      * @return array<string, int>
      */

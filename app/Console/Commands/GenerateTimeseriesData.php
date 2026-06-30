@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Account;
 use App\Models\TimeseriesSnapshot;
+use App\Services\TimeseriesSnapshotChartMapper;
 use Carbon\CarbonImmutable;
 use Illuminate\Console\Command;
 
@@ -13,35 +14,6 @@ class GenerateTimeseriesData extends Command
     private const DEVICES_PROFILE = ['baseline' => 78.0, 'dailyAmplitude' => 9.0, 'weeklyAmplitude' => 6.0, 'trendStep' => 2.5, 'noise' => 4];
     private const ALARMS_PROFILE = ['baseline' => 34.0, 'dailyAmplitude' => 14.0, 'weeklyAmplitude' => 10.0, 'trendStep' => 3.5, 'noise' => 6];
     private const SERVICE_PROFILE = ['baseline' => 88.0, 'dailyAmplitude' => 5.0, 'weeklyAmplitude' => 4.0, 'trendStep' => 2.0, 'noise' => 3];
-    private const ALERT_TYPES = [
-        'active_alarm',
-        'battery_malfunction',
-        'battery_low',
-        'button_malfunction',
-        'charge_malfunction',
-        'database_malfunction',
-        'disk_low',
-        'object_door_failure',
-        'elevator_failure',
-        'gateway_malfunction',
-        'identity_mismatch',
-        'line_alarm',
-        'object_is_under_maintenance',
-        'microphone_malfunction',
-        'network_malfunction',
-        'periodical_call_overdue',
-        'pin_mismatch',
-        'power_malfunction',
-        'ram_low',
-        'reserved_device',
-        'serial_port_malfunction',
-        'shaft_failure',
-        'low_signal',
-        'sip_registration_failure',
-        'speaker_malfunction',
-        'technician_check_overdue',
-        'voice_alarm',
-    ];
 
     protected $signature = 'timeseries:generate
         {--start= : UTC start timestamp, default is now minus one year at the start of the hour}
@@ -49,6 +21,12 @@ class GenerateTimeseriesData extends Command
         {--account=* : Limit generation to one or more account ids}
         {--truncate : Delete existing snapshot rows before generating}';
     protected $description = 'Generate one year of realistic hourly UTC snapshot data in the database';
+
+    public function __construct(
+        private readonly TimeseriesSnapshotChartMapper $chartMapper,
+    ) {
+        parent::__construct();
+    }
 
     public function handle(): int
     {
@@ -235,7 +213,7 @@ class GenerateTimeseriesData extends Command
         $values = [];
         $hourSeed = $ts->dayOfYear * 24 + $ts->hour;
 
-        foreach (self::ALERT_TYPES as $index => $type) {
+        foreach ($this->chartMapper->supportedAlertTypes() as $index => $type) {
             $seed = abs((int) crc32($type . '.' . $accountId));
             $cycle = (($hourSeed + ($seed % 17)) % 24) / 24;
             $swing = sin(($cycle * 2 * M_PI) - M_PI_2);
