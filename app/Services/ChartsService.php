@@ -64,7 +64,6 @@ class ChartsService
         private readonly DeviceAlertsService $alertsService,
         private readonly TimeseriesSnapshotCollector $collector,
         private readonly TimeseriesService $timeseries,
-        private readonly TimeseriesSnapshotChartMapper $chartMapper,
     ) {
     }
 
@@ -256,6 +255,29 @@ class ChartsService
         return $sanitized;
     }
 
+    public function alertTypeCodeForSeriesKey(string $seriesKey): ?string
+    {
+        return $this->timeseries->alertTypeCodeForSeriesKey($seriesKey);
+    }
+
+    public function liveStatKeyForSeriesKey(string $seriesKey): string
+    {
+        return ucfirst($seriesKey);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function alertLiveStatKeysBySeriesKey(): array
+    {
+        $keys = [];
+        foreach ($this->timeseries->supportedAlertTypes() as $seriesKey) {
+            $keys[$seriesKey] = $this->liveStatKeyForSeriesKey($seriesKey);
+        }
+
+        return $keys;
+    }
+
     private function emptyStats(): array
     {
         return [
@@ -292,7 +314,7 @@ class ChartsService
             $nonCritical = 0;
 
             foreach (($row['series'] ?? []) as $seriesKey => $value) {
-                $alertType = is_string($seriesKey) ? $this->chartMapper->alertTypeCodeForSeriesKey($seriesKey) : null;
+                $alertType = is_string($seriesKey) ? $this->alertTypeCodeForSeriesKey($seriesKey) : null;
                 if ($alertType === null) {
                     continue;
                 }

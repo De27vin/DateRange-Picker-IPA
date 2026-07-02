@@ -34,14 +34,14 @@
     }
 
     // provide per-alert-type counts for the Alerts chart
-    $chartMapper = app(\App\Services\TimeseriesSnapshotChartMapper::class);
-    $alertsStats = array_fill_keys(array_values($chartMapper->alertLiveStatKeysBySeriesKey()), 0);
+    $chartsService = app(\App\Services\ChartsService::class);
+    $alertsStats = array_fill_keys(array_values($chartsService->alertLiveStatKeysBySeriesKey()), 0);
 
     try {
       $alertsService = new \App\Services\DeviceAlertsService();
       $alertCounts = $alertsService->getAllAlertCounts(session('account.id')) ?? [];
-      foreach ($chartMapper->alertLiveStatKeysBySeriesKey() as $seriesKey => $liveKey) {
-        $rawType = $chartMapper->alertTypeCodeForSeriesKey($seriesKey);
+      foreach ($chartsService->alertLiveStatKeysBySeriesKey() as $seriesKey => $liveKey) {
+        $rawType = $chartsService->alertTypeCodeForSeriesKey($seriesKey);
         $alertsStats[$liveKey] = $rawType !== null ? ($alertCounts[$rawType] ?? 0) : 0;
       }
     } catch (\Throwable $ex) {

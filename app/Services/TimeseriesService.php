@@ -8,11 +8,35 @@ use Illuminate\Support\Facades\DB;
 class TimeseriesService
 {
     private const DELTA_MARKER = '_delta';
-
-    public function __construct(
-        private readonly ?TimeseriesSnapshotChartMapper $chartMapper = null,
-    ) {
-    }
+    private const ALERT_TYPE_MAP = [
+        'active_alarm' => 'ALARM',
+        'battery_malfunction' => 'BATDEF',
+        'battery_low' => 'BATLOW',
+        'button_malfunction' => 'BUTTON',
+        'charge_malfunction' => 'CHARGE',
+        'database_malfunction' => 'DB',
+        'disk_low' => 'DISK',
+        'object_door_failure' => 'LOCATION',
+        'elevator_failure' => 'ELEVATOR',
+        'gateway_malfunction' => 'GATEWAY',
+        'identity_mismatch' => 'IDENTITY',
+        'line_alarm' => 'LINE',
+        'object_is_under_maintenance' => 'MAINTENANCE',
+        'microphone_malfunction' => 'MIC',
+        'network_malfunction' => 'NETWORK',
+        'periodical_call_overdue' => 'PERIODICAL',
+        'pin_mismatch' => 'PIN',
+        'power_malfunction' => 'POWER',
+        'ram_low' => 'RAM',
+        'reserved_device' => 'RESERVE',
+        'serial_port_malfunction' => 'SERIAL',
+        'shaft_failure' => 'SHAFT',
+        'low_signal' => 'SIGNAL',
+        'sip_registration_failure' => 'SIP',
+        'speaker_malfunction' => 'SPEAKER',
+        'technician_check_overdue' => 'TECH',
+        'voice_alarm' => 'VOICE',
+    ];
 
     /**
      * @return array{resolution: string, data: array<int, array{ts: string, series: array<string, int>}>}
@@ -65,11 +89,47 @@ class TimeseriesService
 
             $points[] = [
                 'ts' => $ts->toIso8601String(),
-                'series' => $this->chartMapper()->extractSeries($chart, $snapshotData),
+                'series' => $this->extractSeries($chart, $snapshotData),
             ];
         }
 
         return $points;
+    }
+
+    /**
+     * @return array<string, int>
+     */
+    public function extractSeries(string $chart, array $snapshotData): array
+    {
+        return match ($chart) {
+            'EquipmentChart' => [
+                'enabled' => $this->intValue($this->path($snapshotData, ['devices', 'enabled'])),
+                'disabled' => $this->intValue($this->path($snapshotData, ['devices', 'disabled'])),
+            ],
+            'AlarmChart' => [
+                'inbound_calls' => $this->intValue($this->path($snapshotData, ['alarms', 'inbound_calls'])),
+                'active_alarms' => $this->intValue($this->path($snapshotData, ['alarms', 'active_alarms'])),
+            ],
+            'AlertsChart' => $this->alertTypeSeries($snapshotData),
+            'ServiceLevelChart' => [
+                'periodical_calls' => $this->intValue($this->path($snapshotData, ['service_level', 'periodical_calls'])),
+                'local_checks' => $this->intValue($this->path($snapshotData, ['service_level', 'local_checks'])),
+            ],
+            default => [],
+        };
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public function supportedAlertTypes(): array
+    {
+        return array_keys(self::ALERT_TYPE_MAP);
+    }
+
+    public function alertTypeCodeForSeriesKey(string $seriesKey): ?string
+    {
+        return self::ALERT_TYPE_MAP[$seriesKey] ?? null;
     }
 
     public function forRange(CarbonImmutable $startUtc, CarbonImmutable $endUtc): string
@@ -254,11 +314,6 @@ class TimeseriesService
         }, array_values($map));
     }
 
-    private function chartMapper(): TimeseriesSnapshotChartMapper
-    {
-        return $this->chartMapper ?? new TimeseriesSnapshotChartMapper();
-    }
-
     private function loadSnapshotStateBefore(int $accountId, CarbonImmutable $startUtc): ?array
     {
         $chain = [];
@@ -361,6 +416,45 @@ class TimeseriesService
         }
 
         return max(0, min(100, (int) round((float) $value)));
+    }
+
+    /**
+     * @return array<string, int>
+     */
+    private function alertTypeSeries(array $snapshotData): array
+    {
+        $alerts = $this->path($snapshotData, ['alerts', 'alert_type']);
+        $series = [];
+        foreach ($this->supportedAlertTypes() as $type) {
+            $legacyValue = is_array($alerts) ? ($alerts[$type] ?? null) : null;
+            $rawValue = is_array($alerts) ? ($alerts[self::ALERT_TYPE_MAP[$type] ?? ''] ?? null) : null;
+            $series[$type] = $this->intValue($legacyValue ?? $rawValue ?? 0);
+        }
+
+        return $series;
+    }
+
+    private function path(array $data, array $path): mixed
+    {
+        $value = $data;
+        foreach ($path as $segment) {
+            if (!is_array($value) || !array_key_exists($segment, $value)) {
+                return null;
+            }
+
+            $value = $value[$segment];
+        }
+
+        return $value;
+    }
+
+    private function intValue(mixed $value): int
+    {
+        if (!is_numeric($value)) {
+            return 0;
+        }
+
+        return (int) round((float) $value);
     }
 
     /**
