@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DashboardWidgetSeriesRequest;
 use App\Services\ChartsService;
-use App\Services\DashboardWidgetSettingsService;
 use Illuminate\Http\JsonResponse;
 
 class DashboardWidgetsController extends Controller
@@ -16,17 +15,17 @@ class DashboardWidgetsController extends Controller
         ]);
     }
 
-    public function settings(DashboardWidgetSettingsService $settings): JsonResponse
+    public function settings(ChartsService $charts): JsonResponse
     {
         return response()->json([
-            'data' => $settings->getEffectiveDefaults(),
+            'data' => $charts->getEffectiveDefaults(),
         ]);
     }
 
-    public function chartsSettings(DashboardWidgetSettingsService $settings): JsonResponse
+    public function chartsSettings(ChartsService $charts): JsonResponse
     {
         return response()->json([
-            'data' => $settings->getEffectiveDefaults(DashboardWidgetSettingsService::SCOPE_CHARTS),
+            'data' => $charts->getEffectiveDefaults(ChartsService::SCOPE_CHARTS),
         ]);
     }
 

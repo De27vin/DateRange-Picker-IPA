@@ -1,5 +1,5 @@
 @php
-    $isCharts = ($scope ?? 'dashboard') === \App\Services\DashboardWidgetSettingsService::SCOPE_CHARTS;
+    $isCharts = ($scope ?? 'dashboard') === \App\Services\ChartsService::SCOPE_CHARTS;
     $items = $isCharts
         ? [
             'equipment' => __('Equipment'),

@@ -2,33 +2,33 @@
 
 namespace App\Http\Livewire\User;
 
-use App\Services\DashboardWidgetSettingsService;
+use App\Services\ChartsService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class ChangeDashboard extends Component
 {
-    public string $scope = DashboardWidgetSettingsService::SCOPE_DASHBOARD;
+    public string $scope = ChartsService::SCOPE_DASHBOARD;
     public array $settings = [];
 
-    private DashboardWidgetSettingsService $settingsService;
+    private ChartsService $settingsService;
 
     public function __construct($id = null)
     {
         parent::__construct($id);
-        $this->settingsService = new DashboardWidgetSettingsService();
+        $this->settingsService = app(ChartsService::class);
     }
 
-    public function mount(string $scope = DashboardWidgetSettingsService::SCOPE_DASHBOARD)
+    public function mount(string $scope = ChartsService::SCOPE_DASHBOARD)
     {
         if (!session('account.id') || !Auth::check()) {
             \Log::error('Required data not found in ChangeDashboard component');
             abort(500);
         }
 
-        $this->scope = in_array($scope, DashboardWidgetSettingsService::SCOPES, true)
+        $this->scope = in_array($scope, ChartsService::SCOPES, true)
             ? $scope
-            : DashboardWidgetSettingsService::SCOPE_DASHBOARD;
+            : ChartsService::SCOPE_DASHBOARD;
         $this->settings = $this->settingsService->getUserDefaults($this->scope);
     }
 
