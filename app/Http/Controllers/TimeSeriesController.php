@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TimeseriesRequest;
-use App\Services\DatabaseTimeseriesLoaderService;
+use App\Services\TimeseriesService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 
 class TimeSeriesController extends Controller
 {
-    public function fetch(TimeseriesRequest $request, DatabaseTimeseriesLoaderService $timeseriesData): JsonResponse
+    public function fetch(TimeseriesRequest $request, TimeseriesService $timeseriesData): JsonResponse
     {
         $chart = $request->validated('chart');
         $startUtc = $request->startUtc();

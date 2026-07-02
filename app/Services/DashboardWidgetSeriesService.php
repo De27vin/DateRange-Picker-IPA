@@ -7,8 +7,7 @@ use Carbon\CarbonImmutable;
 class DashboardWidgetSeriesService
 {
     public function __construct(
-        private readonly DatabaseTimeseriesLoaderService $loader,
-        private readonly TimeseriesAggregatorService $aggregator,
+        private readonly TimeseriesService $timeseries,
         private readonly TimeseriesSnapshotChartMapper $chartMapper,
         private readonly DeviceAlertsService $alertsService,
     ) {
@@ -16,13 +15,13 @@ class DashboardWidgetSeriesService
 
     public function build(string $widget, CarbonImmutable $startUtc, CarbonImmutable $endUtc): array
     {
-        $bucketCount = $this->aggregator->suggestedBucketCountForRange($startUtc, $endUtc);
+        $bucketCount = $this->timeseries->suggestedBucketCountForRange($startUtc, $endUtc);
 
         return match ($widget) {
             'equipment' => [
                 'bucket_count' => $bucketCount,
-                'data' => $this->aggregator->bucketByLastDatapoint(
-                    $this->loader->load('EquipmentChart', $startUtc, $endUtc),
+                'data' => $this->timeseries->bucketByLastDatapoint(
+                    $this->timeseries->load('EquipmentChart', $startUtc, $endUtc),
                     $startUtc,
                     $endUtc,
                     $bucketCount,
@@ -31,8 +30,8 @@ class DashboardWidgetSeriesService
             ],
             'overdues' => [
                 'bucket_count' => $bucketCount,
-                'data' => $this->aggregator->bucketByLastDatapoint(
-                    $this->loader->load('ServiceLevelChart', $startUtc, $endUtc),
+                'data' => $this->timeseries->bucketByLastDatapoint(
+                    $this->timeseries->load('ServiceLevelChart', $startUtc, $endUtc),
                     $startUtc,
                     $endUtc,
                     $bucketCount,
@@ -41,8 +40,8 @@ class DashboardWidgetSeriesService
             ],
             'alerts' => [
                 'bucket_count' => $bucketCount,
-                'data' => $this->aggregator->bucketByLastDatapoint(
-                    $this->transformAlertRows($this->loader->load('AlertsChart', $startUtc, $endUtc)),
+                'data' => $this->timeseries->bucketByLastDatapoint(
+                    $this->transformAlertRows($this->timeseries->load('AlertsChart', $startUtc, $endUtc)),
                     $startUtc,
                     $endUtc,
                     $bucketCount,
