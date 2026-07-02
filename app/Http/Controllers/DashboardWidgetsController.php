@@ -3,17 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\DashboardWidgetSeriesRequest;
-use App\Services\DashboardCurrentStatsService;
+use App\Services\ChartsService;
 use App\Services\DashboardWidgetSettingsService;
-use App\Services\DashboardWidgetSeriesService;
 use Illuminate\Http\JsonResponse;
 
 class DashboardWidgetsController extends Controller
 {
-    public function summary(DashboardCurrentStatsService $stats): JsonResponse
+    public function summary(ChartsService $charts): JsonResponse
     {
         return response()->json([
-            'data' => $stats->get(),
+            'data' => $charts->currentStats(),
         ]);
     }
 
@@ -33,12 +32,12 @@ class DashboardWidgetsController extends Controller
 
     public function series(
         DashboardWidgetSeriesRequest $request,
-        DashboardWidgetSeriesService $series
+        ChartsService $charts
     ): JsonResponse {
         $widget = (string) $request->validated('widget');
         $startUtc = $request->startUtc();
         $endUtc = $request->endUtc();
-        $result = $series->build($widget, $startUtc, $endUtc);
+        $result = $charts->widgetSeries($widget, $startUtc, $endUtc);
 
         return response()->json([
             'meta' => [
