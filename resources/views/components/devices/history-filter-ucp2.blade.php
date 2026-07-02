@@ -7,6 +7,7 @@
     'historyFilter'  => [],
     'severityFilter' => [],
     'dateFilter'     => [],
+    'canExportHistory' => false,
 ])
 <div class="info-container text-medium block py-2 text-sm hover:text-gray-900 has-children">
     <div class="flex w-full justify-between items-center ml-0">
@@ -15,21 +16,21 @@
         </span>
     </div>
 
-    <div class="site-history-toolbar flex justify-between">
-        <div class="site-history-fields w-full md:w-1/2 flex flex-col justify-start md:flex-row md:justify-start">
-            <div class="site-history-control site-history-date-control w-1/2">
+    <div class="flex justify-between">
+        <div class="w-full md:w-1/2 space-x-0 md:space-x-8 space-y-4 md:space-y-0 flex flex-col justify-start md:flex-row md:justify-start">
+            <div class="w-1/2">
                 <x-input.group inline for="filter-dateFromValue" :label="__('From')">
                     <x-input.date wire:model="dateFilter.dateFromValue" id="filter-dateFromValue" placeholder="dd.mm.yyyy" />
                 </x-input.group>
             </div>
-            <div class="site-history-control site-history-date-control w-1/2">
+            <div class="w-1/2">
                 <x-input.group inline for="filter-dateToValue" :label="__('To')">
                     <x-input.date wire:model="dateFilter.dateToValue" id="filter-dateToValue" placeholder="dd.mm.yyyy" />
                 </x-input.group>
             </div>
             @if($deviceSite)
-                <div class="site-history-control site-history-context-control w-full h-15">
-                    <x-input.group inline for="filter-historyContext" :label="__('History')">
+                <div class="w-full h-15">
+                    <x-input.group inline for="filter-historyContext" :label="__('History Context')">
                         <x-input.select class="w-full" wire:model="context" id="module_id">
                             @php arsort($contextOptions); @endphp
                             @foreach ($contextOptions as $value => $option)
@@ -41,10 +42,11 @@
             @endif
         </div>
 
-        <div class="site-history-actions items-center justify-end">
+        <div class="items-center justify-end">
 {{--            <div class="mx-2 bottom-underline-light uppercase text-xs">@lang('Actions')</div>--}}
 
             <div class="flex">
+                @if($canExportHistory)
                 <div x-data="exportHandler(@js(['type' => 'history', 'componentId' => $componentId, 'storeUrl' => route('exports.store'), 'progressLabel' => __('Downloading…')]))"
                      x-init="init()"
                      style="z-index: 10;"
@@ -60,6 +62,7 @@
 
                     <x-export.progress-bar />
                 </div>
+                @endif
 
                 <x-button.white class="ml-1 border border-slate-200" wire:click="resetFilters">
                     @lang('Reset Filters')
@@ -197,104 +200,3 @@
         </div>
     </div>
 </div>
-
-<style>
-    .site-history-toolbar {
-        align-items: flex-end;
-        gap: 24px;
-    }
-
-    .site-history-fields {
-        align-items: flex-end;
-        gap: 30px;
-        flex-wrap: wrap;
-    }
-
-    .site-history-control {
-        min-width: 212px;
-    }
-
-    .site-history-date-control {
-        width: 212px !important;
-    }
-
-    .site-history-context-control {
-        min-width: 360px;
-    }
-
-    .site-history-control label {
-        display: block;
-        margin: 0 0 -20px 12px;
-        position: relative;
-        z-index: 1;
-        color: #7c8fac;
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: 0;
-        line-height: 1;
-        text-transform: uppercase;
-    }
-
-    .site-history-control input,
-    .site-history-control select {
-        width: 100% !important;
-        height: 60px !important;
-        min-height: 60px !important;
-        padding: 22px 38px 9px 12px !important;
-        border: 1px solid #c9d4e5 !important;
-        border-radius: 8px !important;
-        background-color: #ffffff !important;
-        box-shadow: none !important;
-        color: #001a44 !important;
-        font-size: 15px !important;
-        font-weight: 500 !important;
-        line-height: 1.2 !important;
-        box-sizing: border-box !important;
-    }
-
-    .site-history-control select {
-        appearance: none;
-        background-image:
-            linear-gradient(45deg, transparent 50%, #6f819e 50%),
-            linear-gradient(135deg, #6f819e 50%, transparent 50%);
-        background-position:
-            calc(100% - 18px) 31px,
-            calc(100% - 12px) 31px;
-        background-repeat: no-repeat;
-        background-size: 6px 6px, 6px 6px;
-    }
-
-    .site-history-control input:focus,
-    .site-history-control select:focus {
-        border-color: #8fabdd !important;
-        outline: 0 !important;
-    }
-
-    .site-history-actions {
-        align-self: flex-end;
-        padding-bottom: 0;
-    }
-
-    @media (max-width: 1023px) {
-        .site-history-toolbar,
-        .site-history-fields {
-            align-items: stretch;
-            gap: 16px;
-        }
-
-        .site-history-toolbar {
-            flex-direction: column;
-        }
-
-        .site-history-control,
-        .site-history-date-control,
-        .site-history-context-control {
-            width: 100% !important;
-            min-width: 0;
-        }
-
-        .site-history-actions {
-            align-self: flex-start;
-        }
-    }
-</style>
